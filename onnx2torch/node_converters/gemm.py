@@ -45,11 +45,10 @@ class OnnxGeneralLinear(nn.Linear):
             bias: bool,
             trans_a: int,
     ):
-        is_simple = trans_a == 0
-        if is_simple:
+        if trans_a == 0:
             return nn.Linear(in_features=in_features, out_features=out_features, bias=bias)
-        else:
-            return OnnxGeneralLinear(in_features, out_features, bias, trans_a)
+
+        return OnnxGeneralLinear(in_features, out_features, bias, trans_a)
 
 
 @add_converter(operation_type='Gemm', version=9)
