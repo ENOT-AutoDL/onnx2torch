@@ -51,7 +51,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     epsilon = node_attributes.get('epsilon', 1e-5)
     momentum = node_attributes.get('momentum', 0.9)
     if training_mode != 0:
-        raise NotImplementedError(f'BatchNorm nodes in training mode are not supported.')
+        raise NotImplementedError('BatchNorm nodes in training mode are not supported.')
 
     torch_module = bn_class(
         num_features=scale.size()[0],
