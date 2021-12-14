@@ -1,7 +1,5 @@
 # onnx2torch
 
-> Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
-
 onnx2torch is an ONNX to PyTorch converter. 
 Our converter:
 * Is easy to use – Convert the ONNX model with the function call ``convert``;
@@ -10,7 +8,16 @@ Our converter:
 
 If you find an issue, please [let us know](https://github.com/ENOT-AutoDL/onnx2torch/issues)! And feel free to create merge requests.
 
-> Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.
+Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.  
+Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
+
+## Installation
+
+### From PyPi
+
+```bash
+pip install onnx2torch
+```
 
 ## Usage
 
@@ -56,27 +63,6 @@ We have tested the following models:
 - [x] ResNet50
 - [x] SSDLite with MobileNetV2 backbone
 
-## Setup
-
-## Option 1 – From source
-
-Go to our [repo](https://github.com/ENOT-AutoDL/onnx2torch).  
-And install with the following command:
-```bash
-pip install .
-```
-
-or in develop mode:
-```bash
-pip install -e .
-```
-
-## Option 2 – From PyPi
-
-```bash
-pip install onnx2torch
-```
-
 ## How to add new operations to converter
 
 Here we show how to add the module:
@@ -92,9 +78,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 ```
-Here we have registered an operation named ``Relu`` for opset versions 6, 13, 14.
-> Note that the ``torch_module`` argument in ``OperationConverterResult`` must be a torch.nn.Module, not just a callable object!  
-> If Operation's behaviour differs from one opset version to another, you should implement it separately.
+Here we have registered an operation named ``Relu`` for opset versions 6, 13, 14.  
+Note that the ``torch_module`` argument in ``OperationConverterResult`` must be a torch.nn.Module, not just a callable object!  
+If Operation's behaviour differs from one opset version to another, you should implement it separately.
 
 2. Operations supported by PyTorch and ONNX BUT have different behaviour
 ```python
@@ -129,4 +115,4 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     )
 ```
 
-> Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ExpandExportToOnnx``.
+Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ExpandExportToOnnx``.
