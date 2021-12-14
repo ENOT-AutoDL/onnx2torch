@@ -10,6 +10,7 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 
+# pylint: disable=no-member
 TENSOR_TYPE_TO_TORCH_TYPE = {
     int(TensorProto.FLOAT): torch.float32,
     int(TensorProto.UINT8): torch.uint8,
@@ -23,6 +24,7 @@ TENSOR_TYPE_TO_TORCH_TYPE = {
     int(TensorProto.COMPLEX64): torch.complex64,
     int(TensorProto.COMPLEX128): torch.complex128,
 }
+# pylint: enable=no-member
 
 
 class OnnxCast(nn.Module):
