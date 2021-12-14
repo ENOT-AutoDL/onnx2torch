@@ -2,6 +2,7 @@ from typing import Tuple
 
 import numpy as np
 import onnx
+import pytest
 from PIL import Image
 from onnx import version_converter
 
@@ -33,6 +34,7 @@ def create_test_batch(n: int = 32, target_size: Tuple[int, int] = (224, 224)) ->
     return np.array(batch)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_resnet50():
     model_path = get_model_path('resnet50')
     model = onnx.load_model(str(model_path.resolve()))
@@ -52,6 +54,7 @@ def test_resnet50():
     )
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_ssdlite() -> None:
     model_path = get_model_path('ssdlite')
     model = onnx.load_model(str(model_path.resolve()))

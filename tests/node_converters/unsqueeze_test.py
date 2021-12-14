@@ -42,6 +42,7 @@ def _test_unsqueeze(
 # Known warning. Shape Inference do not work properly in opset_version=9 and negative indices.
 # [W:onnxruntime:, execution_frame.cc:721 VerifyOutputSizes]
 # Expected shape from model of {2,3,16,16} does not match actual shape of {2,1,3,16,1,16} for output y
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
     'input_shape,axes,opset_version',
     (

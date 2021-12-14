@@ -2,6 +2,7 @@ from typing import Tuple
 
 import numpy as np
 import onnx
+import pytest
 from onnx import numpy_helper
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
@@ -30,6 +31,7 @@ def _test_constant_as_tensor(shape: Tuple[int, ...], dtype: np.dtype) -> None:
     check_model(model, onnx_inputs={})
 
 
+@pytest.mark.filterwarnings('ignore:No input args')
 def test_constant() -> None:
     _test_constant_as_tensor((16, 16, 16), np.dtype('int32'))
     _test_constant_as_tensor((16, 16, 16), np.dtype('int32'))

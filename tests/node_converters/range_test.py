@@ -1,5 +1,6 @@
 import numpy as np
 import onnx
+import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
@@ -32,6 +33,7 @@ def _test_range(
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_range() -> None:
     _test_range(
         start=np.array(1, dtype=np.int32),

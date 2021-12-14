@@ -1,5 +1,6 @@
 import numpy as np
 import onnx
+import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
@@ -34,6 +35,7 @@ def _test_tile(
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_tile() -> None:
     data = np.random.rand(2, 3, 4, 5).astype(np.float32)
     repeats = np.random.randint(low=1, high=10, size=(np.ndim(data),)).astype(np.int64)

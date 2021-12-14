@@ -2,6 +2,7 @@ from typing import List
 
 import numpy as np
 import onnx
+import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
@@ -35,6 +36,7 @@ def _test_shape(
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_shape() -> None:
     _test_shape(input_shape=[2, 3, 16, 16, 16], opset_version=9)
     _test_shape(input_shape=[2, 3, 16, 16], opset_version=9)
