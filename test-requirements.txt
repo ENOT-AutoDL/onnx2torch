@@ -1,0 +1,5 @@
+googledrivedownloader
+onnxruntime
+pytest
+Pillow
+requests
