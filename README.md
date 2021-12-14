@@ -92,7 +92,7 @@ class OnnxExpand(nn.Module):
 
     def forward(self, *args) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
-            with skip_torch_tracing():
+            with SkipTorchTracing():
                 output = self._do_forward(*args)
                 return _ExpandExportToOnnx.set_output_and_apply(output, *args)
 

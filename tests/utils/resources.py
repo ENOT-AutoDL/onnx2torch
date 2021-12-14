@@ -40,7 +40,7 @@ def get_model_path(name: str) -> Path:
 
 
 def get_minimal_dataset_path():
-    dataset_path = DATASETS_DIR / f'minimal_dataset'
+    dataset_path = DATASETS_DIR / 'minimal_dataset'
     if not dataset_path.exists():
         arch_path = dataset_path.with_suffix('.tar.gz')
         GoogleDriveDownloader.download_file_from_google_drive(

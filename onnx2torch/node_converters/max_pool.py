@@ -37,9 +37,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     strides = node_attributes.get('strides', 1)
     storage_order = node_attributes.get('storage_order', 0)
     if storage_order != 0:
-        raise NotImplementedError(f'Only row major (0) order is supported.')
+        raise NotImplementedError('Only row major (0) order is supported.')
     if kernel_shape is None:
-        raise RuntimeError(f'Kernel shape for MaxPool not specified. Kernel shape is mandatory parameters in onnx. ')
+        raise RuntimeError('Kernel shape for MaxPool not specified. Kernel shape is mandatory parameters in onnx.')
 
     auto_pad = node_attributes.get('auto_pad', 'NOTSET')
     if auto_pad == 'NOTSET':

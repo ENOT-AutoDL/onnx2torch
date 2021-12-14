@@ -80,7 +80,7 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
     }
 
     onnx_model = infer_shapes(onnx_model)
-    onnx_graph = OnnxGraph(onnx_model.graph)
+    onnx_graph = OnnxGraph(onnx_model.graph)  # pylint: disable=no-member
     torch_graph = fx.Graph()
 
     torch_initializers = InitializersContainer()

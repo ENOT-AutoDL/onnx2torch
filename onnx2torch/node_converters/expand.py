@@ -6,7 +6,7 @@ from torch import nn
 
 from onnx2torch.common import OperationConverterResult
 from onnx2torch.common import onnx_mapping_from_node
-from onnx2torch.common import skip_torch_tracing
+from onnx2torch.common import SkipTorchTracing
 from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
@@ -21,7 +21,7 @@ class OnnxExpand(nn.Module):
 
     def forward(self, *args) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
-            with skip_torch_tracing():
+            with SkipTorchTracing():
                 output = self._do_forward(*args)
                 return _ExpandExportToOnnx.set_output_and_apply(output, *args)
 

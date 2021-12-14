@@ -39,6 +39,7 @@ def _test_squeeze(
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
     'shape,axes,opset_version',
     (

@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 from typing import NamedTuple
 from typing import Tuple
@@ -59,7 +58,7 @@ def get_const_value(name: str, graph: OnnxGraph) -> Union[torch.Tensor, float, i
     raise KeyError(f'Tensor "{name}" is not found in constant values')
 
 
-class skip_torch_tracing:
+class SkipTorchTracing:
     def __init__(self):
         self._catch_warnings = catch_warnings()
         self._state = None

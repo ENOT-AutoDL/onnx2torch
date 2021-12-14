@@ -32,6 +32,7 @@ def _test_reshape(
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
     'input_shape,output_shape,opset_version',
     (

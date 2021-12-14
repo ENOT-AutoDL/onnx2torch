@@ -2,6 +2,7 @@ from typing import Optional
 
 import numpy as np
 import onnx
+import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
@@ -46,6 +47,7 @@ def _test_slice(
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_slice() -> None:
     x = np.random.randn(20, 10, 5).astype(np.float32)
 
