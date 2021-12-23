@@ -18,6 +18,7 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
     'Sub': torch.sub,
     'Mul': torch.mul,
     'Div': torch.div,
+    'Pow': torch.pow,
 }
 
 
@@ -65,6 +66,11 @@ class OnnxBinaryMathOperation(nn.Module):
 @add_converter(operation_type='Div', version=7)
 @add_converter(operation_type='Div', version=13)
 @add_converter(operation_type='Div', version=14)
+@add_converter(operation_type='Pow', version=1)
+@add_converter(operation_type='Pow', version=7)
+@add_converter(operation_type='Pow', version=12)
+@add_converter(operation_type='Pow', version=13)
+@add_converter(operation_type='Pow', version=15)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=OnnxBinaryMathOperation(
