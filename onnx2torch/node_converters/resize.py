@@ -56,14 +56,14 @@ class OnnxResize(nn.Module):
             sizes: torch.Tensor = torch.tensor([]),
     ) -> torch.Tensor:
         self.mode = _dimension_mode(self.mode, x.dim() - 2)
-        if roi is not None:
+        if roi.numel() != 0:
             warnings.warn('Roi only takes effect when coordinate_transformation_mode is "tf_crop_and_resize".')
             warnings.warn('Pytorch\'s interpolate doesn\'t use roi. Result might differ."')
 
         # In onnx scales and sizes in format [n, c, d, h, w]
         # but in torch only [d, h, w]
         sizes, scales = list(sizes), list(scales)
-        input_shape = list(x.shape())
+        input_shape = list(x.shape)
         if input_shape[:2] == sizes[:2]:
             sizes = sizes[2:]
         elif scales[:2] == [1, 1]:

@@ -3,9 +3,7 @@ import onnx
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from tests.utils.common import calc_ort_outputs
-from tests.utils.common import calc_torch_and_ort_outputs
-from tests.utils.common import convert_onnx2torch2onnx
+from tests.utils.common import check_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -15,6 +13,10 @@ def _test_resize(
         sizes: np.ndarray = None,
         **kwargs,
 ) -> None:
+    align_corners = kwargs.pop('align_corners', None)
+    if align_corners:
+        kwargs['coordinate_transformation_mode'] = 'align_corners'
+
     initializers = {}
     inputs = ['x', 'roi']
     test_inputs = {'x': x, 'roi': np.array([0.0])}
@@ -23,11 +25,10 @@ def _test_resize(
         inputs.append('scales')
     if sizes is not None:
         inputs.append('scales')
-        test_inputs['scales'] = None
+        test_inputs['scales'] = np.array([]).astype(np.float32)
         test_inputs['sizes'] = sizes
         inputs.append('sizes')
 
-    print(test_inputs, inputs)
     node = onnx.helper.make_node(op_type='Resize', inputs=inputs, outputs=['y'], **kwargs)
 
     outputs_info = [
@@ -44,24 +45,13 @@ def _test_resize(
         inputs_example=test_inputs,
         outputs_info=outputs_info,
     )
-
-    torch_outputs, ort_outputs = calc_torch_and_ort_outputs(model=model, test_inputs=test_inputs)
-    (ort_outputs,) = ort_outputs
-
-    onnx_backward_conversion_model = convert_onnx2torch2onnx(model, inputs=test_inputs)
-
-    ort_backward_conversion_model_outputs = calc_ort_outputs(
-        onnx_backward_conversion_model,
-        inputs={graph_input.name: test_inputs[graph_input.name] for graph_input in
-                onnx_backward_conversion_model.graph.input},
+    check_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -7,
+        atol_torch_cpu_cuda=10 ** -7,
+        atol_onnx_torch2onnx=10 ** -7,
     )
-    (ort_backward_conversion_model_outputs,) = ort_backward_conversion_model_outputs
-
-    ok = ort_backward_conversion_model_outputs.shape == ort_outputs.shape
-    assert ok, 'ort from onnx2torch2onnx model and ort outputs have significant difference'
-
-    ok = np.all(torch_outputs == ort_outputs)
-    assert ok, 'torch and ort outputs have significant difference'
 
 
 def test_resize() -> None:
@@ -107,5 +97,5 @@ def test_resize() -> None:
         [3, 4],
     ]]], dtype=np.float32)
     scales = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
-    _test_resize(x=data, scales=scales, mode='nearest')
-
+    _test_resize(x=data, scales=scales, mode='nearest', nearest_mode='floor',
+                 coordinate_transformation_mode='asymmetric')
