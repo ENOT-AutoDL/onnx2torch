@@ -1,3 +1,4 @@
+import inspect
 from collections import OrderedDict
 from pathlib import Path
 from typing import Union
@@ -8,7 +9,6 @@ from onnx.onnx_ml_pb2 import ModelProto
 from onnx.shape_inference import infer_shapes
 from torch import fx
 from torch import nn
-import inspect
 
 from onnx2torch.node_converters import get_converter
 from onnx2torch.onnx_graph import OnnxGraph
