@@ -12,7 +12,7 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 
-VALID_COORDINATE_TRANSFORM_MODES = ['asymmelstric', 'align_corners', 'pytorch_half_pixel', 'half_pixel']
+VALID_COORDINATE_TRANSFORM_MODES = ['asymmetric', 'align_corners', 'pytorch_half_pixel', 'half_pixel']
 
 
 DIMENSION_MODE = {
@@ -62,8 +62,8 @@ class OnnxResize(nn.Module):
 
         # In onnx scales and sizes in format [n, c, d, h, w]
         # but in torch only [d, h, w]
-        sizes, scales = list(sizes), list(scales)
-        input_shape = list(x.shape)
+        sizes, scales = sizes.tolist(), scales.tolist()
+        input_shape = x.shape
         if input_shape[:2] == sizes[:2]:
             sizes = sizes[2:]
         elif scales[:2] == [1, 1]:
@@ -86,11 +86,51 @@ class OnnxResize(nn.Module):
             scale_factor=scales,
             mode=self.mode,
             align_corners=self.align_corners,
-            recompute_scale_factor=scales is not None,
         )
 
 
-# @add_converter(operation_type='Resize', version=10)
+class OnnxResizeV10(nn.Module):
+
+    def __init__(self, mode: str = 'nearest'):
+        super().__init__()
+        self.mode = mode
+        if self.mode == 'linear':
+            warnings.warn('Pytorch\'s linear interpolate and onnx resize might differ!"')
+
+    def forward(
+            self,
+            x: torch.Tensor,
+            scales: torch.Tensor,
+    ) -> torch.Tensor:
+        self.mode = _dimension_mode(self.mode, x.dim() - 2)
+
+        # In onnx scales and sizes in format [n, c, d, h, w]
+        # but in torch only [d, h, w]
+        scales = scales.tolist()
+        if scales[:2] == [1, 1]:
+            scales = scales[2:]
+        elif len(scales) == 0:
+            raise ValueError('Scales should be defined.')
+        else:
+            raise NotImplementedError('Pytorch\'s interpolate cannot scale channel or batch dimensions.')
+
+        return torch.nn.functional.interpolate(
+            x,
+            scale_factor=tuple((float(x) for x in scales)),
+            mode=self.mode,
+        )
+
+
+@add_converter(operation_type='Resize', version=10)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    node_attributes = node.attributes
+    mode = node_attributes.get('mode', 'nearest')
+
+    torch_module = OnnxResizeV10(mode=mode)
+    return OperationConverterResult(
+        torch_module=torch_module,
+        onnx_mapping=onnx_mapping_from_node(node),
+    )
 
 
 @add_converter(operation_type='Resize', version=11)
@@ -106,7 +146,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
     if coordinate_transformation_mode not in VALID_COORDINATE_TRANSFORM_MODES:
         raise NotImplementedError(
-            f'Coordinate transformation mode "tf_crop_and_resize" is not implemented.'
+            f'Coordinate transformation mode "tf_crop_and_resize" and "tf_half_pixel_for_nn" are not implemented.'
         )
 
     if mode == 'nearest':
