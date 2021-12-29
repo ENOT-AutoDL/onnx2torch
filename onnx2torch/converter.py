@@ -8,6 +8,7 @@ from onnx.onnx_ml_pb2 import ModelProto
 from onnx.shape_inference import infer_shapes
 from torch import fx
 from torch import nn
+import inspect
 
 from onnx2torch.node_converters import get_converter
 from onnx2torch.onnx_graph import OnnxGraph
@@ -115,12 +116,12 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
                 args.append(torch_nodes[value_name])
 
             elif value_type == ValueType.NODE_OUTPUT:
-                onnx_node, _ = onnx_graph.value_as_node_output(value_name)
-                torch_input_node = torch_nodes[onnx_node.unique_name]
+                onnx_input_node, _ = onnx_graph.value_as_node_output(value_name)
+                torch_input_node = torch_nodes[onnx_input_node.unique_name]
 
                 # Get only one needed output of torch_input_node by index
-                if len(onnx_node.output_values) > 1:
-                    index = onnx_node.output_values.index(value_name)
+                if len(onnx_input_node.output_values) > 1:
+                    index = onnx_input_node.output_values.index(value_name)
                     torch_input_node = torch_graph.call_function(
                         lambda x, index: x[index],
                         args=tuple([torch_input_node, ]),
@@ -138,7 +139,19 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
             else:
                 RuntimeError(f'Got unexpected input value type ({value_type})')
 
-        torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args))
+        # Collect kwargs if there are some skipped args
+        kwargs = {}
+        node_input_values = onnx_node.input_values
+        if '' in node_input_values:
+            torch_forward = torch_module._do_forward if hasattr(torch_module, '_do_forward') else torch_module.forward
+            keys_args = tuple(inspect.signature(torch_forward).parameters.keys())
+            kwargs = {
+                name: args.pop(0)
+                for name, value in zip(keys_args, node_input_values)
+                if value != ''
+            }
+
+        torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
 
     # Create output nodes
     onnx_output_nodes = [
