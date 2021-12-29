@@ -18,14 +18,13 @@ def _test_resize(
         kwargs['coordinate_transformation_mode'] = 'align_corners'
 
     initializers = {}
-    inputs = ['x', 'roi']
-    test_inputs = {'x': x, 'roi': np.array([0.0])}
+    inputs = ['x', '']
+    test_inputs = {'x': x}
     if scales is not None:
         test_inputs['scales'] = scales
         inputs.append('scales')
     if sizes is not None:
-        inputs.append('scales')
-        test_inputs['scales'] = np.array([]).astype(np.float32)
+        inputs.append('')
         test_inputs['sizes'] = sizes
         inputs.append('sizes')
 
@@ -44,6 +43,7 @@ def _test_resize(
         initializers=initializers,
         inputs_example=test_inputs,
         outputs_info=outputs_info,
+        opset_version=13,  # in opset 11 scale and sizes are not optional
     )
     check_model(
         model,
@@ -91,7 +91,7 @@ def test_resize() -> None:
     scales = np.array([1.0, 1.0, 2.0, 2.0], dtype=np.float32)
     _test_resize(x=data, scales=scales, mode='linear', align_corners=True)
 
-    # nearest
+    # nearest scales
     data = np.array([[[
         [1, 2],
         [3, 4],
@@ -100,6 +100,20 @@ def test_resize() -> None:
     _test_resize(
         x=data,
         scales=scales,
+        mode='nearest',
+        nearest_mode='floor',
+        coordinate_transformation_mode='asymmetric',
+    )
+
+    # nearest sizes
+    data = np.array([[[
+        [1, 2],
+        [3, 4],
+    ]]], dtype=np.float32)
+    sizes = np.array([1, 1, 10, 10], dtype=np.int64)
+    _test_resize(
+        x=data,
+        sizes=sizes,
         mode='nearest',
         nearest_mode='floor',
         coordinate_transformation_mode='asymmetric',
