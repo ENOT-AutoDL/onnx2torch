@@ -30,7 +30,10 @@ def _get_torch_align_corners(mode: str, coordinate_transformation_mode: str) -> 
 
 
 def _dimension_mode(mode: str, data_dim) -> str:
-    torch_mode = DIMENSION_MODE[mode].get(data_dim, None)
+    torch_mode = DIMENSION_MODE.get(mode, None)
+    if torch_mode is None:
+        return mode
+    torch_mode = torch_mode.get(data_dim, None)
     if torch_mode is None:
         raise NotImplementedError(f"{data_dim}D input is not implemented for {mode} mode.")
     return torch_mode
