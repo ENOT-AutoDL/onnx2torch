@@ -20,16 +20,29 @@ def _test_nms(
         'boxes': boxes,
         'scores': scores,
     }
+    inputs = list(test_inputs)
+    
     if max_output_boxes_per_class is not None:
         test_inputs['max_output_boxes_per_class'] = np.array(max_output_boxes_per_class, dtype=np.int64)
+        inputs.append('max_output_boxes_per_class')
+    else:
+        inputs.append('')
+        
     if iou_threshold is not None:
         test_inputs['iou_threshold'] = np.array(iou_threshold, dtype=np.float32)
+        inputs.append('iou_threshold')
+    else:
+        inputs.append('')
+        
     if score_threshold is not None:
         test_inputs['score_threshold'] = np.array(score_threshold, dtype=np.float32)
+        inputs.append('score_threshold')
+    else:
+        inputs.append('')
 
     node = onnx.helper.make_node(
         op_type='NonMaxSuppression',
-        inputs=list(test_inputs),
+        inputs=inputs,
         outputs=['y'],
     )
 
@@ -144,4 +157,25 @@ def test_nms() -> None:
         max_output_boxes_per_class=None,
         iou_threshold=None,
         score_threshold=None,
+    )
+    _test_nms(
+        boxes=boxes,
+        scores=scores,
+        max_output_boxes_per_class=None,
+        iou_threshold=None,
+        score_threshold=0.1,
+    )
+    _test_nms(
+        boxes=boxes,
+        scores=scores,
+        max_output_boxes_per_class=None,
+        iou_threshold=0.2,
+        score_threshold=0.1,
+    )
+    _test_nms(
+        boxes=boxes,
+        scores=scores,
+        max_output_boxes_per_class=2,
+        iou_threshold=None,
+        score_threshold=0.1,
     )
