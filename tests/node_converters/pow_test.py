@@ -30,7 +30,11 @@ def test_pow() -> None:
             outputs=['z'],
         )
 
-        model = make_model_from_nodes(nodes=node, initializers=initializers, inputs_example=test_inputs)
+        model = make_model_from_nodes(
+            nodes=node, 
+            initializers=initializers,
+            inputs_example=test_inputs,
+        )
         check_model(model, test_inputs)
 
 

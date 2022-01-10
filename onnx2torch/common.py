@@ -58,16 +58,6 @@ def get_const_value(name: str, graph: OnnxGraph) -> Union[torch.Tensor, float, i
     raise KeyError(f'Tensor "{name}" is not found in constant values')
 
 
-def old_style_broadcast(first: torch.Tensor, second: torch.Tensor, axis: int) -> torch.Tensor:
-    rank = len(first.shape)
-    axis = axis + rank if axis < 0 else axis
-
-    second_shape = [1]*axis + list(second.shape)
-    second_shape = second_shape + [1]*(rank - len(second_shape))
-
-    return second.view(second_shape)
-
-
 class SkipTorchTracing:
     def __init__(self):
         self._catch_warnings = catch_warnings()
@@ -81,3 +71,13 @@ class SkipTorchTracing:
     def __exit__(self, exc_type, exc_val, exc_tb):
         torch_C._set_tracing_state(self._state)
         self._catch_warnings.__exit__(exc_type, exc_val, exc_tb)
+
+
+def old_style_broadcast(first: torch.Tensor, second: torch.Tensor, axis: int) -> torch.Tensor:
+    rank = len(first.shape)
+    axis = axis + rank if axis < 0 else axis
+
+    second_shape = [1]*axis + list(second.shape)
+    second_shape = second_shape + [1]*(rank - len(second_shape))
+
+    return second.view(second_shape)
