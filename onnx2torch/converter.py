@@ -135,28 +135,28 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
                     torch_initializers.add_initializer(value_name, onnx_graph.initializers[value_name].to_torch())
                     torch_nodes[value_name] = torch_graph.get_attr(f'initializers.{value_name}')
                 args.append(torch_nodes[value_name])
-
+            
+            elif value_type == ValueType.EMPTY:
+                args.append(None)
+            
             else:
-                RuntimeError(f'Got unexpected input value type ({value_type})')
+                raise RuntimeError(f'Got unexpected input value type ({value_type})')
 
         # Collect kwargs if there are some skipped args
         kwargs = {}
-        node_input_values = onnx_node.input_values
-        if '' in node_input_values:
-            first_skipped_arg = node_input_values.index('')
+        if None in args:
+            first_skipped_arg = args.index(None)
             if hasattr(torch_module, '_do_forward'):
                 torch_forward = torch_module._do_forward
             else:
                 torch_forward = torch_module.forward
-                
+
             forward_args = tuple(inspect.signature(torch_forward).parameters.keys())
             forward_args = forward_args[first_skipped_arg:]
-            node_input_values = node_input_values[first_skipped_arg:]
-            kwargs.update({
-                name: args.pop(first_skipped_arg)
-                for name, value in zip(forward_args, node_input_values)
-                if value != ''
-            })
+            for arg_name in forward_args:
+                arg_value = args.pop(first_skipped_arg)
+                if arg_value is not None:
+                    kwargs[arg_name] = arg_value
 
         torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
 
