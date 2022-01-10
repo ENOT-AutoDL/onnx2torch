@@ -23,8 +23,7 @@ class OnnxHardSigmoid(nn.Module):
         self.beta = beta
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        upper_clip = torch.min(torch.tensor(1.0), self.alpha * input_tensor + self.beta)
-        return torch.max(torch.tensor(0.0), upper_clip).to(input_tensor.device)
+        return torch.clip(self.alpha * input_tensor + self.beta, min=0.0, max=1.0)
 
 
 class OnnxSoftmaxV1V11(nn.Module):
@@ -54,8 +53,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     alpha = node.attributes.get('alpha', 0.2)
     beta = node.attributes.get('beta', 0.5)
-    # legacy optimization attribute for opset 1
-    consumed_inputs = node.attributes.get('consumed_inputs', None)
 
     return OperationConverterResult(
         torch_module=OnnxHardSigmoid(alpha=alpha, beta=beta),
@@ -67,8 +64,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 @add_converter(operation_type='LeakyRelu', version=6)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     alpha = node.attributes.get('alpha', 0.01)
-    # legacy optimization attribute for opset 1
-    consumed_inputs = node.attributes.get('consumed_inputs', None)
 
     return OperationConverterResult(
         torch_module=nn.LeakyReLU(negative_slope=alpha),
@@ -90,7 +85,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 @add_converter(operation_type='Sigmoid', version=6)
 @add_converter(operation_type='Sigmoid', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-
     return OperationConverterResult(
         torch_module=nn.Sigmoid(),
         onnx_mapping=onnx_mapping_from_node(node=node),
