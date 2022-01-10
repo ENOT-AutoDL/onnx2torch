@@ -143,13 +143,12 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
         kwargs = {}
         node_input_values = onnx_node.input_values
         if '' in node_input_values:
-            torch_forward = torch_module._do_forward if hasattr(torch_module, '_do_forward') else torch_module.forward
-            keys_args = tuple(inspect.signature(torch_forward).parameters.keys())
-            kwargs = {
+            keys_args = tuple(inspect.signature(torch_module.forward).parameters.keys())
+            kwargs.update({
                 name: args.pop(0)
                 for name, value in zip(keys_args, node_input_values)
                 if value != ''
-            }
+            })
 
         torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
 
