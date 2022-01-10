@@ -1,3 +1,4 @@
+import inspect
 from collections import OrderedDict
 from pathlib import Path
 from typing import Union
@@ -115,12 +116,12 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
                 args.append(torch_nodes[value_name])
 
             elif value_type == ValueType.NODE_OUTPUT:
-                onnx_node, _ = onnx_graph.value_as_node_output(value_name)
-                torch_input_node = torch_nodes[onnx_node.unique_name]
+                onnx_input_node, _ = onnx_graph.value_as_node_output(value_name)
+                torch_input_node = torch_nodes[onnx_input_node.unique_name]
 
                 # Get only one needed output of torch_input_node by index
-                if len(onnx_node.output_values) > 1:
-                    index = onnx_node.output_values.index(value_name)
+                if len(onnx_input_node.output_values) > 1:
+                    index = onnx_input_node.output_values.index(value_name)
                     torch_input_node = torch_graph.call_function(
                         lambda x, index: x[index],
                         args=tuple([torch_input_node, ]),
@@ -134,11 +135,30 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
                     torch_initializers.add_initializer(value_name, onnx_graph.initializers[value_name].to_torch())
                     torch_nodes[value_name] = torch_graph.get_attr(f'initializers.{value_name}')
                 args.append(torch_nodes[value_name])
-
+            
+            elif value_type == ValueType.EMPTY:
+                args.append(None)
+            
             else:
-                RuntimeError(f'Got unexpected input value type ({value_type})')
+                raise RuntimeError(f'Got unexpected input value type ({value_type})')
 
-        torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args))
+        # Collect kwargs if there are some skipped args
+        kwargs = {}
+        if None in args:
+            first_skipped_arg = args.index(None)
+            if hasattr(torch_module, '_do_forward'):
+                torch_forward = torch_module._do_forward
+            else:
+                torch_forward = torch_module.forward
+
+            forward_args = tuple(inspect.signature(torch_forward).parameters.keys())
+            forward_args = forward_args[first_skipped_arg:]
+            for arg_name in forward_args:
+                arg_value = args.pop(first_skipped_arg)
+                if arg_value is not None:
+                    kwargs[arg_name] = arg_value
+
+        torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
 
     # Create output nodes
     onnx_output_nodes = [
