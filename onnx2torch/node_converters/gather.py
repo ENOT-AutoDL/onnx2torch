@@ -1,7 +1,9 @@
 __all__ = ['OnnxGather']
 
+from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import torch
 from torch import nn
@@ -21,16 +23,20 @@ class OnnxGather(nn.Module):
         self.axis = axis
 
     @staticmethod
-    def slice_from_axis(input_data: torch.Tensor, axis: int, indices: torch.Tensor) -> Tuple[slice, ...]:
+    def slice_from_axis(
+            input_data: torch.Tensor,
+            axis: int,
+            indices: torch.Tensor,
+    ) -> Tuple[Union[slice, torch.Tensor], ...]:
         axis = input_data.dim() + axis if axis < 0 else axis
-        skip_axis = [slice(None)] * axis
+        skip_axis: List[Union[slice, torch.Tensor]] = [slice(None)] * axis
         skip_axis.append(indices)
         return tuple(skip_axis)
 
-    def forward(self, input_tensor: torch.Tensor, indices: Optional[torch.Tensor]) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
         # pytorch Gather differs from onnx Gather, onnx gather work like numpy.take
         # But torch.take does not support different axis. So we make it by yourself
-        # numpy.take is input_data[:,:,indices] where we pass NONE slices AXIS time
+        # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time
         slice_for_take = self.slice_from_axis(input_tensor, self.axis, indices)
         return input_tensor[slice_for_take]
 
