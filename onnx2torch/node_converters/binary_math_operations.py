@@ -8,6 +8,7 @@ import torch
 from torch import nn
 
 from onnx2torch.common import OperationConverterResult
+from onnx2torch.common import old_style_broadcast
 from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
@@ -29,18 +30,9 @@ class OnnxBinaryMathOperation(nn.Module):
         self.axis = axis
         self.math_op_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    def _old_style_broadcast(self, first: torch.Tensor, second: torch.Tensor) -> torch.Tensor:
-        rank = len(first.shape)
-        axis = self.axis + rank if self.axis < 0 else self.axis
-
-        second_shape = [1]*axis + list(second.shape)
-        second_shape = second_shape + [1]*(rank - len(second_shape))
-
-        return second.view(second_shape)
-
     def forward(self, first: torch.Tensor, second: torch.Tensor) -> torch.Tensor:
         if self.broadcast == 1 and self.axis is not None:
-            second = self._old_style_broadcast(first, second)
+            second = old_style_broadcast(first, second, self.axis)
 
         return self.math_op_function(first, second)
 
