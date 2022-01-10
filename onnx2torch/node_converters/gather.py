@@ -24,11 +24,11 @@ class OnnxGather(nn.Module):
 
     @staticmethod
     def slice_from_axis(
-            input_data: torch.Tensor,
+            input_tensor: torch.Tensor,
             axis: int,
             indices: torch.Tensor,
     ) -> Tuple[Union[slice, torch.Tensor], ...]:
-        axis = input_data.dim() + axis if axis < 0 else axis
+        axis = input_tensor.dim() + axis if axis < 0 else axis
         skip_axis: List[Union[slice, torch.Tensor]] = [slice(None)] * axis
         skip_axis.append(indices)
         return tuple(skip_axis)
