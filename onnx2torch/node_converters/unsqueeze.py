@@ -47,7 +47,11 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     axes_value_name = node.input_values[1] if len(node.input_values) > 1 else None
 
     if axes_value_name is not None:
-        axes = graph.initializers[axes_value_name].to_torch()
+        axes = graph.initializers.get(axes_value_name, None)
+        if axes is not None:
+            axes = axes.to_torch()
+        else:
+            input_values.append(node.input_values[1])
     else:
         axes = torch.tensor(node.attributes['axes'], dtype=torch.long)
 
