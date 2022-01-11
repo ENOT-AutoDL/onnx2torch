@@ -19,17 +19,17 @@ class OnnxPow(nn.Module):
         self.axis = axis
         self.broadcast = broadcast
 
-    def forward(self, input: torch.Tensor, exponent: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor, exponent: torch.Tensor) -> torch.Tensor:
         if self.broadcast == 1 and self.axis is not None:
-            exponent = old_style_broadcast(input, exponent, self.axis)
+            exponent = old_style_broadcast(input_tensor, exponent, self.axis)
 
-        return torch.pow(input, exponent)
+        return torch.pow(input_tensor, exponent)
 
 
 class OnnxSqrt(nn.Module):
 
-    def forward(self, input: torch.Tensor) -> torch.Tensor:
-        return torch.sqrt(input)
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        return torch.sqrt(input_tensor)
 
 
 @add_converter(operation_type='Pow', version=1)
