@@ -14,12 +14,7 @@ from onnx2torch.onnx_node import OnnxNode
 
 VALID_COORDINATE_TRANSFORM_MODES = ['asymmetric', 'align_corners', 'pytorch_half_pixel', 'half_pixel']
 
-
-DIMENSION_MODE = {
-    'linear': {1: 'linear', 2: 'bilinear', 3: 'trilinear'},
-    'cubic': {1: None, 2: 'bicubic', 3: None},
-    'nearest': {dim: 'nearest' for dim in range(3)},
-}
+LINEAR_MODES = {1: 'linear', 2: 'bilinear', 3: 'trilinear'}
 
 
 def _get_torch_align_corners(mode: str, coordinate_transformation_mode: str) -> Optional[bool]:
@@ -29,14 +24,24 @@ def _get_torch_align_corners(mode: str, coordinate_transformation_mode: str) -> 
     return align_corners
 
 
-def _dimension_mode(mode: str, data_dim) -> str:
-    torch_mode = DIMENSION_MODE.get(mode, None)
-    if torch_mode is None:
+def _dimension_mode(mode: str, dim_size: int) -> str:
+    if dim_size <= 0 and dim_size > 3:
+        raise RuntimeError('Input tensor has to have from 1 to 3 dimensions.')
+
+    if mode == 'nearest':
         return mode
-    torch_mode = torch_mode.get(data_dim, None)
-    if torch_mode is None:
-        raise NotImplementedError(f"{data_dim}D input is not implemented for {mode} mode.")
-    return torch_mode
+
+    elif 'cubic' in mode:
+        if dim_size == 2:
+            return 'bicubic'
+        else:
+            raise NotImplementedError(f"{dim_size}D input is not implemented for {mode} mode.")
+
+    elif 'linear' in mode:
+        return LINEAR_MODES[dim_size]
+
+    else:
+        raise RuntimeError(f'Got unexpected mode for interpolation ({mode})')
 
 
 class OnnxResize(nn.Module):
@@ -149,7 +154,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
     if coordinate_transformation_mode not in VALID_COORDINATE_TRANSFORM_MODES:
         raise NotImplementedError(
-            f'Coordinate transformation mode "tf_crop_and_resize" and "tf_half_pixel_for_nn" are not implemented.'
+            'Coordinate transformation modes "tf_crop_and_resize" and "tf_half_pixel_for_nn" are not implemented.'
         )
 
     if mode == 'nearest':
@@ -157,13 +162,13 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
             raise NotImplementedError('Only floor nearest mode is implemented.')
         if coordinate_transformation_mode != 'asymmetric':
             raise ValueError(
-                f'''Pytorch\'s nearest neighbor used asymmetric mode. 
+                f'''Pytorch\'s nearest neighbor interpolation uses asymmetric mode. 
                 But got {coordinate_transformation_mode}.'''
             )
     else:
         if coordinate_transformation_mode == 'asymmetric':
-            raise ValueError('For linear and cubic "half_pixel", "pytorch_half_pixel" and "align_corners" are valid')
-        warnings.warn('Results might differ!')
+            raise ValueError('For linear and cubic interpolation in pytorch '
+                             '"half_pixel", "pytorch_half_pixel" and "align_corners" are valid')
 
     if cubic_coeff_a != -0.75:
         raise NotImplementedError('Only -0.75 value for cubic_coeff_a is implemented in pytorch\'s interpolate.')
