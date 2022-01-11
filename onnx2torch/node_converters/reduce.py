@@ -62,6 +62,7 @@ class OnnxReduce(nn.Module):
                 keepdim=self.keepdims,
             )
             if isinstance(result, tuple):
+                # max and min returns tuple(Tensor, indices)
                 result = result[0]
 
         return result

@@ -5,14 +5,16 @@ import pytest
 from tests.utils.common import check_model
 from tests.utils.common import make_model_from_nodes
 
-REDUCE_OPERATIONS = ('ReduceMax', 'ReduceMin', 'ReduceMean', 'ReduceSum', 'ReduceProd')
+REDUCE_OPERATIONS_WITH_TOLERANCE = (
+    ('ReduceMax', 0),
+    ('ReduceMin', 0),
+    ('ReduceMean', 10 ** -5),
+    ('ReduceSum', 10 ** -5),
+    ('ReduceProd', 10 ** -5),
+)
 
 
-def _test_reduce(input_tensor: np.ndarray, op_type: str, **kwargs) -> None:
-    tol = 0.0
-    if op_type in REDUCE_OPERATIONS[2:]:
-        tol = 10 ** -5
-
+def _test_reduce(input_tensor: np.ndarray, op_type: str, tol: float, **kwargs) -> None:
     test_inputs = {'input_tensor': input_tensor}
     node = onnx.helper.make_node(
         op_type=op_type,
@@ -34,7 +36,7 @@ def _test_reduce(input_tensor: np.ndarray, op_type: str, **kwargs) -> None:
     )
 
 
-@pytest.mark.parametrize('op_type', REDUCE_OPERATIONS)
+@pytest.mark.parametrize('op_type,tol', REDUCE_OPERATIONS_WITH_TOLERANCE)
 @pytest.mark.parametrize(
     'shape,axes,keepdims',
     (
@@ -49,10 +51,11 @@ def _test_reduce(input_tensor: np.ndarray, op_type: str, **kwargs) -> None:
             ((2, 3, 8, 8), [1, 3], 1),
     ),
 )
-def test_reduce(op_type, shape, axes, keepdims) -> None:
+def test_reduce(op_type, tol, shape, axes, keepdims) -> None:
     test_kwargs = dict(
         input_tensor=np.random.uniform(-10, 10, shape).astype(np.float32),
         op_type=op_type,
+        tol=tol,
     )
     if axes is not None:
         test_kwargs['axes'] = axes
