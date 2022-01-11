@@ -16,6 +16,7 @@ class ValueType(Enum):
     NODE_OUTPUT = 1
     GRAPH_INITIALIZER = 2
     UNKNOWN = 3
+    EMPTY = 4
 
 
 class OnnxGraph:
@@ -91,6 +92,9 @@ class OnnxGraph:
 
         if value_name in self._initializers:
             return ValueType.GRAPH_INITIALIZER
+        
+        if value_name == '':
+            return ValueType.EMPTY
 
         return ValueType.UNKNOWN
 

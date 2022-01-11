@@ -28,6 +28,8 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
             ('Relu', [8, 3, 32, 32]),
             ('Exp', [8, 3, 32, 32]),
             ('Sigmoid', [8, 3, 32, 32]),
+            ('HardSigmoid', [8, 3, 32, 32]),
+            ('LeakyRelu', [8, 3, 32, 32]),
     ),
 )
 def test_common_activations(activation: str, input_shape: List[int]) -> None:

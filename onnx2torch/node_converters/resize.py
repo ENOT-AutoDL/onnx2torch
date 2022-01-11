@@ -66,7 +66,7 @@ class OnnxResize(nn.Module):
         # In onnx scales and sizes in format [n, c, d, h, w]
         # but in torch only [d, h, w]
         sizes, scales = sizes.tolist(), scales.tolist()
-        input_shape = x.shape
+        input_shape = list(x.shape)
         if input_shape[:2] == sizes[:2]:
             sizes = sizes[2:]
         elif scales[:2] == [1, 1]:
