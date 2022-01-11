@@ -19,7 +19,7 @@ LINEAR_MODES = {1: 'linear', 2: 'bilinear', 3: 'trilinear'}
 
 def _get_torch_align_corners(mode: str, coordinate_transformation_mode: str) -> Optional[bool]:
     align_corners = coordinate_transformation_mode == 'align_corners'
-    if mode == "nearest" and align_corners is False:
+    if mode == "nearest":
         return None
     return align_corners
 
@@ -58,12 +58,12 @@ class OnnxResize(nn.Module):
 
     def forward(
             self,
-            x: torch.Tensor,
+            input_tensor: torch.Tensor,
             roi: torch.Tensor = torch.tensor([]),
             scales: torch.Tensor = torch.tensor([]),
             sizes: torch.Tensor = torch.tensor([]),
     ) -> torch.Tensor:
-        self.mode = _dimension_mode(self.mode, x.dim() - 2)
+        self.mode = _dimension_mode(self.mode, input_tensor.dim() - 2)
         if roi.numel() != 0:
             warnings.warn('Roi only takes effect when coordinate_transformation_mode is "tf_crop_and_resize".')
             warnings.warn('Pytorch\'s interpolate doesn\'t use roi. Result might differ."')
@@ -71,7 +71,7 @@ class OnnxResize(nn.Module):
         # In onnx scales and sizes in format [n, c, d, h, w]
         # but in torch only [d, h, w]
         sizes, scales = sizes.tolist(), scales.tolist()
-        input_shape = list(x.shape)
+        input_shape = list(input_tensor.shape)
         if input_shape[:2] == sizes[:2]:
             sizes = sizes[2:]
         elif scales[:2] == [1, 1]:
@@ -89,7 +89,7 @@ class OnnxResize(nn.Module):
             raise ValueError('Only one of the two, scales or sizes, needs to be defined.')
 
         return torch.nn.functional.interpolate(
-            x,
+            input_tensor,
             size=sizes,
             scale_factor=scales,
             mode=self.mode,
@@ -103,14 +103,14 @@ class OnnxResizeV10(nn.Module):
         super().__init__()
         self.mode = mode
         if self.mode == 'linear':
-            warnings.warn('Pytorch\'s linear interpolate and onnx resize might differ!"')
+            warnings.warn('Pytorch\'s linear interpolate and onnx resize significantly differ!"')
 
     def forward(
             self,
-            x: torch.Tensor,
+            input_tensor: torch.Tensor,
             scales: torch.Tensor,
     ) -> torch.Tensor:
-        self.mode = _dimension_mode(self.mode, x.dim() - 2)
+        self.mode = _dimension_mode(self.mode, input_tensor.dim() - 2)
 
         # In onnx scales and sizes in format [n, c, d, h, w]
         # but in torch only [d, h, w]
@@ -123,7 +123,7 @@ class OnnxResizeV10(nn.Module):
             raise NotImplementedError('Pytorch\'s interpolate cannot scale channel or batch dimensions.')
 
         return torch.nn.functional.interpolate(
-            x,
+            input_tensor,
             scale_factor=tuple((float(x) for x in scales)),
             mode=self.mode,
         )
@@ -160,7 +160,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     if mode == 'nearest':
         if nearest_mode != 'floor':
             raise NotImplementedError('Only floor nearest mode is implemented.')
-        if coordinate_transformation_mode != 'asymmetric':
+        if coordinate_transformation_mode not in ('asymmetric', 'align_corners'):
             raise ValueError(
                 f'''Pytorch\'s nearest neighbor interpolation uses asymmetric mode. 
                 But got {coordinate_transformation_mode}.'''

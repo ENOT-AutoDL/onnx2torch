@@ -14,10 +14,10 @@ def _test_resize(
         x: np.ndarray,
         scales: Optional[np.ndarray] = None,
         sizes: Optional[np.ndarray] = None,
-        align_corners: Optional[bool] = None,
+        align_corners: bool = False,
         **kwargs,
 ) -> None:
-    if align_corners is not None:
+    if align_corners is True:
         kwargs['coordinate_transformation_mode'] = 'align_corners'
 
     inputs = ['x', '']
@@ -54,9 +54,9 @@ def _test_resize(
     check_model(
         model,
         test_inputs,
-        atol_onnx_torch=10 ** -7,
-        atol_torch_cpu_cuda=10 ** -7,
-        atol_onnx_torch2onnx=10 ** -7,
+        atol_onnx_torch=10 ** -3,
+        atol_torch_cpu_cuda=10 ** -3,
+        atol_onnx_torch2onnx=10 ** -3,
     )
 
 
@@ -93,9 +93,9 @@ def _test_resize_v10(
     )
 
 
-@pytest.mark.parametrize('mode', ('linear', 'nearest'))
+@pytest.mark.parametrize('mode', ('linear', 'nearest', 'cubic'))
 def test_resize(mode) -> None:
-    data = np.random.randint(0, 255, size=(1, 1, 20, 20), dtype=np.float32)
+    data = np.random.randint(0, 255, size=(1, 1, 20, 20)).astype(np.float32)
     if mode == 'nearest':
         # nearest scales
         scales = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
@@ -132,13 +132,13 @@ def test_resize(mode) -> None:
         _test_resize(x=data, sizes=sizes, mode=mode)
 
 
-@pytest.mark.parametrize('mode', ('linear', 'nearest'))
+@pytest.mark.parametrize('mode', ('nearest',))
 def test_resizeV10(mode: str) -> None:
-    data = np.random.randint(0, 255, size=(1, 1, 20, 20), dtype=np.float32)
+    data = np.random.randint(0, 255, size=(1, 1, 20, 20)).astype(np.float32)
     # upsample
     scales = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
     _test_resize_v10(x=data, scales=scales, mode=mode)
 
     # downsample
-    scales = np.array([1.0, 1.0, 0.8, 0.8], dtype=np.float32)
+    scales = np.array([1.0, 1.0, 0.5, 0.5], dtype=np.float32)
     _test_resize_v10(x=data, scales=scales, mode=mode)
