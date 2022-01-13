@@ -52,21 +52,21 @@ class OnnxSqueezeDynamicAxes(nn.Module):
 
         return input_tensor
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
-                output = self._do_forward(*args, **kwargs)
-                return _SqueezeExportToOnnx.set_output_and_apply(output, *args, **kwargs)
+                output = self._do_forward(*args)
+                return _SqueezeExportToOnnx.set_output_and_apply(output, *args)
 
-        return self._do_forward(*args, **kwargs)
+        return self._do_forward(*args)
 
 
 class _SqueezeExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         print(graph.__dir__())
-        return graph.op('Squeeze', *args, **kwargs, outputs=1)
+        return graph.op('Squeeze', *args, outputs=1)
 
 
 @add_converter(operation_type='Squeeze', version=1)

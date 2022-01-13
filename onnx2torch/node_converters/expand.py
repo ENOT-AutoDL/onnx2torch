@@ -31,8 +31,8 @@ class OnnxExpand(nn.Module):
 class _ExpandExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
-        return graph.op('Expand', *args, **kwargs, outputs=1)
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('Expand', *args, outputs=1)
 
 
 @add_converter(operation_type='Expand', version=8)

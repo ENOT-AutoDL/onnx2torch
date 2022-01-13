@@ -56,20 +56,20 @@ class OnnxNonMaxSuppression(nn.Module):
 
         return torch.tensor(out, dtype=torch.int64, device=boxes.device)
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
-                output = self._do_forward(*args, **kwargs)
+                output = self._do_forward(*args)
                 return _NmsExportToOnnx.set_output_and_apply(output, *args)
 
-        return self._do_forward(*args, **kwargs)
+        return self._do_forward(*args)
 
 
 class _NmsExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
-        return graph.op('NonMaxSuppression', *args, **kwargs, outputs=1)
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('NonMaxSuppression', *args, outputs=1)
 
 
 @add_converter(operation_type='NonMaxSuppression', version=10)
