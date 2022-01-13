@@ -22,9 +22,9 @@ class OnnxNonMaxSuppression(nn.Module):
     def _do_forward(
             boxes: torch.Tensor,
             scores: torch.Tensor,
-            max_output_boxes_per_class: Optional[torch.Tensor] = None,
-            iou_threshold: Optional[torch.Tensor] = None,
-            score_threshold: Optional[torch.Tensor] = None,
+            max_output_boxes_per_class: Optional[torch.Tensor],
+            iou_threshold: Optional[torch.Tensor],
+            score_threshold: Optional[torch.Tensor],
     ) -> torch.Tensor:
         if max_output_boxes_per_class is None:
             return torch.empty([0, 3], dtype=torch.int64, device=boxes.device)
@@ -41,9 +41,9 @@ class OnnxNonMaxSuppression(nn.Module):
                 confidence_mask = class_scores > score_threshold
                 confidence_indexes = confidence_mask.nonzero(as_tuple=False).squeeze(1)
                 nms_indexes = torchvision.ops.nms(
-                    batch_boxes[confidence_indexes],
-                    class_scores[confidence_indexes],
-                    iou_threshold,
+                    boxes=batch_boxes[confidence_indexes],
+                    scores=class_scores[confidence_indexes],
+                    iou_threshold=iou_threshold,
                 )
                 num_boxes = min(max_output_boxes_per_class, nms_indexes.size(0))
                 nms_indexes = nms_indexes[:num_boxes]
@@ -56,13 +56,35 @@ class OnnxNonMaxSuppression(nn.Module):
 
         return torch.tensor(out, dtype=torch.int64, device=boxes.device)
 
-    def forward(self, *args) -> torch.Tensor:
+    def forward(
+            self,
+            boxes: torch.Tensor,
+            scores: torch.Tensor,
+            max_output_boxes_per_class: Optional[torch.Tensor] = None,
+            iou_threshold: Optional[torch.Tensor] = None,
+            score_threshold: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
-                output = self._do_forward(*args)
-                return _NmsExportToOnnx.set_output_and_apply(output, *args)
+                output = self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
 
-        return self._do_forward(*args)
+                if max_output_boxes_per_class is None:
+                    max_output_boxes_per_class = torch.tensor([0], dtype=torch.int64)
+                if iou_threshold is None:
+                    iou_threshold = torch.tensor([0.0], dtype=torch.float32)
+                if score_threshold is None:
+                    score_threshold = torch.tensor([0.0], dtype=torch.float32)
+
+                return _NmsExportToOnnx.set_output_and_apply(
+                    output,
+                    boxes,
+                    scores,
+                    max_output_boxes_per_class,
+                    iou_threshold,
+                    score_threshold,
+                )
+
+        return self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
 
 
 class _NmsExportToOnnx(CustomExportToOnnx):
