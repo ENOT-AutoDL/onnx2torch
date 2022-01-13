@@ -1,68 +1,91 @@
-__all__ = ['OnnxUnsqueeze']
+__all__ = [
+    'OnnxUnsqueezeStaticAxes',
+    'OnnxUnsqueezeDynamicAxes',
+]
 
+from typing import List
 from typing import Optional
 
 import torch
+import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.common import OnnxMapping
 from onnx2torch.common import OperationConverterResult
+from onnx2torch.common import SkipTorchTracing
+from onnx2torch.common import get_const_value
+from onnx2torch.common import onnx_mapping_from_node
+from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 
 
-class OnnxUnsqueeze(nn.Module):
+class OnnxUnsqueezeStaticAxes(nn.Module):
 
-    def __init__(self, axes: Optional[torch.Tensor] = None):
+    def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
-        self.axes = axes
+        self.axes = sorted(axes)
 
-    def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None):
-        if axes is not None and self.axes is not None:
-            raise ValueError(
-                'Static axes are specified for Unsqueeze and dynamic axes are passed in forward. '
-                'if you want to use dynamic axes you should not pass static axes during module creation. '
-            )
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        result = input_tensor
+        for axes_id in self.axes:
+            result = torch.unsqueeze(result, dim=axes_id)
 
-        if axes is None and self.axes is None:
-            raise ValueError(
-                'Static axes or dynamic axes not provided. '
-                'If you dont specified static axes during module creation, you must pass it in forward. '
-            )
+        return result
 
-        axes = axes if axes is not None else self.axes
-        axes, _ = torch.sort(axes)
-        for i in axes:
-            input_tensor = torch.unsqueeze(input_tensor, i)
 
-        return input_tensor
+class OnnxUnsqueezeDynamicAxes(nn.Module):
+
+    def _do_forward(self, input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
+        result = input_tensor
+        for axes_id in torch.sort(axes).values:
+            result = torch.unsqueeze(result, dim=axes_id)
+
+        return result
+
+    def forward(self, *args, **kwargs) -> torch.Tensor:
+        if torch.onnx.is_in_onnx_export():
+            with SkipTorchTracing():
+                output = self._do_forward(*args, **kwargs)
+                return _UnsqueezeExportToOnnx.set_output_and_apply(output, *args, **kwargs)
+
+        return self._do_forward(*args, **kwargs)
+
+
+class _UnsqueezeExportToOnnx(CustomExportToOnnx):
+
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
+        print(graph.__dir__())
+        return graph.op('Unsqueeze', *args, **kwargs, outputs=1)
 
 
 @add_converter(operation_type='Unsqueeze', version=1)
 @add_converter(operation_type='Unsqueeze', version=11)
-@add_converter(operation_type='Unsqueeze', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-    input_values = [node.input_values[0]]
-    axes_value_name = node.input_values[1] if len(node.input_values) > 1 else None
-
-    if axes_value_name is not None:
-        axes = graph.initializers.get(axes_value_name, None)
-        if axes is not None:
-            axes = axes.to_torch()
-        else:
-            input_values.append(node.input_values[1])
-    else:
-        axes = torch.tensor(node.attributes['axes'], dtype=torch.long)
-
-    torch_module = OnnxUnsqueeze(
-        axes=axes,
+    axes = node.attributes['axes']
+    return OperationConverterResult(
+        torch_module=OnnxUnsqueezeStaticAxes(axes=axes),
+        onnx_mapping=onnx_mapping_from_node(node),
     )
 
+
+@add_converter(operation_type='Unsqueeze', version=13)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    try:
+        axes = get_const_value(node.input_values[1], graph)
+        return OperationConverterResult(
+            torch_module=OnnxUnsqueezeStaticAxes(axes=axes),
+            onnx_mapping=OnnxMapping(
+                inputs=(node.input_values[0],),
+                outputs=node.output_values,
+            ),
+        )
+    except KeyError:
+        pass
+
     return OperationConverterResult(
-        torch_module=torch_module,
-        onnx_mapping=OnnxMapping(
-            inputs=tuple(input_values),
-            outputs=node.output_values,
-        ),
+        torch_module=OnnxUnsqueezeDynamicAxes(),
+        onnx_mapping=onnx_mapping_from_node(node),
     )
