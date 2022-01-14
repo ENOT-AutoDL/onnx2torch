@@ -11,13 +11,13 @@ from tests.utils.common import make_model_from_nodes
     ('Or', 'And', 'Xor'),
 )
 def test_logical_operation(op_type: str) -> None:
-    x = (np.random.randn(10, 1, 64, 128) > 0).astype(bool)
+    x = (np.random.randn(10, 1, 64, 128) > 0)
     y_variants = (
-        (np.random.randn(128) > 0).astype(bool),
-        (np.random.randn(64, 128) > 0).astype(bool),
-        (np.random.randn(1, 64, 128) > 0).astype(bool),
-        (np.random.randn(1, 3, 1, 128) > 0).astype(bool),
-        (np.random.randn(10, 1, 64, 128) > 0).astype(bool),
+        (np.random.randn(128) > 0),
+        (np.random.randn(64, 128) > 0),
+        (np.random.randn(1, 64, 128) > 0),
+        (np.random.randn(1, 3, 1, 128) > 0),
+        (np.random.randn(10, 1, 64, 128) > 0),
     )
     for y in y_variants:
         test_inputs = {'x': x, 'y': y}
@@ -38,10 +38,10 @@ def test_logical_operation(op_type: str) -> None:
 
 def test_not() -> None:
     x_variants = (
-        (np.random.randn(128) > 0).astype(bool),
-        (np.random.randn(64, 128) > 0).astype(bool),
-        (np.random.randn(1, 64, 128) > 0).astype(bool),
-        (np.random.randn(10, 1, 64, 128) > 0).astype(bool),
+        (np.random.randn(128) > 0),
+        (np.random.randn(64, 128) > 0),
+        (np.random.randn(1, 64, 128) > 0),
+        (np.random.randn(10, 1, 64, 128) > 0),
     )
 
     for x in x_variants:
