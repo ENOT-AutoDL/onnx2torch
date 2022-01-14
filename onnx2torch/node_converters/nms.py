@@ -45,12 +45,12 @@ class OnnxNonMaxSuppression(nn.Module):
                 confidence_mask = class_scores > score_threshold
                 confidence_indexes = confidence_mask.nonzero(as_tuple=False).squeeze(1)
 
-                batch_boxes = batch_boxes[confidence_indexes]
+                filtered_batch_boxes = batch_boxes[confidence_indexes]
                 if self.center_point_box:
-                    batch_boxes = torchvision.ops.box_convert(batch_boxes, in_fmt='cxcywh', out_fmt='xyxy')
+                    filtered_batch_boxes = torchvision.ops.box_convert(filtered_batch_boxes, in_fmt='cxcywh', out_fmt='xyxy')
 
                 nms_indexes = torchvision.ops.nms(
-                    boxes=batch_boxes,
+                    boxes=filtered_batch_boxes,
                     scores=class_scores[confidence_indexes],
                     iou_threshold=iou_threshold,
                 )
