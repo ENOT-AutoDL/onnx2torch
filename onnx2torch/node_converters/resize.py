@@ -1,18 +1,16 @@
 __all__ = ['OnnxResize']
 
 import warnings
-from typing import Optional
 
 import torch
 from torch import nn
+from typing import Optional
 
 from onnx2torch.common import OperationConverterResult
 from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-
-VALID_COORDINATE_TRANSFORM_MODES = ['asymmetric', 'align_corners', 'pytorch_half_pixel', 'half_pixel']
 
 LINEAR_MODES = {1: 'linear', 2: 'bilinear', 3: 'trilinear'}
 
@@ -25,8 +23,8 @@ def _get_torch_align_corners(mode: str, coordinate_transformation_mode: str) -> 
 
 
 def _dimension_mode(mode: str, dim_size: int) -> str:
-    if dim_size <= 0 and dim_size > 3:
-        raise RuntimeError('Input tensor has to have from 1 to 3 dimensions.')
+    if dim_size not in [1, 2, 3]:
+        raise RuntimeError('Input tensor for resize has to have from 1 to 3 dimensions.')
 
     if mode == 'nearest':
         return mode
@@ -41,7 +39,7 @@ def _dimension_mode(mode: str, dim_size: int) -> str:
         return LINEAR_MODES[dim_size]
 
     else:
-        raise RuntimeError(f'Got unexpected mode for interpolation ({mode})')
+        raise RuntimeError(f'Got unexpected mode for interpolation ({mode}).')
 
 
 class OnnxResize(nn.Module):
@@ -66,10 +64,10 @@ class OnnxResize(nn.Module):
         self.mode = _dimension_mode(self.mode, input_tensor.dim() - 2)
         if roi.numel() != 0:
             warnings.warn('Roi only takes effect when coordinate_transformation_mode is "tf_crop_and_resize".')
-            warnings.warn('Pytorch\'s interpolate doesn\'t use roi. Result might differ."')
+            warnings.warn('Pytorch\'s interpolate doesn\'t use roi. Result might differ.')
 
-        # In onnx scales and sizes in format [n, c, d, h, w]
-        # but in torch only [d, h, w]
+        # Format of onnx scales and sizes is [n, c, d, h, w]
+        # But in torch only [d, h, w] (without batch and channel dimensions)
         sizes, scales = sizes.tolist(), scales.tolist()
         input_shape = list(input_tensor.shape)
         if input_shape[:2] == sizes[:2]:
@@ -103,7 +101,7 @@ class OnnxResizeV10(nn.Module):
         super().__init__()
         self.mode = mode
         if self.mode == 'linear':
-            warnings.warn('Pytorch\'s linear interpolate and onnx resize significantly differ!"')
+            warnings.warn('Pytorch\'s linear interpolate and onnx linear resize might differ significantly!')
 
     def forward(
             self,
@@ -112,8 +110,8 @@ class OnnxResizeV10(nn.Module):
     ) -> torch.Tensor:
         self.mode = _dimension_mode(self.mode, input_tensor.dim() - 2)
 
-        # In onnx scales and sizes in format [n, c, d, h, w]
-        # but in torch only [d, h, w]
+        # Format of onnx scales is [n, c, d, h, w]
+        # But in torch only [d, h, w] (without batch and channel dimensions)
         scales = scales.tolist()
         if scales[:2] == [1, 1]:
             scales = scales[2:]
@@ -124,7 +122,7 @@ class OnnxResizeV10(nn.Module):
 
         return torch.nn.functional.interpolate(
             input_tensor,
-            scale_factor=tuple((float(x) for x in scales)),
+            scale_factor=scales,
             mode=self.mode,
         )
 
@@ -152,38 +150,39 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     mode = node_attributes.get('mode', 'nearest')
     nearest_mode = node_attributes.get('nearest_mode', 'round_prefer_floor')
 
-    if coordinate_transformation_mode not in VALID_COORDINATE_TRANSFORM_MODES:
-        raise NotImplementedError(
-            'Coordinate transformation modes "tf_crop_and_resize" and "tf_half_pixel_for_nn" are not implemented.'
-        )
-
     if mode == 'nearest':
         if nearest_mode != 'floor':
-            raise NotImplementedError('Only floor nearest mode is implemented.')
-        if coordinate_transformation_mode not in ('asymmetric', 'align_corners'):
-            raise ValueError(
-                f'''Pytorch\'s nearest neighbor interpolation uses asymmetric mode. 
-                But got {coordinate_transformation_mode}.'''
+            warnings.warn(
+                'Pytorch\'s nearest neighbor interpolate uses the "floor" nearest_mode. '
+                'For others modes, the results might differ significantly!'
+            )
+
+        if coordinate_transformation_mode != 'asymmetric':
+            warnings.warn(
+                'Pytorch\'s nearest neighbor interpolation uses "asymmetric" coordinate_transformation_mode. '
+                'For others modes, the results might differ significantly!'
             )
     else:
-        if coordinate_transformation_mode == 'asymmetric':
-            raise ValueError('For linear and cubic interpolation in pytorch '
-                             '"half_pixel", "pytorch_half_pixel" and "align_corners" are valid')
+        if coordinate_transformation_mode not in ['pytorch_half_pixel', 'half_pixel']:
+            warnings.warn(
+                'For linear and cubic interpolation in "asymmetric" and "align_corners" coordinate_transformation_mode'
+                'results might differ significantly!'
+            )
 
     if cubic_coeff_a != -0.75:
-        raise NotImplementedError('Only -0.75 value for cubic_coeff_a is implemented in pytorch\'s interpolate.')
+        warnings.warn('With a cubic coefficient value other than 0.75, the results might differ significantly!')
 
     if exclude_outside != 0:
-        raise NotImplementedError('Only 0 value for exclude_outside is implemented.')
+        warnings.warn('With a exclude outside value other than 0, the results might differ significantly!')
 
     if extrapolation_value != 0.0:
-        raise NotImplementedError('Only 0.0 value for extrapolation_value is implemented.')
+        warnings.warn('With a extrapolation value other than 0.0, the results might differ significantly!')
 
-    torch_module = OnnxResize(
-        coordinate_transformation_mode=coordinate_transformation_mode,
-        mode=mode,
-    )
+
     return OperationConverterResult(
-        torch_module=torch_module,
+        torch_module=OnnxResize(
+            mode=mode,
+            coordinate_transformation_mode=coordinate_transformation_mode,
+        ),
         onnx_mapping=onnx_mapping_from_node(node),
     )

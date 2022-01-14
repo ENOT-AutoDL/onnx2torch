@@ -54,9 +54,9 @@ def _test_resize(
     check_model(
         model,
         test_inputs,
-        atol_onnx_torch=10 ** -3,
-        atol_torch_cpu_cuda=10 ** -3,
-        atol_onnx_torch2onnx=10 ** -3,
+        atol_onnx_torch=10 ** -6,
+        atol_torch_cpu_cuda=10 ** -6,
+        atol_onnx_torch2onnx=10 ** -6,
     )
 
 
@@ -93,52 +93,50 @@ def _test_resize_v10(
     )
 
 
-@pytest.mark.parametrize('mode', ('linear', 'nearest', 'cubic'))
-def test_resize(mode) -> None:
-    data = np.random.randint(0, 255, size=(1, 1, 20, 20)).astype(np.float32)
-    if mode == 'nearest':
-        # nearest scales
-        scales = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
-        _test_resize(
-            x=data,
-            scales=scales,
-            mode='nearest',
-            nearest_mode='floor',
-            coordinate_transformation_mode='asymmetric',
-        )
+_UPSAMPLE_SIZES = np.array([1, 1, 500, 500]).astype(np.int64)
+_UPSAMPLE_SCALES = np.array([1.0, 1.0, 2.0, 2.0]).astype(np.float32)
 
-        # nearest sizes
-        sizes = np.array([1, 1, 10, 10], dtype=np.int64)
-        _test_resize(
-            x=data,
-            sizes=sizes,
-            mode='nearest',
-            nearest_mode='floor',
-            coordinate_transformation_mode='asymmetric',
-        )
-    else:
-        # upsample
-        scales = np.array([1.0, 1.0, 2.0, 2.0], dtype=np.float32)
-        _test_resize(x=data, scales=scales, mode=mode)
-        _test_resize(x=data, scales=scales, mode=mode, align_corners=True)
-        sizes = np.array([1, 1, 9, 10], dtype=np.int64)
-        _test_resize(x=data, sizes=sizes, mode=mode)
+_DOWNSAMPLE_SIZES = np.array([1, 1, 125, 125]).astype(np.int64)
+_DOWNSAMPLE_SCALES = np.array([1.0, 1.0, 0.5, 0.5]).astype(np.float32)
 
-        # downsample
-        scales = np.array([1.0, 1.0, 0.8, 0.8], dtype=np.float32)
-        _test_resize(x=data, scales=scales, mode=mode)
-        _test_resize(x=data, scales=scales, mode=mode, align_corners=True)
-        sizes = np.array([1, 1, 3, 3], dtype=np.int64)
-        _test_resize(x=data, sizes=sizes, mode=mode)
+_DATA = np.random.normal(scale=3.0, size=[1, 1, 250, 250]).astype(np.float32)
+
+
+@pytest.mark.parametrize(
+    'sizes,scales,mode,coordinate_transformation_mode',
+    (
+            (_UPSAMPLE_SIZES, None, 'linear', 'half_pixel'),
+            (None, _UPSAMPLE_SCALES, 'linear', 'half_pixel'),
+            (_DOWNSAMPLE_SIZES, None, 'linear', 'half_pixel'),
+            (None, _DOWNSAMPLE_SCALES, 'linear', 'half_pixel'),
+            (_UPSAMPLE_SIZES, None, 'nearest', 'asymmetric'),
+            (None, _UPSAMPLE_SCALES, 'nearest', 'asymmetric'),
+            (_DOWNSAMPLE_SIZES, None, 'nearest', 'asymmetric'),
+            (None, _DOWNSAMPLE_SCALES, 'nearest', 'asymmetric'),
+            (_UPSAMPLE_SIZES, None, 'cubic', 'half_pixel'),
+            (None, _UPSAMPLE_SCALES, 'cubic', 'half_pixel'),
+            (_DOWNSAMPLE_SIZES, None, 'cubic', 'half_pixel'),
+            (None, _DOWNSAMPLE_SCALES, 'cubic', 'half_pixel'),
+    )
+)
+def test_resize(
+        sizes: np.ndarray,
+        scales: np.ndarray,
+        mode: str,
+        coordinate_transformation_mode: str,
+) -> None:
+
+    _test_resize(
+        x=_DATA,
+        sizes=sizes,
+        scales=scales,
+        mode=mode,
+        nearest_mode='floor',
+        coordinate_transformation_mode=coordinate_transformation_mode,
+    )
 
 
 @pytest.mark.parametrize('mode', ('nearest',))
 def test_resizeV10(mode: str) -> None:
-    data = np.random.randint(0, 255, size=(1, 1, 20, 20)).astype(np.float32)
-    # upsample
-    scales = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
-    _test_resize_v10(x=data, scales=scales, mode=mode)
-
-    # downsample
-    scales = np.array([1.0, 1.0, 0.5, 0.5], dtype=np.float32)
-    _test_resize_v10(x=data, scales=scales, mode=mode)
+    _test_resize_v10(x=_DATA, scales=_UPSAMPLE_SCALES, mode=mode)
+    _test_resize_v10(x=_DATA, scales=_DOWNSAMPLE_SCALES, mode=mode)
