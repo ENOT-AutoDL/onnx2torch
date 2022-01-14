@@ -10,7 +10,7 @@ from tests.utils.common import make_model_from_nodes
     'op_type',
     ('Add', 'Sub', 'Mul', 'Div'),
 )
-def test_math_binary_operation(op_type) -> None:
+def test_math_binary_operation(op_type: str) -> None:
     input_shape = [10, 3, 128, 128]
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
     y_variants = [
