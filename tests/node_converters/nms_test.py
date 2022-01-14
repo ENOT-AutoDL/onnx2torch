@@ -108,7 +108,13 @@ _BOXES_IOU_SCORE_TEST = _BOXES
 _SCORES_IOU_SCORE_TEST = _SCORES
 
 _BOXES_2_BATCHES_TEST = np.asarray([_BOXES[0], _BOXES[0]])
-_2_BATCHES_TEST = np.asarray([_SCORES[0], _SCORES[0]])
+_SCORES_2_BATCHES_TEST = np.asarray([_SCORES[0], _SCORES[0]])
+
+_BOXES_2_BATCHES_2_CLASSES_TEST = np.asarray([_BOXES[0], _BOXES[0]])
+_SCORES_2_BATCHES_2_CLASSES_TEST = np.asarray([
+    [_SCORES[0, 0], _SCORES[0, 0][::-1]],  # 1 batch
+    [_SCORES[0, 0][::-1], _SCORES[0, 0]],  # 2 batch
+])
 
 _BOXES_2_CLASSES_TEST = _BOXES
 _SCORES_2_CLASSES_TEST = np.asarray([[_SCORES[0, 0], _SCORES[0, 0]]])
@@ -129,9 +135,11 @@ _SCORES_NONE_TEST = _SCORES
             (_BOXES_1_BOX_TEST, _SCORES_1_BOX_TEST, 3, 0.5, 0.0, None),  # single box
             (_BOXES_SCORE_TEST, _SCORES_SCORE_TEST, 3, 0.5, 0.0, None),  # suppress by IOU
             (_BOXES_IOU_SCORE_TEST, _SCORES_IOU_SCORE_TEST, 3, 0.5, 0.4, None),  # suppress by IOU and score
-            (_BOXES_2_BATCHES_TEST, _2_BATCHES_TEST, 2, 0.5, 0.0, None),  # two batches
+            (_BOXES_2_BATCHES_TEST, _SCORES_2_BATCHES_TEST, 2, 0.5, 0.0, None),  # two batches
             (_BOXES_2_CLASSES_TEST, _SCORES_2_CLASSES_TEST, 2, 0.5, 0.0, None),  # two classes
-
+            (
+                _BOXES_2_BATCHES_2_CLASSES_TEST, _SCORES_2_BATCHES_2_CLASSES_TEST, 2, 0.5, 0.8, None,
+            ),  # two batches two classes
             (_BOXES_NONE_TEST, _SCORES_NONE_TEST, 3, None, 0.4, None),  # test None params
             (_BOXES_NONE_TEST, _SCORES_NONE_TEST, 3, 0.5, None, None),  # test None params
             (_BOXES_NONE_TEST, _SCORES_NONE_TEST, None, 0.5, 0.4, None),  # test None params
