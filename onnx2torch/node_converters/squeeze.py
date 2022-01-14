@@ -43,7 +43,7 @@ class OnnxSqueezeStaticAxes(nn.Module):
 
 class OnnxSqueezeDynamicAxes(nn.Module):
 
-    def _do_forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def _do_forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor]) -> torch.Tensor:
         if axes is None or axes.nelement() == 0:
             return torch.squeeze(input_tensor)
 
@@ -52,13 +52,16 @@ class OnnxSqueezeDynamicAxes(nn.Module):
 
         return input_tensor
 
-    def forward(self, *args) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
+                args = [input_tensor, axes]
                 output = self._do_forward(*args)
+                if axes is None:
+                    args.pop()
                 return _SqueezeExportToOnnx.set_output_and_apply(output, *args)
-
-        return self._do_forward(*args)
+            
+        return self._do_forward(input_tensor, axes)
 
 
 class _SqueezeExportToOnnx(CustomExportToOnnx):

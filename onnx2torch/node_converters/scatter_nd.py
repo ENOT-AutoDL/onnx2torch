@@ -28,13 +28,13 @@ class OnnxScatterND(nn.Module):
 
         return output
 
-    def forward(self, *args) -> torch.Tensor:
+    def forward(self, data: torch.Tensor, indices: torch.Tensor, updates: torch.Tensor) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
-                output = self._do_forward(*args)
-                return _ScatterNDExportToOnnx.set_output_and_apply(output, *args)
+                output = self._do_forward(data, indices, updates)
+                return _ScatterNDExportToOnnx.set_output_and_apply(output, data, indices, updates)
 
-        return self._do_forward(*args)
+        return self._do_forward(data, indices, updates)
 
 
 class _ScatterNDExportToOnnx(CustomExportToOnnx):

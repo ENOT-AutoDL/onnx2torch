@@ -146,13 +146,9 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
         kwargs = {}
         if None in args:
             first_skipped_arg = args.index(None)
-            if hasattr(torch_module, '_do_forward'):
-                torch_forward = torch_module._do_forward
-            else:
-                torch_forward = torch_module.forward
-
-            forward_args = tuple(inspect.signature(torch_forward).parameters.keys())
+            forward_args = tuple(inspect.signature(torch_module.forward).parameters.keys())
             forward_args = forward_args[first_skipped_arg:]
+
             for arg_name in forward_args:
                 arg_value = args.pop(first_skipped_arg)
                 if arg_value is not None:

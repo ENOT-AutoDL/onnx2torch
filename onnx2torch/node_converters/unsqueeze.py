@@ -44,13 +44,13 @@ class OnnxUnsqueezeDynamicAxes(nn.Module):
 
         return result
 
-    def forward(self, *args) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
-                output = self._do_forward(*args)
-                return _UnsqueezeExportToOnnx.set_output_and_apply(output, *args)
+                output = self._do_forward(input_tensor, axes)
+                return _UnsqueezeExportToOnnx.set_output_and_apply(output, input_tensor, axes)
 
-        return self._do_forward(*args)
+        return self._do_forward(input_tensor, axes)
 
 
 class _UnsqueezeExportToOnnx(CustomExportToOnnx):
