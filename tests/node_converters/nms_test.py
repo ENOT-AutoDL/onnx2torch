@@ -76,11 +76,11 @@ _BOXES = np.array([[
 ]], dtype=np.float32)
 _SCORES = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]], dtype=np.float32)
 
-_BOXES_XYWH_FORMAT_TEST = np.array([
+_BOXES_CXCYWH_FORMAT_TEST = np.array([
     [[1.0, 1.0, 1.1, 1.1],
      [1.5, 1.5, 1.6, 1.6]]
 ], dtype=np.float32)
-_SCORES_XYWH_FORMAT_TEST = np.array([[[0.9, 0.75]]], dtype=np.float32)
+_SCORES_CXCYWH_FORMAT_TEST = np.array([[[0.9, 0.75]]], dtype=np.float32)
 
 _BOXES_FLIPPED_COORDINATES_TEST = np.array([[
     [1.0, 1.0, 0.0, 0.0],
@@ -120,7 +120,7 @@ _SCORES_NONE_TEST = _SCORES
 @pytest.mark.parametrize(
     'boxes,scores,max_output_boxes_per_class,iou_threshold,score_threshold,center_point_box',
     (
-            (_BOXES_XYWH_FORMAT_TEST, _SCORES_XYWH_FORMAT_TEST, 3, 0.1, 0.0, True),  # center point box format
+            (_BOXES_CXCYWH_FORMAT_TEST, _SCORES_CXCYWH_FORMAT_TEST, 3, 0.1, 0.0, True),  # center point box format
             # FIXME
             # flipped coordinates
             # (_BOXES_FLIPPED_COORDINATES_TEST, _SCORES_FLIPPED_COORDINATES_TEST, 3, 0.5, 0.0, None),
