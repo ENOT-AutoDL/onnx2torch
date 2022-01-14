@@ -27,20 +27,20 @@ class OnnxNot(nn.Module):
     def _do_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.logical_not(input_tensor)
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
             with SkipTorchTracing():
-                output = self._do_forward(*args, **kwargs)
-                return _NotExportToOnnx.set_output_and_apply(output, *args)
+                output = self._do_forward(input_tensor)
+                return _NotExportToOnnx.set_output_and_apply(output, input_tensor)
 
-        return self._do_forward(*args, **kwargs)
+        return self._do_forward(input_tensor)
 
 
 class _NotExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
-        return graph.op('Not', *args, **kwargs, outputs=1)
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('Not', *args, outputs=1)
 
 
 class OnnxLogical(nn.Module):
