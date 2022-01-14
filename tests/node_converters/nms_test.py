@@ -16,6 +16,7 @@ def _test_nms(
         max_output_boxes_per_class: Optional[int] = None,
         iou_threshold: Optional[float] = None,
         score_threshold: Optional[float] = None,
+        center_point_box: Optional[bool] = None,
 ) -> None:
     test_inputs = {
         'boxes': boxes,
@@ -45,6 +46,7 @@ def _test_nms(
         op_type='NonMaxSuppression',
         inputs=inputs,
         outputs=['y'],
+        center_point_box=center_point_box,
     )
 
     outputs_info = [
@@ -64,42 +66,7 @@ def _test_nms(
     check_model(model, test_inputs)
 
 
-_BOXES_0 = np.array([
-    [[0.0, 0.0, 1.0, 1.0],
-     [0.0, 0.1, 1.0, 0.0],
-     [0.0, 0.9, 1.0, 0.95],
-     [0.0, 0.8, 0.8, 0.9],
-     [0.4, 0.1, 0.8, 0.5],
-     [0.3, 0.4, 0.7, 0.6]]
-], dtype=np.float32)
-_SCORES_0 = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]], dtype=np.float32)
-
-_BOXES_1 = np.array([[
-    [1.0, 1.0, 0.0, 0.0],
-    [0.0, 0.1, 1.0, 1.1],
-    [0.0, 0.9, 1.0, -0.1],
-    [0.0, 10.0, 1.0, 11.0],
-    [1.0, 10.1, 0.0, 11.1],
-    [1.0, 101.0, 0.0, 100.0],
-]], dtype=np.float32)
-_SCORES_1 = _SCORES_0
-
-_BOXES_2 = np.array([[
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0],
-    [0.0, 0.0, 1.0, 1.0]
-]], dtype=np.float32)
-_SCORES_2 = np.array([[[0.9, 0.9, 0.9, 0.9, 0.9, 0.95, 0.9, 0.9, 0.9, 0.9]]], dtype=np.float32)
-
-_BOXES_3 = np.array([[
+_BOXES = np.array([[
     [0.0, 0.0, 1.0, 1.0],
     [0.0, 0.1, 1.0, 1.1],
     [0.0, -0.1, 1.0, 0.9],
@@ -107,43 +74,67 @@ _BOXES_3 = np.array([[
     [0.0, 10.1, 1.0, 11.1],
     [0.0, 100.0, 1.0, 101.0]
 ]], dtype=np.float32)
-_SCORES_3 = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]], dtype=np.float32)
+_SCORES = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]], dtype=np.float32)
 
-_BOXES_4 = np.array([[
-    [0.0, 0.0, 1.0, 1.0]
+_BOXES_XYWH_FORMAT_TEST = np.array([
+    [[1.0, 1.0, 1.1, 1.1],
+     [1.5, 1.5, 1.6, 1.6]]
+], dtype=np.float32)
+_SCORES_XYWH_FORMAT_TEST = np.array([[[0.9, 0.75]]], dtype=np.float32)
+
+_BOXES_FLIPPED_COORDINATES_TEST = np.array([[
+    [1.0, 1.0, 0.0, 0.0],
+    [0.0, 0.1, 1.0, 1.1],
+    [0.0, 0.9, 1.0, -0.1],
+    [0.0, 10.0, 1.0, 11.0],
+    [1.0, 10.1, 0.0, 11.1],
+    [1.0, 101.0, 0.0, 100.0],
 ]], dtype=np.float32)
-_SCORES_4 = np.array([[[0.9]]], dtype=np.float32)
+_SCORES_FLIPPED_COORDINATES_TEST = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]], dtype=np.float32)
 
-_BOXES_5 = _BOXES_3
-_SCORES_5 = _SCORES_3
+_BOXES_IDENTICAL_BOXES_TEST = np.array([[[0.0, 0.0, 1.0, 1.0]] * 10], dtype=np.float32)
+_SCORES_IDENTICAL_BOXES_TEST = np.array([[[0.9] * 9 + [0.91]]], dtype=np.float32)
 
-_BOXES_6 = _BOXES_3
-_SCORES_6 = _SCORES_3
+_BOXES_LIMIT_OUT_TEST = _BOXES
+_SCORES_LIMIT_OUT_TEST = _SCORES
 
-_BOXES_7 = np.asarray([_BOXES_3[0], _BOXES_3[0]])
-_SCORES_7 = np.asarray([_SCORES_3[0], _SCORES_3[0]])
+_BOXES_1_BOX_TEST = np.array([[[0.0, 0.0, 1.0, 1.0]]], dtype=np.float32)
+_SCORES_1_BOX_TEST = np.array([[[0.9]]], dtype=np.float32)
 
-_BOXES_8 = _BOXES_3
-_SCORES_8 = np.asarray([[_SCORES_3[0, 0], _SCORES_3[0, 0]]])
+_BOXES_SCORE_TEST = _BOXES
+_SCORES_SCORE_TEST = _SCORES
+
+_BOXES_IOU_SCORE_TEST = _BOXES
+_SCORES_IOU_SCORE_TEST = _SCORES
+
+_BOXES_2_BATCHES_TEST = np.asarray([_BOXES[0], _BOXES[0]])
+_2_BATCHES_TEST = np.asarray([_SCORES[0], _SCORES[0]])
+
+_BOXES_2_CLASSES_TEST = _BOXES
+_SCORES_2_CLASSES_TEST = np.asarray([[_SCORES[0, 0], _SCORES[0, 0]]])
+
+_BOXES_NONE_TEST = _BOXES
+_SCORES_NONE_TEST = _SCORES
 
 
 @pytest.mark.parametrize(
-    'boxes,scores,max_output_boxes_per_class,iou_threshold,score_threshold',
+    'boxes,scores,max_output_boxes_per_class,iou_threshold,score_threshold,center_point_box',
     (
-            (_BOXES_0, _SCORES_0, 3, 0.5, 0.0),
-            (_BOXES_1, _SCORES_1, 3, 0.5, 0.0),  # flipped coordinates
-            (_BOXES_2, _SCORES_2, 3, 0.5, 0.0),  # identical boxes
-            (_BOXES_3, _SCORES_3, 2, 0.5, 0.0),  # limit output size
-            (_BOXES_4, _SCORES_4, 3, 0.5, 0.0),  # single box
-            (_BOXES_5, _SCORES_5, 3, 0.5, 0.0),  # suppress by IOU
-            (_BOXES_6, _SCORES_6, 3, 0.5, 0.4),  # suppress by IOU and score
-            (_BOXES_7, _SCORES_7, 2, 0.5, 0.0),  # two batches
-            (_BOXES_8, _SCORES_8, 2, 0.5, 0.0),  # two classes
+            (_BOXES_XYWH_FORMAT_TEST, _SCORES_XYWH_FORMAT_TEST, 3, 0.1, 0.0, True),  # center point box format
+            # flipped coordinates
+            (_BOXES_FLIPPED_COORDINATES_TEST, _SCORES_FLIPPED_COORDINATES_TEST, 3, 0.5, 0.0, None),
+            (_BOXES_IDENTICAL_BOXES_TEST, _SCORES_IDENTICAL_BOXES_TEST, 3, 0.5, 0.0, None),  # identical boxes
+            (_BOXES, _SCORES, 2, 0.5, 0.0, None),  # limit output size
+            (_BOXES_1_BOX_TEST, _SCORES_1_BOX_TEST, 3, 0.5, 0.0, None),  # single box
+            (_BOXES_SCORE_TEST, _SCORES_SCORE_TEST, 3, 0.5, 0.0, None),  # suppress by IOU
+            (_BOXES_IOU_SCORE_TEST, _SCORES_IOU_SCORE_TEST, 3, 0.5, 0.4, None),  # suppress by IOU and score
+            (_BOXES_2_BATCHES_TEST, _2_BATCHES_TEST, 2, 0.5, 0.0, None),  # two batches
+            (_BOXES_2_CLASSES_TEST, _SCORES_2_CLASSES_TEST, 2, 0.5, 0.0, None),  # two classes
 
-            (_BOXES_6, _SCORES_6, 3, None, 0.4),  # test None params
-            (_BOXES_6, _SCORES_6, 3, 0.5, None),  # test None params
-            (_BOXES_6, _SCORES_6, None, 0.5, 0.4),  # test None params
-            (_BOXES_6, _SCORES_6, 3, None, None),  # test None params
+            (_BOXES_NONE_TEST, _SCORES_NONE_TEST, 3, None, 0.4, None),  # test None params
+            (_BOXES_NONE_TEST, _SCORES_NONE_TEST, 3, 0.5, None, None),  # test None params
+            (_BOXES_NONE_TEST, _SCORES_NONE_TEST, None, 0.5, 0.4, None),  # test None params
+            (_BOXES_NONE_TEST, _SCORES_NONE_TEST, 3, None, None, None),  # test None params
     ),
 )
 def test_nms(
@@ -152,6 +143,7 @@ def test_nms(
         max_output_boxes_per_class: Optional[int],
         iou_threshold: Optional[float],
         score_threshold: Optional[float],
+        center_point_box: Optional[bool],
 ) -> None:
     _test_nms(
         boxes=boxes,
@@ -159,4 +151,5 @@ def test_nms(
         max_output_boxes_per_class=max_output_boxes_per_class,
         iou_threshold=iou_threshold,
         score_threshold=score_threshold,
+        center_point_box=center_point_box,
     )
