@@ -57,34 +57,33 @@ class OnnxResize(nn.Module):
     def forward(
             self,
             input_tensor: torch.Tensor,
-            roi: torch.Tensor = torch.tensor([]),
-            scales: torch.Tensor = torch.tensor([]),
-            sizes: torch.Tensor = torch.tensor([]),
+            roi: Optional[torch.Tensor] = None,
+            scales: Optional[torch.Tensor] = None,
+            sizes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         self.mode = _dimension_mode(self.mode, input_tensor.dim() - 2)
-        if roi.numel() != 0:
+        if roi is not None:
             warnings.warn('Roi only takes effect when coordinate_transformation_mode is "tf_crop_and_resize".')
             warnings.warn('Pytorch\'s interpolate doesn\'t use roi. Result might differ.')
 
+        if scales is not None and sizes is not None:
+            raise ValueError('Only one of the two, scales or sizes, needs to be defined.')
+
         # Format of onnx scales and sizes is [n, c, d, h, w]
         # But in torch only [d, h, w] (without batch and channel dimensions)
-        sizes, scales = sizes.tolist(), scales.tolist()
         input_shape = list(input_tensor.shape)
-        if input_shape[:2] == sizes[:2]:
+        if sizes is not None:
+            sizes = sizes.tolist()
+            if input_shape[:2] != sizes[:2]:
+                raise NotImplementedError('Pytorch\'s interpolate cannot resize channel or batch dimensions.')
             sizes = sizes[2:]
-        elif scales[:2] == [1, 1]:
+        elif scales is not None:
+            scales = scales.tolist()
+            if scales[:2] != [1, 1]:
+                raise NotImplementedError('Pytorch\'s interpolate cannot scale channel or batch dimensions.')
             scales = scales[2:]
-        elif len(sizes) == 0 and len(scales) == 0:
+        else:
             raise ValueError('One of scales or sizes should be defined.')
-        else:
-            raise NotImplementedError('Pytorch\'s interpolate cannot scale channel or batch dimensions.')
-
-        if len(scales) == 0:
-            scales = None
-        elif len(sizes) == 0:
-            sizes = None
-        else:
-            raise ValueError('Only one of the two, scales or sizes, needs to be defined.')
 
         return torch.nn.functional.interpolate(
             input_tensor,
@@ -177,7 +176,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
     if extrapolation_value != 0.0:
         warnings.warn('With a extrapolation value other than 0.0, the results might differ significantly!')
-
 
     return OperationConverterResult(
         torch_module=OnnxResize(
