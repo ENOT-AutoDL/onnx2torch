@@ -1,5 +1,6 @@
 __all__ = [
     'OnnxReduceSumDynamicAxes',
+    'OnnxReduceSumStaticAxes',
     'OnnxReduceStaticAxes',
 ]
 
@@ -91,14 +92,7 @@ class OnnxReduceSumDynamicAxes(nn.Module):
         else:
             axes = torch.sort(axes).values.tolist()
 
-        result = input_tensor
-        for passed_dims, axis in enumerate(axes):
-            result = torch.sum(
-                result,
-                dim=axis if self.keepdims else axis - passed_dims,
-                keepdim=self.keepdims,
-            )
-        return result
+        return torch.sum(input_tensor, dim=axes, keepdim=self.keepdims)
 
     def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
@@ -157,6 +151,7 @@ class OnnxReduceSumStaticAxes(nn.Module):
                 return self.math_op_function(input_tensor)
 
             self.axes = list(range(input_tensor.dim()))
+            
         return torch.sum(input_tensor, dim=self.axes, keepdim=self.keepdims)
 
 
