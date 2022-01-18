@@ -19,7 +19,7 @@ from onnx2torch.node_converters.max_pool import *
 from onnx2torch.node_converters.nms import *
 from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
-from onnx2torch.node_converters.reduce_max import *
+from onnx2torch.node_converters.reduce import *
 from onnx2torch.node_converters.reshape import *
 from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
