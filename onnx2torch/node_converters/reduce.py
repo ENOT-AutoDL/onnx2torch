@@ -82,10 +82,10 @@ class OnnxReduceSumDynamicAxes(nn.Module):
 
     def _do_forward(self, input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
         if axes is None or axes.nelement() == 0:
-            if self.noop_with_empty_axes is True:
+            if self.noop_with_empty_axes:
                 return input_tensor
 
-            if self.keepdims is False:
+            if not self.keepdims:
                 return torch.sum(input_tensor)
 
             axes = list(range(input_tensor.dim()))
@@ -144,10 +144,10 @@ class OnnxReduceSumStaticAxes(nn.Module):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         if self.axes is None or len(self.axes) == 0:
-            if self.noop_with_empty_axes is True:
+            if self.noop_with_empty_axes:
                 return input_tensor
 
-            if self.keepdims is False:
+            if not self.keepdims:
                 return self.math_op_function(input_tensor)
 
             self.axes = list(range(input_tensor.dim()))
@@ -175,7 +175,7 @@ class OnnxReduceStaticAxes(nn.Module):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         if self.axes is None or len(self.axes) == 0:
-            if self.keepdims is False:
+            if not self.keepdims:
                 return self.math_op_function(input_tensor)
 
             self.axes = list(range(input_tensor.dim()))
