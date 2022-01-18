@@ -2,6 +2,7 @@ import random
 
 import numpy as np
 import onnx
+import pytest
 from onnx import numpy_helper
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
@@ -32,6 +33,7 @@ def _test_constant_of_shape(shape: np.ndarray, value: np.ndarray) -> None:
     check_model(model, test_inputs)
 
 
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_constant_of_shape() -> None:
     for _ in range(10):
         size = random.randint(1, 6)

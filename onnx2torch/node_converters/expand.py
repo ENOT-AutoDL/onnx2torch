@@ -6,7 +6,7 @@ from torch import nn
 
 from onnx2torch.common import OperationConverterResult
 from onnx2torch.common import onnx_mapping_from_node
-from onnx2torch.common import skip_torch_tracing
+from onnx2torch.common import SkipTorchTracing
 from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
@@ -19,20 +19,20 @@ class OnnxExpand(nn.Module):
     def _do_forward(input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
         return input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
 
-    def forward(self, *args) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
         if torch.onnx.is_in_onnx_export():
-            with skip_torch_tracing():
-                output = self._do_forward(*args)
-                return _ExpandExportToOnnx.set_output_and_apply(output, *args)
+            with SkipTorchTracing():
+                output = self._do_forward(input_tensor, shape)
+                return _ExpandExportToOnnx.set_output_and_apply(output, input_tensor, shape)
 
-        return self._do_forward(*args)
+        return self._do_forward(input_tensor, shape)
 
 
 class _ExpandExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
-        return graph.op('Expand', *args, **kwargs, outputs=1)
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('Expand', *args, outputs=1)
 
 
 @add_converter(operation_type='Expand', version=8)

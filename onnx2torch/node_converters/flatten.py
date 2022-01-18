@@ -6,7 +6,6 @@ from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-import numpy as np
 
 
 class OnnxFlatten(nn.Module):
@@ -20,11 +19,11 @@ class OnnxFlatten(nn.Module):
         return torch.flatten(x, start_dim=1)
 
     @classmethod
-    def maybe_create_simple_linear(cls, axis: int = 1):
+    def maybe_create_simple_flatten(cls, axis: int = 1) -> nn.Module:
         if axis == 1:
             return nn.Flatten(start_dim=axis)
-        else:
-            cls(axis=axis)
+
+        return cls(axis=axis)
 
 
 @add_converter(operation_type='Flatten', version=13)
@@ -32,9 +31,7 @@ class OnnxFlatten(nn.Module):
 @add_converter(operation_type='Flatten', version=9)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 1)
-    torch_module = OnnxFlatten(
-        axis=axis,
-    )
+    torch_module = OnnxFlatten.maybe_create_simple_flatten(axis=axis)
 
     return OperationConverterResult(
         torch_module=torch_module,
