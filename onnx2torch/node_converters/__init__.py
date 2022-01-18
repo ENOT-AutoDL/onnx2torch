@@ -14,13 +14,14 @@ from onnx2torch.node_converters.gather import *
 from onnx2torch.node_converters.gemm import *
 from onnx2torch.node_converters.global_average_pool import *
 from onnx2torch.node_converters.identity import *
+from onnx2torch.node_converters.logical import *
 from onnx2torch.node_converters.max_pool import *
 from onnx2torch.node_converters.nms import *
 from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
-from onnx2torch.node_converters.reduce_max import *
-from onnx2torch.node_converters.resize import *
+from onnx2torch.node_converters.reduce import *
 from onnx2torch.node_converters.reshape import *
+from onnx2torch.node_converters.resize import *
 from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
 from onnx2torch.node_converters.slice import *
