@@ -25,7 +25,7 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 
 
-def _initialize_none_dim(dim: Union[int, Tuple[int, ...]], input_dim: int):
+def _initialize_none_dim(dim: Optional[Union[int, Tuple[int, ...]]], input_dim: int):
     if dim is None:
         return list(range(input_dim))
     return dim
