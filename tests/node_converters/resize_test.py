@@ -17,7 +17,7 @@ def _test_resize(
         align_corners: bool = False,
         **kwargs,
 ) -> None:
-    if align_corners is True:
+    if align_corners:
         kwargs['coordinate_transformation_mode'] = 'align_corners'
 
     inputs = ['x', '']
