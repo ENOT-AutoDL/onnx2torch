@@ -11,19 +11,6 @@ from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 from tests.utils.common import check_model
 from tests.utils.common import make_model_from_nodes
 
-REDUCE_OPERATIONS_WITH_TOLERANCE = (
-    ('ReduceL1', 10 ** -5),
-    ('ReduceL2', 10 ** -5),
-    ('ReduceLogSum', 10 ** -5),
-    ('ReduceLogSumExp', 10 ** -5),
-    ('ReduceMax', 0),
-    ('ReduceMin', 0),
-    ('ReduceMean', 10 ** -5),
-    ('ReduceSum', 10 ** -5),
-    ('ReduceProd', 10 ** -5),
-    ('ReduceSumSquare', 10 ** -5),
-)
-
 
 def _test_reduce(input_tensor: np.ndarray, op_type: str, tol: float, **kwargs) -> None:
     test_inputs = {'input_tensor': input_tensor}
@@ -43,7 +30,7 @@ def _test_reduce(input_tensor: np.ndarray, op_type: str, tol: float, **kwargs) -
         test_inputs,
         atol_onnx_torch=tol,
         atol_torch_cpu_cuda=tol,
-        atol_onnx_torch2onnx=tol,
+        atol_onnx_torch2onnx=0.0,
     )
 
 
@@ -68,11 +55,11 @@ def _test_reduce_sum(
 
     if axes is not None and len(axes) > 0:
         test_inputs['axes'] = np.array(axes, dtype=np.int64)
-        output_shape = np.sum(input_tensor, axis=tuple(axes), keepdims=keepdims == 1).shape
+        output_shape = np.sum(input_tensor, axis=tuple(axes), keepdims=(keepdims == 1)).shape
     else:
         test_inputs['axes'] = np.array([], dtype=np.int64)
         if noop_with_empty_axes == 0:
-            output_shape = np.sum(input_tensor, keepdims=keepdims).shape
+            output_shape = np.sum(input_tensor, keepdims=(keepdims == 1)).shape
         else:
             output_shape = input_tensor.shape
 
@@ -98,11 +85,25 @@ def _test_reduce_sum(
         test_inputs,
         atol_onnx_torch=10 ** -5,
         atol_torch_cpu_cuda=10 ** -5,
-        atol_onnx_torch2onnx=10 ** -5,
+        atol_onnx_torch2onnx=0.0,
     )
 
 
-@pytest.mark.parametrize('op_type,tol', REDUCE_OPERATIONS_WITH_TOLERANCE)
+@pytest.mark.parametrize(
+    'op_type,tol',
+    (
+        ('ReduceL1', 10 ** -5),
+        ('ReduceL2', 10 ** -5),
+        ('ReduceLogSum', 10 ** -5),
+        ('ReduceLogSumExp', 10 ** -5),
+        ('ReduceMax', 0),
+        ('ReduceMin', 0),
+        ('ReduceMean', 10 ** -5),
+        ('ReduceSum', 10 ** -5),
+        ('ReduceProd', 10 ** -5),
+        ('ReduceSumSquare', 10 ** -5),
+    )
+)
 @pytest.mark.parametrize(
     'shape,axes,keepdims',
     (
