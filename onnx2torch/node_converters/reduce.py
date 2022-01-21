@@ -16,7 +16,6 @@ from torch import nn
 
 from onnx2torch.common import OnnxMapping
 from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import SkipTorchTracing
 from onnx2torch.common import get_const_value
 from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
@@ -96,21 +95,20 @@ class OnnxReduceSumDynamicAxes(nn.Module):
         return torch.sum(input_tensor, dim=axes, keepdim=self.keepdims)
 
     def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
+        output = self._do_forward(input_tensor, axes)
         if torch.onnx.is_in_onnx_export():
-            with SkipTorchTracing():
-                args = [input_tensor, axes]
-                output = self._do_forward(*args)
-                if axes is None:
-                    args.pop()
+            args = [input_tensor]
+            if axes is not None:
+                args.append(axes)
 
-                return _ReduceSumExportToOnnx.set_output_and_apply(
-                    output,
-                    *args,
-                    int(self.keepdims),
-                    int(self.noop_with_empty_axes),
-                )
+            return _ReduceSumExportToOnnx.set_output_and_apply(
+                output,
+                *args,
+                int(self.keepdims),
+                int(self.noop_with_empty_axes),
+            )
 
-        return self._do_forward(input_tensor, axes)
+        return output
 
 
 class _ReduceSumExportToOnnx(CustomExportToOnnx):

@@ -7,7 +7,6 @@ import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import SkipTorchTracing
 from onnx2torch.common import old_style_broadcast
 from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
@@ -24,16 +23,12 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 
 class OnnxNot(nn.Module):
 
-    def _do_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        return torch.logical_not(input_tensor)
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        output = torch.logical_not(input_tensor)
         if torch.onnx.is_in_onnx_export():
-            with SkipTorchTracing():
-                output = self._do_forward(input_tensor)
-                return _NotExportToOnnx.set_output_and_apply(output, input_tensor)
+            return _NotExportToOnnx.set_output_and_apply(output, input_tensor)
 
-        return self._do_forward(input_tensor)
+        return output
 
 
 class _NotExportToOnnx(CustomExportToOnnx):

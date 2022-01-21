@@ -12,7 +12,6 @@ from torch import nn
 
 from onnx2torch.common import OnnxMapping
 from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import SkipTorchTracing
 from onnx2torch.common import get_const_value
 from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
@@ -43,32 +42,33 @@ class OnnxSqueezeStaticAxes(nn.Module):
 
 class OnnxSqueezeDynamicAxes(nn.Module):
 
-    def _do_forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor]) -> torch.Tensor:
+    @staticmethod
+    def _do_forward(input_tensor: torch.Tensor, axes: Optional[torch.Tensor]) -> torch.Tensor:
         if axes is None or axes.nelement() == 0:
             return torch.squeeze(input_tensor)
 
+        result = input_tensor
         for axes_id in torch.sort(axes, descending=True).values:
-            input_tensor = torch.squeeze(input_tensor, dim=axes_id)
+            result = torch.squeeze(result, dim=axes_id)
 
-        return input_tensor
+        return result
 
     def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
+        output = self._do_forward(input_tensor, axes)
         if torch.onnx.is_in_onnx_export():
-            with SkipTorchTracing():
-                args = [input_tensor, axes]
-                output = self._do_forward(*args)
-                if axes is None:
-                    args.pop()
-                return _SqueezeExportToOnnx.set_output_and_apply(output, *args)
+            args = [input_tensor]
+            if axes is not None:
+                args.append(axes)
+
+            return _SqueezeExportToOnnx.set_output_and_apply(output, *args)
             
-        return self._do_forward(input_tensor, axes)
+        return output
 
 
 class _SqueezeExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        print(graph.__dir__())
         return graph.op('Squeeze', *args, outputs=1)
 
 
