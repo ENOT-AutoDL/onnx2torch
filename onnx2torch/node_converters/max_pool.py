@@ -5,6 +5,7 @@ from torch import nn
 from onnx2torch.common import OperationConverterResult
 from onnx2torch.common import get_shape_from_value_info
 from onnx2torch.common import onnx_mapping_from_node
+from onnx2torch.common import onnx_padding_to_torch_padding
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
@@ -27,31 +28,23 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     spatial_rank = len(input_shape) - 2
     maxpool_class = _MAXPOOL_CLASS_FROM_SPATIAL_RANK.get(spatial_rank, None)
     if maxpool_class is None:
-        raise NotImplementedError(f'Convolution operation with spatial rank == {spatial_rank} is not implemented')
+        raise NotImplementedError(f'Max pool operation with spatial rank == {spatial_rank} is not implemented')
 
     node_attributes = node.attributes
+    # required
+    kernel_shape = node_attributes['kernel_shape']
+    # optional
     ceil_mode = node_attributes.get('ceil_mode', 0)
     dilation = node_attributes.get('dilations', 1)
-    padding = node_attributes.get('pads', [0] * spatial_rank * 2)
-    kernel_shape = node_attributes.get('kernel_shape', None)
     strides = node_attributes.get('strides', 1)
     storage_order = node_attributes.get('storage_order', 0)
     if storage_order != 0:
         raise NotImplementedError('Only row major (0) order is supported.')
-    if kernel_shape is None:
-        raise RuntimeError('Kernel shape for MaxPool not specified. Kernel shape is mandatory parameters in onnx.')
 
-    auto_pad = node_attributes.get('auto_pad', 'NOTSET')
-    if auto_pad == 'NOTSET':
-        half_len = len(padding) // 2
-        if tuple(padding[:half_len]) != tuple(padding[half_len:]):
-            raise NotImplementedError(f'Only symmetric padding is implemented ({padding})')
-
-        padding = padding[:half_len]
-    elif auto_pad in ('SAME_UPPER', 'SAME_LOWER', 'VALID'):
-        raise NotImplementedError(f'"{auto_pad}" auto_pad is not implemented')
-    else:
-        raise ValueError(f'Got unexpected auto_pad value "{auto_pad}"')
+    padding = onnx_padding_to_torch_padding(
+        node_attributes.get('pads', [0] * spatial_rank * 2),
+        node_attributes.get('auto_pad', 'NOTSET')
+    )
 
     torch_module = maxpool_class(
         kernel_size=kernel_shape,
