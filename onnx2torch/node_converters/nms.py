@@ -9,7 +9,6 @@ from torch import nn
 
 from onnx2torch.common import OperationConverterResult
 from onnx2torch.common import onnx_mapping_from_node
-from onnx2torch.common import SkipTorchTracing
 from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
@@ -73,28 +72,26 @@ class OnnxNonMaxSuppression(nn.Module):
             iou_threshold: Optional[torch.Tensor] = None,
             score_threshold: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
+        output = self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
         if torch.onnx.is_in_onnx_export():
-            with SkipTorchTracing():
-                output = self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
+            if max_output_boxes_per_class is None:
+                max_output_boxes_per_class = torch.tensor([0], dtype=torch.int64)
+            if iou_threshold is None:
+                iou_threshold = torch.tensor([0.0], dtype=torch.float32)
+            if score_threshold is None:
+                score_threshold = torch.tensor([0.0], dtype=torch.float32)
 
-                if max_output_boxes_per_class is None:
-                    max_output_boxes_per_class = torch.tensor([0], dtype=torch.int64)
-                if iou_threshold is None:
-                    iou_threshold = torch.tensor([0.0], dtype=torch.float32)
-                if score_threshold is None:
-                    score_threshold = torch.tensor([0.0], dtype=torch.float32)
+            return _NmsExportToOnnx.set_output_and_apply(
+                output,
+                boxes,
+                scores,
+                max_output_boxes_per_class,
+                iou_threshold,
+                score_threshold,
+                int(self.center_point_box),
+            )
 
-                return _NmsExportToOnnx.set_output_and_apply(
-                    output,
-                    boxes,
-                    scores,
-                    max_output_boxes_per_class,
-                    iou_threshold,
-                    score_threshold,
-                    int(self.center_point_box),
-                )
-
-        return self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
+        return output
 
 
 class _NmsExportToOnnx(CustomExportToOnnx):

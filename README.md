@@ -91,12 +91,12 @@ class OnnxExpand(nn.Module):
         return input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
 
     def forward(self, *args) -> torch.Tensor:
+        output = self._do_forward(*args)
+        
         if torch.onnx.is_in_onnx_export():
-            with SkipTorchTracing():
-                output = self._do_forward(*args)
-                return _ExpandExportToOnnx.set_output_and_apply(output, *args)
+            return _ExpandExportToOnnx.set_output_and_apply(output, *args)
 
-        return self._do_forward(*args)
+        return output
 
 
 class _ExpandExportToOnnx(CustomExportToOnnx):

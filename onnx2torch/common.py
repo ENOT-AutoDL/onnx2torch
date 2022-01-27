@@ -2,14 +2,10 @@ from typing import List
 from typing import NamedTuple
 from typing import Tuple
 from typing import Union
-from warnings import catch_warnings
-from warnings import filterwarnings
 
 import torch
-import torch._C as torch_C
 from onnx import ValueInfoProto
 from torch import nn
-from torch.jit import TracerWarning
 
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
@@ -56,21 +52,6 @@ def get_const_value(name: str, graph: OnnxGraph) -> Union[torch.Tensor, float, i
         return attr_value
 
     raise KeyError(f'Tensor "{name}" is not found in constant values')
-
-
-class SkipTorchTracing:
-    def __init__(self):
-        self._catch_warnings = catch_warnings()
-        self._state = None
-
-    def __enter__(self):
-        self._state = torch_C._get_tracing_state()
-        self._catch_warnings.__enter__()
-        filterwarnings(action='ignore', category=TracerWarning)
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        torch_C._set_tracing_state(self._state)
-        self._catch_warnings.__exit__(exc_type, exc_val, exc_tb)
 
 
 def old_style_broadcast(first: torch.Tensor, second: torch.Tensor, axis: int) -> torch.Tensor:
