@@ -43,7 +43,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 
     padding = onnx_padding_to_torch_padding(
         node_attributes.get('pads', [0] * spatial_rank * 2),
-        node_attributes.get('auto_pad', 'NOTSET')
+        node_attributes.get('auto_pad', 'NOTSET'),
     )
 
     torch_module = maxpool_class(

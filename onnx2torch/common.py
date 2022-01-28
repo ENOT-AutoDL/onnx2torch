@@ -67,7 +67,7 @@ def old_style_broadcast(first: torch.Tensor, second: torch.Tensor, axis: int) ->
 def onnx_padding_to_torch_padding(padding: Tuple[int, ...], auto_pad: str) -> Tuple[int, ...]:
     if auto_pad == 'NOTSET':
         half_len = len(padding) // 2
-        if tuple(padding[:half_len]) != tuple(padding[half_len:]):
+        if padding[:half_len] != padding[half_len:]:
             raise NotImplementedError(f'Only symmetric padding is implemented ({padding})')
 
         padding = padding[:half_len]
