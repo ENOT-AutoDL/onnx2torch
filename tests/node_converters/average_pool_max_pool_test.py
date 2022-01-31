@@ -9,7 +9,7 @@ from tests.utils.common import check_model
 from tests.utils.common import make_model_from_nodes
 
 
-def _test_op(
+def _test_pool_op(
         op_type,
         input_shape: List[int],
         atol_onnx_torch: float = 0.0,
@@ -68,5 +68,4 @@ def test_max_pool_average_pool(op: str, input_shape: List[int], kernel_shape: Li
     if op == 'AveragePool':
         optional_attrs['atol_onnx_torch'] = 10**-7
 
-    _test_op('MaxPool', input_shape=input_shape, kernel_shape=kernel_shape, **optional_attrs)
-
+    _test_pool_op(op, input_shape=input_shape, kernel_shape=kernel_shape, **optional_attrs)
