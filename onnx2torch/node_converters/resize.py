@@ -12,7 +12,7 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 
-_TORCH_MODES = {
+_MODES_MAPPING = {
     ('nearest', 1): 'nearest',
     ('nearest', 2): 'nearest',
     ('nearest', 3): 'nearest',
@@ -30,10 +30,10 @@ def _get_torch_align_corners(mode: str, coordinate_transformation_mode: str) -> 
     return coordinate_transformation_mode == 'align_corners'
 
 
-def _dimension_mode(mode: str, dim_size: int) -> str:
-    torch_mode = _TORCH_MODES.get((mode, dim_size), None)
+def _onnx_mode_to_torch_mode(onnx_mode: str, dim_size: int) -> str:
+    torch_mode = _MODES_MAPPING.get((onnx_mode, dim_size), None)
     if torch_mode is None:
-        raise NotImplementedError(f'{dim_size}D input is not implemented for "{mode}" mode.')
+        raise NotImplementedError(f'{dim_size}D input is not implemented for "{onnx_mode}" mode.')
 
     return torch_mode
 
@@ -46,7 +46,7 @@ class OnnxResize(nn.Module):
             align_corners: Optional[bool] = None,
     ):
         super().__init__()
-        self.mode = mode
+        self.onnx_mode = mode
         self.align_corners = align_corners
 
     def forward(
@@ -56,31 +56,36 @@ class OnnxResize(nn.Module):
             scales: Optional[torch.Tensor] = None,
             sizes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-        self.mode = _dimension_mode(self.mode, input_tensor.dim() - 2)
-        if roi is not None:
+        torch_mode = _onnx_mode_to_torch_mode(self.onnx_mode, input_tensor.dim() - 2)
+        if roi is not None and roi.nelement() != 0:
             raise NotImplementedError('roi logic is not implemented.')
 
         # Format of onnx scales and sizes is [n, c, d, h, w]
         # But in torch only [d, h, w] (without batch and channel dimensions)
         input_shape = list(input_tensor.shape)
         if sizes is not None:
-            sizes = sizes.tolist()
-            if input_shape[:2] != sizes[:2]:
-                raise NotImplementedError('Pytorch\'s interpolate cannot resize channel or batch dimensions.')
-            sizes = sizes[2:]
-        elif scales is not None:
-            scales = scales.tolist()
-            if scales[:2] != [1, 1]:
-                raise NotImplementedError('Pytorch\'s interpolate cannot scale channel or batch dimensions.')
-            scales = scales[2:]
-        else:
-            raise ValueError('One of scales or sizes should be defined.')
+            if sizes.nelement() != 0:
+                sizes = sizes.tolist()
+                if input_shape[:2] != sizes[:2]:
+                    raise NotImplementedError('Pytorch\'s interpolate cannot resize channel or batch dimensions.')
+                sizes = sizes[2:]
+            else:
+                sizes = None
+
+        if scales is not None:
+            if scales.nelement() != 0:
+                scales = scales.tolist()
+                if scales[:2] != [1, 1]:
+                    raise NotImplementedError('Pytorch\'s interpolate cannot scale channel or batch dimensions.')
+                scales = scales[2:]
+            else:
+                scales = None
 
         return torch.nn.functional.interpolate(
             input_tensor,
             size=sizes,
             scale_factor=scales,
-            mode=self.mode,
+            mode=torch_mode,
             align_corners=self.align_corners,
         )
 
