@@ -147,12 +147,11 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
         if None in args:
             first_skipped_arg = args.index(None)
             forward_args = tuple(inspect.signature(torch_module.forward).parameters.keys())
-            forward_args = forward_args[first_skipped_arg:]
-
-            for arg_name in forward_args:
-                arg_value = args.pop(first_skipped_arg)
-                if arg_value is not None:
-                    kwargs[arg_name] = arg_value
+            forward_args = forward_args[first_skipped_arg:len(args)]
+            args, kwargs_values = args[:first_skipped_arg], args[first_skipped_arg:]
+            kwargs.update(
+                {name: value for name, value in zip(forward_args, kwargs_values) if value is not None}
+            )
 
         torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
 
