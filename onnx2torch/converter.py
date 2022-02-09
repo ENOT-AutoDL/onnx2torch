@@ -101,7 +101,7 @@ def convert(
     for i, name in enumerate(onnx_graph.input_values, 1):
         if save_input_names:
             if not name.isidentifier():
-                raise ValueError('Input name "{name}" cannot be used as name of placeholder in fx.GraphModule.')
+                raise ValueError(f'Input name "{name}" cannot be used as name of placeholder in fx.GraphModule.')
 
             placeholder_name = name
         else:
