@@ -60,8 +60,33 @@ print(np.allclose(outputs_ort, out_torch.detach().numpy(), atol=1.e-7))
 ## Models
 
 We have tested the following models:
-- [x] ResNet50
+
+Segmentation models:
+- [x] DeepLabv3plus
+- [x] DeepLabv3 resnet50
+- [x] HRNet
+- [x] UNet
+- [x] FCN resnet50
+- [x] lraspp mobilenetv3
+
+Detection  from MMdetection:
 - [x] SSDLite with MobileNetV2 backbone
+- [x] RetinaNet R50
+- [x] SSD300 with VGG backbone
+- [x] Yolov3_d53
+
+Classification from torchvision:
+- [x] Resnet18
+- [x] Resnet50
+- [x] MobileNet v2
+- [x] MobileNet v3 large
+- [x] EfficientNet_b{0, 1, 2, 3}
+- [x] WideResNet50
+- [x] ResNext50
+- [x] VGG16
+- [x] GoogleleNet
+- [x] MnasNet
+- [x] RegNet
 
 ## How to add new operations to converter
 
