@@ -4,9 +4,9 @@ from typing import NamedTuple
 
 from onnx import defs
 
-from onnx2torch.common import OperationConverterResult
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OperationConverterResult
 
 _LOGGER = logging.getLogger(__name__)
 _CONVERTER_REGISTRY = {}
