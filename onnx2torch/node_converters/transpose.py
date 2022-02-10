@@ -6,11 +6,11 @@ from typing import Optional
 import torch
 from torch import nn
 
-from onnx2torch.common import OnnxMapping
-from onnx2torch.common import OperationConverterResult
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OperationConverterResult
 
 
 class OnnxTranspose(nn.Module):
