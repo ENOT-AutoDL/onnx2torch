@@ -20,7 +20,7 @@ _ONNX_MODELS_IDS = {
     'ssd300_vgg': '1740qkxD5dSBuPnN5s7HfyvQy20x68lYJ',
     'ssdlite': '1E-sqOn-DVrQ-mLtBr9elHTTh8BvMIyFK',
     'unet': '1CEp3h3_4viSgcMOtjwhT4h7PPsbjqzZs',
-    'yolov3_d53': '1Seq_18qSEvJz5cA6kkxtUHIVd2Ql6CK2',
+    'yolov3_d53': '1XLjil1iBDsIVwpi9Yp7aEbuJMnlmCsyc',
     'yolov5_ultralitics': '1JCXndU8Y5wv_Yx_3ahzIzooO-m4iwiP4',
 }
 
