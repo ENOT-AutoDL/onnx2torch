@@ -8,7 +8,7 @@ from tests import DATASETS_DIR
 from tests import MODELS_DIR
 
 _ONNX_MODELS_URLS = {
-    'resnet50': 'https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet50-v2-7.onnx',
+    'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
 }
 
 _ONNX_MODELS_IDS = {

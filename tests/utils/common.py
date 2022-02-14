@@ -265,8 +265,7 @@ def check_torch_model(
 ) -> None:
     arguments = locals()
     input_names = list(onnx_inputs.keys())
-    args = list(onnx_inputs.values())
-    args = tuple(torch.tensor(arg) for arg in args)
+    args = tuple(torch.tensor(arg) for arg in onnx_inputs.values())
 
     with io.BytesIO() as tmp_file:
         torch.onnx.export(
