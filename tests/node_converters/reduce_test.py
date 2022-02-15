@@ -8,7 +8,7 @@ import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -25,7 +25,7 @@ def _test_reduce(input_tensor: np.ndarray, op_type: str, tol: float, **kwargs) -
         initializers={},
         inputs_example=test_inputs,
     )
-    check_model(
+    check_onnx_model(
         model,
         test_inputs,
         atol_onnx_torch=tol,
@@ -80,7 +80,7 @@ def _test_reduce_sum(
             shape=output_shape,
         ),),
     )
-    check_model(
+    check_onnx_model(
         model,
         test_inputs,
         atol_onnx_torch=10 ** -5,

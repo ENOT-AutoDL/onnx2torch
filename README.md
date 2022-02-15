@@ -26,7 +26,7 @@ Below you can find some examples of use.
 ### Convert
 ```python
 import torch
-from onnx2torch.converter import convert
+from onnx2torch import convert
 
 # Path to ONNX model
 onnx_model_path = '/some/path/mobile_net_v2.onnx'
@@ -60,8 +60,33 @@ print(np.allclose(outputs_ort, out_torch.detach().numpy(), atol=1.e-7))
 ## Models
 
 We have tested the following models:
-- [x] ResNet50
+
+Segmentation models:
+- [x] DeepLabv3plus
+- [x] DeepLabv3 resnet50
+- [x] HRNet
+- [x] UNet
+- [x] FCN resnet50
+- [x] lraspp mobilenetv3
+
+Detection  from MMdetection:
 - [x] SSDLite with MobileNetV2 backbone
+- [x] RetinaNet R50
+- [x] SSD300 with VGG backbone
+- [x] Yolov3_d53
+
+Classification from torchvision:
+- [x] Resnet18
+- [x] Resnet50
+- [x] MobileNet v2
+- [x] MobileNet v3 large
+- [x] EfficientNet_b{0, 1, 2, 3}
+- [x] WideResNet50
+- [x] ResNext50
+- [x] VGG16
+- [x] GoogleleNet
+- [x] MnasNet
+- [x] RegNet
 
 ## How to add new operations to converter
 
@@ -86,15 +111,10 @@ If Operation's behaviour differs from one opset version to another, you should i
 ```python
 class OnnxExpand(nn.Module):
 
-    @staticmethod
-    def _do_forward(input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
-        return input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
-
-    def forward(self, *args) -> torch.Tensor:
-        output = self._do_forward(*args)
-        
+    def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
+        output = input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
         if torch.onnx.is_in_onnx_export():
-            return _ExpandExportToOnnx.set_output_and_apply(output, *args)
+            return _ExpandExportToOnnx.set_output_and_apply(output, input_tensor, shape)
 
         return output
 
@@ -102,8 +122,8 @@ class OnnxExpand(nn.Module):
 class _ExpandExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args, **kwargs) -> torch_C.Value:
-        return graph.op('Expand', *args, **kwargs, outputs=1)
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('Expand', *args, outputs=1)
 
 
 @add_converter(operation_type='Expand', version=8)

@@ -189,12 +189,13 @@ def convert_onnx2torch2onnx(
         return onnx.load_from_string(tmp_file.getvalue())
 
 
-def _check_model(
+def _check_onnx_model(
         onnx_model: ModelProto,
         onnx_inputs: Dict[str, Any],
         onnx_torch_check_function: Callable,
         torch_cpu_cuda_check_function: Optional[Callable] = None,
         onnx_torch2onnx_check_function: Optional[Callable] = None,
+        opset_version: int = 13,
 ) -> None:
     ort_outputs = calc_ort_outputs(onnx_model, onnx_inputs)
     torch_outputs = calc_torch_outputs(onnx_model, onnx_inputs, device='cpu')
@@ -206,17 +207,18 @@ def _check_model(
         torch_cpu_cuda_check_function(torch_outputs, torch_cuda_outputs)
 
     if onnx_torch2onnx_check_function is not None:
-        torch2onnx_model = convert_onnx2torch2onnx(onnx_model, inputs=onnx_inputs)
+        torch2onnx_model = convert_onnx2torch2onnx(onnx_model, inputs=onnx_inputs, opset_version=opset_version)
         ort_torch2onnx_outputs = calc_ort_outputs(torch2onnx_model, onnx_inputs, skip_unused_inputs=True)
         onnx_torch2onnx_check_function(ort_outputs, ort_torch2onnx_outputs)
 
 
-def check_model(
+def check_onnx_model(
         onnx_model: ModelProto,
         onnx_inputs: Dict[str, Any],
         atol_onnx_torch: float = 0.0,
         atol_torch_cpu_cuda: float = 0.0,
         atol_onnx_torch2onnx: float = 0.0,
+        opset_version: int = 13,
 ) -> None:
     def onnx_torch_check_function(onnx_output, torch_output):
         if len(onnx_output) == 1:
@@ -243,10 +245,37 @@ def check_model(
 
         return True
 
-    _check_model(
+    _check_onnx_model(
         onnx_model=onnx_model,
         onnx_inputs=onnx_inputs,
         onnx_torch_check_function=onnx_torch_check_function,
         torch_cpu_cuda_check_function=torch_cpu_cuda_check_function,
         onnx_torch2onnx_check_function=onnx_torch2onnx_check_function,
+        opset_version=opset_version,
     )
+
+
+def check_torch_model(
+        torch_model: torch.nn.Module,
+        onnx_inputs: Dict[str, Any],
+        atol_onnx_torch: float = 0.0,
+        atol_torch_cpu_cuda: float = 0.0,
+        atol_onnx_torch2onnx: float = 0.0,
+        opset_version: int = 13,
+) -> None:
+    arguments = locals()
+    input_names = list(onnx_inputs.keys())
+    args = tuple(torch.tensor(arg) for arg in onnx_inputs.values())
+
+    with io.BytesIO() as tmp_file:
+        torch.onnx.export(
+            model=torch_model,
+            args=args,
+            f=tmp_file,
+            input_names=input_names,
+            opset_version=opset_version,
+        )
+
+        arguments.pop('torch_model')
+        arguments['onnx_model'] = onnx.load_from_string(tmp_file.getvalue())
+        check_onnx_model(**arguments)

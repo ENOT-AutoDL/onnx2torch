@@ -8,7 +8,7 @@ import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -44,7 +44,7 @@ def _test_unsqueeze(
             shape=np.expand_dims(input_tensor, axis=axes).shape,
         ),),
     )
-    check_model(model, test_inputs)
+    check_onnx_model(model, test_inputs)
 
 
 # Known warning. Shape Inference do not work properly in opset_version=9 and negative indices.

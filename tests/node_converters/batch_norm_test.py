@@ -1,7 +1,7 @@
 import numpy as np
 import onnx
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -32,7 +32,7 @@ def _test_batch_norm(
     )
 
     model = make_model_from_nodes(nodes=node, initializers=initializers, inputs_example=test_inputs)
-    check_model(
+    check_onnx_model(
         model,
         test_inputs,
         atol_onnx_torch=10**-7,

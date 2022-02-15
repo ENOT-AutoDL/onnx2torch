@@ -8,11 +8,20 @@ from tests import DATASETS_DIR
 from tests import MODELS_DIR
 
 _ONNX_MODELS_URLS = {
-    'resnet50': 'https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet50-v2-7.onnx',
+    'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
 }
 
 _ONNX_MODELS_IDS = {
-    'ssdlite': '1b_daJsjdIeOOWUEKIfru_0hzyE49JMqf',
+    'deeplabv3_mnv3_large': '1XIH4kBrGYNYtrW6EtSsPrfmjxGKT8u93',
+    'deeplabv3_plus_resnet101': '1ZTP4FCs8ileMm7ZZMwb1X1hP2KmXcU1X',
+    'hrnet': '1Bp1bSaWq9Yrad7IejeRquw6zAVWqEWsl',
+    'mask_rcnn': '1Tw7I07D3ZYo-x7GaJ_nFavG0qyKNyvee',
+    'retinanet': '1VeFvfiMwIaw1VIipzMzfBm-nzUGq-Xbv',
+    'ssd300_vgg': '1740qkxD5dSBuPnN5s7HfyvQy20x68lYJ',
+    'ssdlite': '1E-sqOn-DVrQ-mLtBr9elHTTh8BvMIyFK',
+    'unet': '1CEp3h3_4viSgcMOtjwhT4h7PPsbjqzZs',
+    'yolov3_d53': '1XLjil1iBDsIVwpi9Yp7aEbuJMnlmCsyc',
+    'yolov5_ultralitics': '1JCXndU8Y5wv_Yx_3ahzIzooO-m4iwiP4',
 }
 
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'

@@ -7,7 +7,7 @@ from onnx import numpy_helper
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -30,7 +30,7 @@ def _test_constant_of_shape(shape: np.ndarray, value: np.ndarray) -> None:
         inputs_example=test_inputs,
         outputs_info=outputs_info,
     )
-    check_model(model, test_inputs)
+    check_onnx_model(model, test_inputs)
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')

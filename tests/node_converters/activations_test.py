@@ -5,7 +5,7 @@ import numpy as np
 import onnx
 import pytest
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -19,7 +19,7 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
         opset_version=opset_version,
     )
 
-    check_model(model, test_inputs)
+    check_onnx_model(model, test_inputs)
 
 
 @pytest.mark.parametrize(
