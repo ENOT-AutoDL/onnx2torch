@@ -5,6 +5,7 @@ __all__ = [
 ]
 
 from functools import partial
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -22,6 +23,13 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_const_value
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+
+
+@torch.fx.wrap
+def _get_element(x: Union[List, Tuple], index: int = 0) -> Any:
+    if isinstance(x, [tuple, list]):
+        return x[index]
+    return x
 
 
 def _initialize_none_dim(dim: Optional[Union[int, Tuple[int, ...]]], input_dim: int):
@@ -189,8 +197,7 @@ class OnnxReduceStaticAxes(nn.Module):
                 dim=axis if self.keepdims else axis - passed_dims,
                 keepdim=self.keepdims,
             )
-            if isinstance(result, tuple):
-                result = result[0]
+            result = _get_element(result, 0)
 
         return result
 

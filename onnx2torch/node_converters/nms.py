@@ -61,6 +61,8 @@ class OnnxNonMaxSuppression(nn.Module):
                     [batch_index, class_index, box_index]
                     for box_index in indexes
                 )
+        if len(out) == 0:
+            return torch.empty([0, 3], dtype=torch.int64, device=boxes.device)
 
         return torch.tensor(out, dtype=torch.int64, device=boxes.device)
 
