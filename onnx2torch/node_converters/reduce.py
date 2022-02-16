@@ -27,7 +27,7 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 
 @torch.fx.wrap
 def _get_element(x: Union[List, Tuple], index: int = 0) -> Any:
-    if isinstance(x, [tuple, list]):
+    if isinstance(x, (tuple, list)):
         return x[index]
     return x
 
