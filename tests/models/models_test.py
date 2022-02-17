@@ -114,7 +114,6 @@ def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
 )
 def test_torchvision_classification(model: str) -> None:
     torch_model = getattr(torchvision.models, model)(pretrained=True)
-
     test_inputs = {
         'inputs': create_test_batch(bs=32),
     }
@@ -139,7 +138,6 @@ def test_torchvision_classification(model: str) -> None:
 )
 def test_torchvision_segmentation(model: str) -> None:
     torch_model = getattr(torchvision.models.segmentation, model)(pretrained=True)
-
     test_inputs = {
         'inputs': create_test_batch(bs=8),
     }
@@ -150,4 +148,30 @@ def test_torchvision_segmentation(model: str) -> None:
         atol_onnx_torch=10 ** -3,
         atol_torch_cpu_cuda=10 ** -3,
         atol_onnx_torch2onnx=10 ** -3,
+    )
+
+
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
+@pytest.mark.parametrize(
+    'model',
+    (
+            'vit',
+            'swin',
+    )
+)
+def test_transformer_models(model: str) -> None:
+    model_path = get_model_path(model)
+    model = onnx.load_model(model_path)
+
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: create_test_batch(bs=8, target_size=(224, 224)),
+    }
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
     )

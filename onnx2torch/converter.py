@@ -147,10 +147,15 @@ def convert(
                 args.append(torch_input_node)
 
             elif value_type == ValueType.GRAPH_INITIALIZER:
+                # pytorch buffer ame cannot contain '.'
+                new_value_name = value_name.replace('.', '_')
                 if value_name not in torch_nodes:
-                    torch_initializers.add_initializer(value_name, onnx_graph.initializers[value_name].to_torch())
-                    torch_nodes[value_name] = torch_graph.get_attr(f'initializers.{value_name}')
-                args.append(torch_nodes[value_name])
+                    torch_initializers.add_initializer(
+                        new_value_name,
+                        onnx_graph.initializers[value_name].to_torch(),
+                    )
+                    torch_nodes[new_value_name] = torch_graph.get_attr(f'initializers.{new_value_name}')
+                args.append(torch_nodes[new_value_name])
             
             elif value_type == ValueType.EMPTY:
                 args.append(None)

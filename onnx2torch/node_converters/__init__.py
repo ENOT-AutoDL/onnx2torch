@@ -16,6 +16,7 @@ from onnx2torch.node_converters.gemm import *
 from onnx2torch.node_converters.global_average_pool import *
 from onnx2torch.node_converters.identity import *
 from onnx2torch.node_converters.logical import *
+from onnx2torch.node_converters.matmul import *
 from onnx2torch.node_converters.max_pool import *
 from onnx2torch.node_converters.nms import *
 from onnx2torch.node_converters.pow import *
@@ -25,6 +26,7 @@ from onnx2torch.node_converters.reshape import *
 from onnx2torch.node_converters.resize import *
 from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
+from onnx2torch.node_converters.split import *
 from onnx2torch.node_converters.slice import *
 from onnx2torch.node_converters.squeeze import *
 from onnx2torch.node_converters.tile import *

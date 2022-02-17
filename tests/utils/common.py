@@ -228,7 +228,7 @@ def check_onnx_model(
             assert np.all(np.isclose(a, b, atol=atol_onnx_torch)), 'ort and torch outputs have significant difference'
 
     def torch_cpu_cuda_check_function(torch_cpu_output, torch_cuda_output):
-        if not isinstance(torch_cpu_output, List):
+        if not isinstance(torch_cpu_output, (List, Tuple)):
             torch_cpu_output = [torch_cpu_output]
             torch_cuda_output = [torch_cuda_output]
 
