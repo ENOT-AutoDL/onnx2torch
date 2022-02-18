@@ -21,7 +21,7 @@ class OnnxScatterND(nn.Module):
         output = data.clone()
         update_indices = indices.shape[:-1]
         for idx in np.ndindex(update_indices):
-            output[indices[idx]] = updates[idx]
+            output[tuple(indices[idx])] = updates[idx]
 
         if torch.onnx.is_in_onnx_export():
             return _ScatterNDExportToOnnx.set_output_and_apply(output, data, indices, updates)
