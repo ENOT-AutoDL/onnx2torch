@@ -46,6 +46,12 @@ class OnnxSplit(nn.Module):
         return self._split(input_tensor, self.split)
 
 
+class OnnxSplitV1(OnnxSplit):
+
+    def forward(self, input_tensor: torch.Tensor, split: Optional[torch.Tensor] = None) -> torch.Tensor:
+        return self._split(input_tensor, split or self.split)
+
+
 @add_converter(operation_type='Split', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     axis = node.attributes.get('axis', 0)
@@ -64,5 +70,16 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     num_splits = len(node.output_values)
     return OperationConverterResult(
         torch_module=OnnxSplit(axis=axis, split=split, num_splits=num_splits),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='Split', version=1)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    axis = node.attributes.get('axis', 0)
+    split = node.attributes.get('split', None)
+    num_splits = len(node.output_values)
+    return OperationConverterResult(
+        torch_module=OnnxSplitV1(axis=axis, split=split, num_splits=num_splits),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )

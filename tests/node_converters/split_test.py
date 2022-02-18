@@ -81,7 +81,7 @@ def _test_split(
         outputs_info=outputs_info,
         opset_version=opset_version,
     )
-    check_onnx_model(model, test_inputs, opset_version=opset_version)
+    check_onnx_model(model, test_inputs)
 
 
 INPUT_1D = np.array([1., 2., 3., 4., 5., 6.]).astype(np.float32)
@@ -106,7 +106,7 @@ EXPECTED_EMPTY_OUT = [np.array([]).astype(np.float32), np.array([]).astype(np.fl
             (EMPTY_INPUT, EXPECTED_EMPTY_OUT, None, np.array([0, 0, 0]).astype(np.int64))
     ),
 )
-def test_resizeV13(
+def test_splitV13(
     input_array: np.ndarray,
     expected_out: List[np.ndarray],
     axis: Optional[int],
@@ -131,7 +131,7 @@ def test_resizeV13(
     ),
 )
 @pytest.mark.parametrize('opset_version', (11, 2))
-def test_resize(
+def test_split(
     input_array: np.ndarray,
     expected_out: List[np.ndarray],
     axis: Optional[int],
@@ -144,4 +144,4 @@ def test_resize(
     if split is not None:
         kwargs['split'] = split
 
-    _test_split(input_array, expected_out, **kwargs)
+    _test_split(input_array, expected_out, opset_version=opset_version, **kwargs)
