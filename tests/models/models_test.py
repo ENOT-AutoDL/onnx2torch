@@ -161,7 +161,7 @@ def test_torchvision_segmentation(model: str) -> None:
 )
 def test_transformer_models(model: str) -> None:
     model_path = get_model_path(model)
-    model = onnx.load_model(model_path)
+    model = onnx.load_model(str(model_path.resolve()))
 
     input_name = model.graph.input[0].name
     test_inputs = {
