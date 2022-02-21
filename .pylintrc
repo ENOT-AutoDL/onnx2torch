@@ -1,3 +1,7 @@
+[BASIC]
+# Good variable names which should always be accepted, separated by a comma.
+good-names=x,y,z
+
 [DESIGN]
 # Maximum number of arguments for function / method
 max-args=12
@@ -16,7 +20,7 @@ max-public-methods=20
 max-line-length=120
 
 [MESSAGES]
-disable=logging-fstring-interpolation
+disable=logging-fstring-interpolation,no-self-use
 
 [SIMILARITIES]
 # Minimum lines number of a similarity.

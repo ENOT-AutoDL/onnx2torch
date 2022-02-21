@@ -62,10 +62,10 @@ class OnnxResize(nn.Module):
 
         # Format of onnx scales and sizes is [n, c, d, h, w]
         # But in torch only [d, h, w] (without batch and channel dimensions)
-        input_shape = list(input_tensor.shape)
         if sizes is not None:
             if sizes.nelement() != 0:
                 sizes = sizes.tolist()
+                input_shape = list(input_tensor.shape)
                 if input_shape[:2] != sizes[:2]:
                     raise NotImplementedError('Pytorch\'s interpolate cannot resize channel or batch dimensions.')
                 sizes = sizes[2:]

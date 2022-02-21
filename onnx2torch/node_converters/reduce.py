@@ -119,7 +119,7 @@ class OnnxReduceSumDynamicAxes(nn.Module):
         return output
 
 
-class _ReduceSumExportToOnnx(CustomExportToOnnx):
+class _ReduceSumExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
@@ -158,7 +158,7 @@ class OnnxReduceSumStaticAxes(nn.Module):
                 return self.math_op_function(input_tensor)
 
             self.axes = list(range(input_tensor.dim()))
-            
+
         return torch.sum(input_tensor, dim=self.axes, keepdim=self.keepdims)
 
 
@@ -274,4 +274,3 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
         torch_module=OnnxReduceSumDynamicAxes(keepdims=keepdims, noop_with_empty_axes=noop_with_empty_axes),
         onnx_mapping=onnx_mapping_from_node(node),
     )
-

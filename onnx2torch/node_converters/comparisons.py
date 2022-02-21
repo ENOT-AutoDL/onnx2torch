@@ -24,8 +24,8 @@ class OnnxCompare(nn.Module):
         super().__init__()
         self.compare_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    def forward(self, a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-        return self.compare_function(a, b)
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return self.compare_function(x, y)
 
 
 @add_converter(operation_type='Equal', version=7)

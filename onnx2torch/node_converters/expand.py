@@ -22,7 +22,7 @@ class OnnxExpand(nn.Module):
         return output
 
 
-class _ExpandExportToOnnx(CustomExportToOnnx):
+class _ExpandExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:

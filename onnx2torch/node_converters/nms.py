@@ -46,7 +46,11 @@ class OnnxNonMaxSuppression(nn.Module):
 
                 filtered_batch_boxes = batch_boxes[confidence_indexes]
                 if self.center_point_box:
-                    filtered_batch_boxes = torchvision.ops.box_convert(filtered_batch_boxes, in_fmt='cxcywh', out_fmt='xyxy')
+                    filtered_batch_boxes = torchvision.ops.box_convert(
+                        filtered_batch_boxes,
+                        in_fmt='cxcywh',
+                        out_fmt='xyxy',
+                    )
 
                 nms_indexes = torchvision.ops.nms(
                     boxes=filtered_batch_boxes,
@@ -96,7 +100,7 @@ class OnnxNonMaxSuppression(nn.Module):
         return output
 
 
-class _NmsExportToOnnx(CustomExportToOnnx):
+class _NmsExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:

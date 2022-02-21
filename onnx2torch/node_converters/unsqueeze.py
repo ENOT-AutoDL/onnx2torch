@@ -52,7 +52,7 @@ class OnnxUnsqueezeDynamicAxes(nn.Module):
         return output
 
 
-class _UnsqueezeExportToOnnx(CustomExportToOnnx):
+class _UnsqueezeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:

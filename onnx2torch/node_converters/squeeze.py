@@ -61,11 +61,11 @@ class OnnxSqueezeDynamicAxes(nn.Module):
                 args.append(axes)
 
             return _SqueezeExportToOnnx.set_output_and_apply(output, *args)
-            
+
         return output
 
 
-class _SqueezeExportToOnnx(CustomExportToOnnx):
+class _SqueezeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
