@@ -16,12 +16,14 @@ _ONNX_MODELS_IDS = {
     'deeplabv3_plus_resnet101': '1ZTP4FCs8ileMm7ZZMwb1X1hP2KmXcU1X',
     'hrnet': '1Bp1bSaWq9Yrad7IejeRquw6zAVWqEWsl',
     'mask_rcnn': '1Tw7I07D3ZYo-x7GaJ_nFavG0qyKNyvee',
-    'retinanet': '1VeFvfiMwIaw1VIipzMzfBm-nzUGq-Xbv',
+    'retinanet': '1UQYLqWLjYbkPn6UpUSYYyHtWZpQiSWbs',
     'ssd300_vgg': '1740qkxD5dSBuPnN5s7HfyvQy20x68lYJ',
     'ssdlite': '1E-sqOn-DVrQ-mLtBr9elHTTh8BvMIyFK',
     'unet': '1CEp3h3_4viSgcMOtjwhT4h7PPsbjqzZs',
     'yolov3_d53': '1XLjil1iBDsIVwpi9Yp7aEbuJMnlmCsyc',
     'yolov5_ultralitics': '1JCXndU8Y5wv_Yx_3ahzIzooO-m4iwiP4',
+    'swin': '1JMNez4S2L3DJcHgZdJ9f8pWRdRgRK2db',
+    'vit': '1Et1Jl8mnCZYIhgREpftW8aK-Wtp7uvGl',
 }
 
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'

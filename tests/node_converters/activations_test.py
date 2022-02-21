@@ -26,6 +26,7 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
     'activation,input_shape',
     (
             ('Relu', [8, 3, 32, 32]),
+            ('Erf', [8, 3, 32, 32]),
             ('Exp', [8, 3, 32, 32]),
             ('Sigmoid', [8, 3, 32, 32]),
             ('HardSigmoid', [8, 3, 32, 32]),
