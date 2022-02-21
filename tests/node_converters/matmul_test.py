@@ -32,4 +32,10 @@ def test_matmul() -> None:
             initializers=initializers,
             inputs_example=test_inputs,
         )
-        check_onnx_model(model, test_inputs)
+        check_onnx_model(
+            model,
+            test_inputs,
+            atol_onnx_torch=10 ** -6,
+            atol_torch_cpu_cuda=10 ** -6,
+            atol_onnx_torch2onnx=10 ** -6,
+        )
