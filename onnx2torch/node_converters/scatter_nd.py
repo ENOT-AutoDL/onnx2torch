@@ -29,7 +29,7 @@ class OnnxScatterND(nn.Module):
         return output
 
 
-class _ScatterNDExportToOnnx(CustomExportToOnnx):
+class _ScatterNDExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('ScatterND', *args, outputs=1)

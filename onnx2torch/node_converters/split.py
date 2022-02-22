@@ -53,7 +53,7 @@ class OnnxSplit(nn.Module):
 
 
 @add_converter(operation_type='Split', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     num_splits = len(node.output_values)
     return OperationConverterResult(
@@ -64,7 +64,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 
 @add_converter(operation_type='Split', version=11)
 @add_converter(operation_type='Split', version=2)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     split = node.attributes.get('split', None)
     num_splits = len(node.output_values)

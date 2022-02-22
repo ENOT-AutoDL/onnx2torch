@@ -31,7 +31,7 @@ class OnnxNot(nn.Module):
         return output
 
 
-class _NotExportToOnnx(CustomExportToOnnx):
+class _NotExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:

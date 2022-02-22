@@ -12,14 +12,14 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 class OnnxMatMul(nn.Module):
 
-    def forward(self, a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-        return torch.matmul(a, b)
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return torch.matmul(x, y)
 
 
 @add_converter(operation_type='MatMul', version=1)
 @add_converter(operation_type='MatMul', version=9)
 @add_converter(operation_type='MatMul', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=OnnxMatMul(),
         onnx_mapping=onnx_mapping_from_node(node=node),

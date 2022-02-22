@@ -44,9 +44,9 @@ class OnnxCast(nn.Module):
 @add_converter(operation_type='Cast', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     node_attributes = node.attributes
-    to = node_attributes.get('to', None)
+    onnx_dtype = node_attributes.get('to', None)
 
     return OperationConverterResult(
-        torch_module=OnnxCast(to),
+        torch_module=OnnxCast(onnx_dtype),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
