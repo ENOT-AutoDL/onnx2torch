@@ -7,7 +7,11 @@ import onnx
 import torch
 from onnx.onnx_ml_pb2 import ModelProto
 from onnx.shape_inference import infer_shapes
-from torch import fx
+
+try:
+    from torch import fx
+except:
+    from torch import _fx as fx
 from torch import nn
 
 from onnx2torch.node_converters import get_converter
