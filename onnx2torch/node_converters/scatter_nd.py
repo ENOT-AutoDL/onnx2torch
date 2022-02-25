@@ -1,6 +1,5 @@
 __all__ = ['OnnxScatterND']
 
-import numpy as np
 import torch
 import torch._C as torch_C
 from torch import nn
@@ -19,12 +18,16 @@ class OnnxScatterND(nn.Module):
         # There is no scatter nd for torch, use following formula:
         # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
         output = data.clone()
-        update_indices = indices.shape[:-1]
-        for idx in np.ndindex(update_indices):
-            output[tuple(indices[idx])] = updates[idx]
 
         if torch.onnx.is_in_onnx_export():
             return _ScatterNDExportToOnnx.set_output_and_apply(output, data, indices, updates)
+
+        ind_dim = indices.dim()
+        # last dimension is a partial-index into data
+        indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
+        # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
+        updates = updates.reshape((-1, *list(updates.shape[ind_dim - 1:])))
+        output[indices] = updates
 
         return output
 
