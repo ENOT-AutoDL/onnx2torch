@@ -42,7 +42,8 @@ def create_test_batch(
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_resnet50():
     model_path = get_model_path('resnet50')
-    model = onnx.load_model(str(model_path.resolve()))
+    # model = onnx.load_model(str(model_path.resolve()))
+    model = onnx.load(str(model_path.resolve()))
     model = version_converter.convert_version(model, 11)
 
     input_name = model.graph.input[0].name
@@ -75,7 +76,8 @@ def test_resnet50():
 )
 def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
     model_path = get_model_path(model)
-    model = onnx.load_model(str(model_path.resolve()))
+    # model = onnx.load_model(str(model_path.resolve()))
+    model = onnx.load(str(model_path.resolve()))
 
     input_name = model.graph.input[0].name
     test_inputs = {
