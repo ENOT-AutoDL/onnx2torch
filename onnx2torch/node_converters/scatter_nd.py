@@ -26,7 +26,7 @@ class OnnxScatterND(nn.Module):
         # last dimension is a partial-index into data
         indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
         # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
-        updates = updates.reshape((-1, *list(updates.shape[ind_dim - 1:])))
+        updates = updates.reshape((-1, *updates.shape[ind_dim - 1:]))
         output[indices] = updates
 
         return output
