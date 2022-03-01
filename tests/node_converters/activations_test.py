@@ -25,21 +25,15 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
 @pytest.mark.parametrize(
     'activation,input_shape',
     (
-            ('Ceil', [8, 3, 32, 32]),
             ('Erf', [8, 3, 32, 32]),
-            ('Exp', [8, 3, 32, 32]),
-            ('Floor', [8, 3, 32, 32]),
             ('HardSigmoid', [8, 3, 32, 32]),
             ('LeakyRelu', [8, 3, 32, 32]),
-            ('Log', [8, 3, 32, 32]),
             ('Relu', [8, 3, 32, 32]),
             ('Sigmoid', [8, 3, 32, 32]),
     ),
 )
 def test_common_activations(activation: str, input_shape: List[int]) -> None:
     data = np.random.randn(*input_shape).astype(np.float32)
-    if activation == 'Log':
-        data[data <= 0] = 10**-4
     _test_activation(activation, data=data, opset_version=11)
 
 

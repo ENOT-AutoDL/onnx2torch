@@ -26,6 +26,7 @@ from onnx2torch.node_converters.reduce import *
 from onnx2torch.node_converters.reshape import *
 from onnx2torch.node_converters.resize import *
 from onnx2torch.node_converters.roialign import *
+from onnx2torch.node_converters.roundings import *
 from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
 from onnx2torch.node_converters.split import *
