@@ -131,6 +131,8 @@ def calc_ort_outputs(model: ModelProto, inputs: Dict[str, Any], skip_unused_inpu
         model.SerializeToString(),
         providers=['CPUExecutionProvider'],
     )
+    # add batch dim in inputs
+    # inputs = dict((ort_session.get_inputs()[i].name, inpt) for i, inpt in enumerate(inputs))
 
     if skip_unused_inputs:
         graph_inputs = [i.name for i in model.graph.input]
