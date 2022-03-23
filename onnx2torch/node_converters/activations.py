@@ -1,4 +1,4 @@
-__all__ = ['OnnxExp', 'OnnxErf', 'OnnxHardSigmoid', 'OnnxSoftmaxV1V11']
+__all__ = ['OnnxErf', 'OnnxHardSigmoid', 'OnnxSoftmaxV1V11']
 
 import torch
 from torch import nn
@@ -8,12 +8,6 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-
-
-class OnnxExp(nn.Module):
-
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        return torch.exp(input_tensor)
 
 
 class OnnxErf(nn.Module):
@@ -50,15 +44,6 @@ class OnnxSoftmaxV1V11(nn.Module):
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=OnnxErf(),
-        onnx_mapping=onnx_mapping_from_node(node=node),
-    )
-
-
-@add_converter(operation_type='Exp', version=6)
-@add_converter(operation_type='Exp', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-    return OperationConverterResult(
-        torch_module=OnnxExp(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 

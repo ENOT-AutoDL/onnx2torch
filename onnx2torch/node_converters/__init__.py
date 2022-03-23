@@ -11,6 +11,7 @@ from onnx2torch.node_converters.constant_of_shape import *
 from onnx2torch.node_converters.conv import *
 from onnx2torch.node_converters.expand import *
 from onnx2torch.node_converters.flatten import *
+from onnx2torch.node_converters.functions import *
 from onnx2torch.node_converters.gather import *
 from onnx2torch.node_converters.gemm import *
 from onnx2torch.node_converters.global_average_pool import *
@@ -24,6 +25,8 @@ from onnx2torch.node_converters.range import *
 from onnx2torch.node_converters.reduce import *
 from onnx2torch.node_converters.reshape import *
 from onnx2torch.node_converters.resize import *
+from onnx2torch.node_converters.roialign import *
+from onnx2torch.node_converters.roundings import *
 from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
 from onnx2torch.node_converters.split import *
