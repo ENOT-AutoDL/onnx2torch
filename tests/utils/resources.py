@@ -1,7 +1,7 @@
 import tarfile
+import urllib.request
 from pathlib import Path
 
-import urllib.request
 from google_drive_downloader import GoogleDriveDownloader
 
 from tests import DATASETS_DIR
