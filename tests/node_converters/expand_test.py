@@ -24,7 +24,7 @@ def _test_expand(
         make_tensor_value_info(
             name='y',
             elem_type=NP_TYPE_TO_TENSOR_TYPE[data.dtype],
-            shape=[],
+            shape=[None] * len(shape),
         ),
     ]
 
