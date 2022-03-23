@@ -63,19 +63,20 @@ We have tested the following models:
 
 Segmentation models:
 - [x] DeepLabv3plus
-- [x] DeepLabv3 resnet50
+- [x] DeepLabv3 resnet50 (torchvision)
 - [x] HRNet
-- [x] UNet
-- [x] FCN resnet50
-- [x] lraspp mobilenetv3
+- [x] UNet (torchvision)
+- [x] FCN resnet50 (torchvision)
+- [x] lraspp mobilenetv3 (torchvision)
 
 Detection  from MMdetection:
-- [x] SSDLite with MobileNetV2 backbone
-- [x] RetinaNet R50
-- [x] SSD300 with VGG backbone
-- [x] Yolov3_d53
+- [x] [SSDLite with MobileNetV2 backbone](https://github.com/open-mmlab/mmdetection)
+- [x] [RetinaNet R50](https://github.com/open-mmlab/mmdetection)
+- [x] [SSD300 with VGG backbone](https://github.com/open-mmlab/mmdetection)
+- [x] [Yolov3_d53](https://github.com/open-mmlab/mmdetection)
+- [x] [Yolov5](https://github.com/ultralytics/yolov5)
 
-Classification from torchvision:
+Classification from __torchvision__:
 - [x] Resnet18
 - [x] Resnet50
 - [x] MobileNet v2
