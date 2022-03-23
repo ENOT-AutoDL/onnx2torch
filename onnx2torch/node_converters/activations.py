@@ -27,14 +27,15 @@ class OnnxHardSigmoid(nn.Module):
 
 
 class OnnxSoftmaxV1V11(nn.Module):
-    def __init__(self, axis: int = 1):
+    def __init__(self, axis: int = 1, is_log: bool = False):
         super().__init__()
         self.axis = axis
+        self.is_log = is_log
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         shape = input_tensor.shape
         result = torch.flatten(input_tensor, start_dim=self.axis)
-        result = torch.softmax(result, -1)
+        result = torch.log_softmax(result, -1) if self.is_log else torch.softmax(result, -1)
 
         return torch.reshape(result, shape)
 
@@ -71,6 +72,23 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     )
 
 
+@add_converter(operation_type='LogSoftmax', version=13)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    return OperationConverterResult(
+        torch_module=nn.LogSoftmax(dim=node.attributes.get('axis', -1)),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='LogSoftmax', version=1)
+@add_converter(operation_type='LogSoftmax', version=11)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    return OperationConverterResult(
+        torch_module=OnnxSoftmaxV1V11(axis=node.attributes.get('axis', 1), is_log=True),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
 @add_converter(operation_type='Relu', version=6)
 @add_converter(operation_type='Relu', version=13)
 @add_converter(operation_type='Relu', version=14)
@@ -102,9 +120,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
 @add_converter(operation_type='Softmax', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-    axis = node.attributes.get('axis', -1)
-
     return OperationConverterResult(
-        torch_module=torch.nn.Softmax(dim=axis),
+        torch_module=torch.nn.Softmax(dim=node.attributes.get('axis', -1)),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )

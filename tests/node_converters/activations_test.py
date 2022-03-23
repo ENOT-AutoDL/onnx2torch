@@ -28,6 +28,7 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
             ('Erf', [8, 3, 32, 32]),
             ('HardSigmoid', [8, 3, 32, 32]),
             ('LeakyRelu', [8, 3, 32, 32]),
+            ('LogSoftmax', [8, 3, 32, 32]),
             ('Relu', [8, 3, 32, 32]),
             ('Sigmoid', [8, 3, 32, 32]),
     ),
@@ -54,9 +55,10 @@ def test_common_activations(activation: str, input_shape: List[int]) -> None:
             ([8, 3, 32, 32], -1, 13),
     ),
 )
-def test_softmax(input_shape: List[int], axis: Optional[int], opset_version: int) -> None:
+@pytest.mark.parametrize('activation', ('Softmax', 'LogSoftmax'))
+def test_softmax(activation: str, input_shape: List[int], axis: Optional[int], opset_version: int) -> None:
     data = np.random.randn(*input_shape).astype(np.float32)
     if axis is None:
-        _test_activation('Softmax', data=data, opset_version=opset_version)
+        _test_activation(activation, data=data, opset_version=opset_version)
     else:
-        _test_activation('Softmax', data=data, opset_version=opset_version, axis=axis)
+        _test_activation(activation, data=data, opset_version=opset_version, axis=axis)

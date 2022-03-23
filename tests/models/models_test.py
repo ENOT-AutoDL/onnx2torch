@@ -63,10 +63,11 @@ def test_resnet50():
 @pytest.mark.parametrize(
     'model,resolution',
     (
-            ('retinanet', (224, 224)),
+            ('retinanet', (604, 604)),
             ('ssd300_vgg', (604, 604)),
             ('ssdlite', (224, 224)),
             ('yolov3_d53', (604, 604)),
+            ('yolov5_ultralitics', (672, 256)),
             ('deeplabv3_mnv3_large', (320, 320)),
             ('deeplabv3_plus_resnet101', (486, 500)),
             ('hrnet', (321, 321)),
@@ -85,9 +86,9 @@ def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10 ** -4,
-        atol_torch_cpu_cuda=10 ** -4,
-        atol_onnx_torch2onnx=10 ** -4,
+        atol_onnx_torch=10 ** -3,
+        atol_torch_cpu_cuda=10 ** -3,
+        atol_onnx_torch2onnx=10 ** -3,
     )
 
 

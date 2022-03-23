@@ -2,6 +2,7 @@ import tarfile
 from pathlib import Path
 
 import requests
+import urllib.request
 from google_drive_downloader import GoogleDriveDownloader
 
 from tests import DATASETS_DIR
@@ -11,19 +12,24 @@ _ONNX_MODELS_URLS = {
     'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
 }
 
+_BASE_URL = 'https://gitlab.expasoft.com/p.ivanov/onnx2torch_data/-/raw/main/models_for_tests'
+
+_CHKP_DETECTION_URL = f'{_BASE_URL}/detection'
+_CHKP_SEGMENTATION_URL = f'{_BASE_URL}/segmentation'
+_CHKP_TRANSFORMERS_URL = f'{_BASE_URL}/transformers'
+
 _ONNX_MODELS_IDS = {
-    'deeplabv3_mnv3_large': '1XIH4kBrGYNYtrW6EtSsPrfmjxGKT8u93',
-    'deeplabv3_plus_resnet101': '1ZTP4FCs8ileMm7ZZMwb1X1hP2KmXcU1X',
-    'hrnet': '1Bp1bSaWq9Yrad7IejeRquw6zAVWqEWsl',
-    'mask_rcnn': '1Tw7I07D3ZYo-x7GaJ_nFavG0qyKNyvee',
-    'retinanet': '1UQYLqWLjYbkPn6UpUSYYyHtWZpQiSWbs',
-    'ssd300_vgg': '1740qkxD5dSBuPnN5s7HfyvQy20x68lYJ',
-    'ssdlite': '1E-sqOn-DVrQ-mLtBr9elHTTh8BvMIyFK',
-    'unet': '1CEp3h3_4viSgcMOtjwhT4h7PPsbjqzZs',
-    'yolov3_d53': '1XLjil1iBDsIVwpi9Yp7aEbuJMnlmCsyc',
-    'yolov5_ultralitics': '1JCXndU8Y5wv_Yx_3ahzIzooO-m4iwiP4',
-    'swin': '1JMNez4S2L3DJcHgZdJ9f8pWRdRgRK2db',
-    'vit': '1Et1Jl8mnCZYIhgREpftW8aK-Wtp7uvGl',
+    'deeplabv3_mnv3_large': f'{_CHKP_SEGMENTATION_URL}/deeplabv3_mobilenet_v3_large.onnx',
+    'deeplabv3_plus_resnet101': f'{_CHKP_SEGMENTATION_URL}/deeplabv3_resnet101_dimans.onnx',
+    'hrnet': f'{_CHKP_SEGMENTATION_URL}/hrnet.onnx',
+    'unet': f'{_CHKP_SEGMENTATION_URL}/unet_resnet34.onnx',
+    'retinanet': f'{_CHKP_DETECTION_URL}/retinanet_r50_fpn.onnx',
+    'ssd300_vgg': f'{_CHKP_DETECTION_URL}/ssd300.onnx',
+    'ssdlite': f'{_CHKP_DETECTION_URL}/ssdlite.onnx',
+    'yolov3_d53': f'{_CHKP_DETECTION_URL}/yolov3_d53_tuned_shape.onnx',
+    'yolov5_ultralitics': f'{_CHKP_DETECTION_URL}/yolov5_ultralitics.onnx',
+    'swin': f'{_CHKP_TRANSFORMERS_URL}/swin.onnx',
+    'vit': f'{_CHKP_TRANSFORMERS_URL}/vit.onnx',
 }
 
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'
@@ -34,16 +40,10 @@ def get_model_path(name: str) -> Path:
     if not model_path.exists():
         if name in _ONNX_MODELS_URLS:
             url = _ONNX_MODELS_URLS[name]
-            with model_path.open(mode='wb') as model_file:
-                response = requests.get(url, stream=True)
-                for chunk in response.iter_content(chunk_size=4*1024):
-                    model_file.write(chunk)
+            urllib.request.urlretrieve(url=url, filename=model_path)
         elif name in _ONNX_MODELS_IDS:
-            GoogleDriveDownloader.download_file_from_google_drive(
-                file_id=_ONNX_MODELS_IDS[name],
-                dest_path=model_path,
-                overwrite=True,
-            )
+            url = _ONNX_MODELS_IDS[name]
+            urllib.request.urlretrieve(url=url, filename=model_path)
         else:
             raise RuntimeError('Cannot find model path.')
 
