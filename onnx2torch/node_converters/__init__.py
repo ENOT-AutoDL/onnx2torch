@@ -29,8 +29,8 @@ from onnx2torch.node_converters.roialign import *
 from onnx2torch.node_converters.roundings import *
 from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
-from onnx2torch.node_converters.split import *
 from onnx2torch.node_converters.slice import *
+from onnx2torch.node_converters.split import *
 from onnx2torch.node_converters.squeeze import *
 from onnx2torch.node_converters.tile import *
 from onnx2torch.node_converters.topk import *
