@@ -39,29 +39,37 @@ class InitializersContainer(nn.Module):
         raise RuntimeError('Got unexpected "forward" on constant container')
 
 
-def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mapping: bool = False):
+def convert(
+        onnx_model_or_path: Union[str, Path, ModelProto],
+        save_input_names: bool = False,
+        attach_onnx_mapping: bool = False,
+) -> fx.GraphModule:
     """Convert model from onnx to PyTorch.
 
     This function build torch.fx GraphModule from onnx ModelProto using operations from the converter registry.
-    The registered operation can be found in onnx2torch/node_converters
+    The registered operation can be found in onnx2torch/node_converters.
 
     Usage example:
 
-        from onnx2torch.converter import convert
+        from onnx2torch import convert
         torch_module = convert('path/to/onnx_model.onnx')
 
 
     Parameters
     ----------
-    onnx_model_or_path:
+    onnx_model_or_path : Union[str, Path, ModelProto]
         Onnx ModelProto or model path to convert.
-    attach_onnx_mapping:
+    save_input_names : bool
+        Whether to use original onnx inputs names as fx graph placeholders names or to use generated names (input_n).
+        False by default.
+    attach_onnx_mapping : bool
         Whether to attach info about mapping to original onnx tensors names.
 
     Returns
     -------
-    :
+    fx.GraphModule
         PyTorch GraphModule
+
     """
 
     if isinstance(onnx_model_or_path, ModelProto):
@@ -90,8 +98,16 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
     torch_nodes = {}
 
     # create input nodes
-    for name in onnx_graph.input_values:
-        torch_nodes[name] = torch_graph.placeholder(name=name)
+    for i, name in enumerate(onnx_graph.input_values, 1):
+        if save_input_names:
+            if not name.isidentifier():
+                raise ValueError(f'Input name "{name}" cannot be used as name of placeholder in fx.GraphModule.')
+
+            placeholder_name = name
+        else:
+            placeholder_name = f'input_{i}'
+
+        torch_nodes[name] = torch_graph.placeholder(name=placeholder_name)
 
     # create intermediate nodes
     # IMPORTANT: nodes already topologically sorted
@@ -131,10 +147,16 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
                 args.append(torch_input_node)
 
             elif value_type == ValueType.GRAPH_INITIALIZER:
+                # The name of putorch buffer must not contain '.'(dot)
+                len_torch_initializers = sum(1 for _ in torch_initializers.buffers())
+                torch_buffer_name = f'onnx_initializer_{len_torch_initializers}'
                 if value_name not in torch_nodes:
-                    torch_initializers.add_initializer(value_name, onnx_graph.initializers[value_name].to_torch())
-                    torch_nodes[value_name] = torch_graph.get_attr(f'initializers.{value_name}')
-                args.append(torch_nodes[value_name])
+                    torch_initializers.add_initializer(
+                        torch_buffer_name,
+                        onnx_graph.initializers[value_name].to_torch(),
+                    )
+                    torch_nodes[torch_buffer_name] = torch_graph.get_attr(f'initializers.{torch_buffer_name}')
+                args.append(torch_nodes[torch_buffer_name])
             
             elif value_type == ValueType.EMPTY:
                 args.append(None)
@@ -147,12 +169,11 @@ def convert(onnx_model_or_path: Union[str, Path, ModelProto], attach_onnx_mappin
         if None in args:
             first_skipped_arg = args.index(None)
             forward_args = tuple(inspect.signature(torch_module.forward).parameters.keys())
-            forward_args = forward_args[first_skipped_arg:]
-
-            for arg_name in forward_args:
-                arg_value = args.pop(first_skipped_arg)
-                if arg_value is not None:
-                    kwargs[arg_name] = arg_value
+            forward_args = forward_args[first_skipped_arg:len(args)]
+            args, kwargs_values = args[:first_skipped_arg], args[first_skipped_arg:]
+            kwargs.update(
+                {name: value for name, value in zip(forward_args, kwargs_values) if value is not None}
+            )
 
         torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
 

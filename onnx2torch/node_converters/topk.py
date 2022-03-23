@@ -6,14 +6,15 @@ from typing import Union
 import torch
 from torch import nn
 
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxTopK(nn.Module):
+class OnnxTopK(nn.Module, OnnxToTorchModule):
 
     def __init__(self, dim: int = -1, largest: int = 1, sorted_: int = 1):
         super().__init__()

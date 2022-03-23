@@ -3,11 +3,12 @@ __all__ = []
 import torch
 from torch import nn
 
-from onnx2torch.common import OnnxMapping
-from onnx2torch.common import OperationConverterResult
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_padding_to_torch_padding
 
 _CONV_CLASS_FROM_SPATIAL_RANK = {
     1: nn.Conv1d,
@@ -37,24 +38,16 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     node_attributes = node.attributes
     kernel_size = node_attributes.get('kernel_shape', weights.shape[2:])
     stride = node_attributes.get('strides', 1)
-    padding = node_attributes.get('pads', [0]*4)
     dilation = node_attributes.get('dilations', 1)
     groups = node_attributes.get('group', 1)
 
+    padding = onnx_padding_to_torch_padding(
+        node_attributes.get('pads', [0] * spatial_rank * 2),
+        node_attributes.get('auto_pad', 'NOTSET'),
+    )
+
     out_channels = weights.shape[0]
     in_channels = weights.shape[1]*groups
-
-    auto_pad = node_attributes.get('auto_pad', 'NOTSET')
-    if auto_pad == 'NOTSET':
-        half_len = len(padding) // 2
-        if tuple(padding[:half_len]) != tuple(padding[half_len:]):
-            raise NotImplementedError(f'Only symmetric padding is implemented ({padding})')
-
-        padding = padding[:half_len]
-    elif auto_pad in ('SAME_UPPER', 'SAME_LOWER', 'VALID'):
-        raise NotImplementedError(f'"{auto_pad}" auto_pad is not implemented')
-    else:
-        raise ValueError(f'Got unexpected auto_pad value "{auto_pad}"')
 
     torch_module = conv_class(
         in_channels=in_channels,

@@ -5,11 +5,12 @@ from typing import Any
 import torch
 from torch import nn
 
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 _CONSTANT_PARSING_MAPPING = {
     'value': lambda x: x.to_torch(),
@@ -22,7 +23,7 @@ _CONSTANT_PARSING_MAPPING = {
 }
 
 
-class OnnxConstant(nn.Module):
+class OnnxConstant(nn.Module, OnnxToTorchModule):
 
     def __init__(self, value: Any):
         super().__init__()

@@ -5,15 +5,16 @@ from typing import Optional
 import torch
 from torch import nn
 
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import old_style_broadcast
-from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import old_style_broadcast
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxPow(nn.Module):
+class OnnxPow(nn.Module, OnnxToTorchModule):
     def __init__(self, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
         self.axis = axis
@@ -26,7 +27,7 @@ class OnnxPow(nn.Module):
         return torch.pow(input_tensor, exponent)
 
 
-class OnnxSqrt(nn.Module):
+class OnnxSqrt(nn.Module, OnnxToTorchModule):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.sqrt(input_tensor)

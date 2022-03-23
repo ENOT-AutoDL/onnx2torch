@@ -5,6 +5,7 @@ __all__ = [
 ]
 
 from functools import partial
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -14,15 +15,24 @@ import torch
 import torch._C as torch_C
 from torch import nn
 
-from onnx2torch.common import OnnxMapping
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import SkipTorchTracing
-from onnx2torch.common import get_const_value
-from onnx2torch.common import onnx_mapping_from_node
-from onnx2torch.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import get_const_value
+from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+
+
+@torch.fx.wrap
+def _get_element(x: Union[List, Tuple], index: int = 0) -> Any:
+    if isinstance(x, (tuple, list)):
+        return x[index]
+
+    return x
 
 
 def _initialize_none_dim(dim: Optional[Union[int, Tuple[int, ...]]], input_dim: int):
@@ -73,7 +83,7 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxReduceSumDynamicAxes(nn.Module):
+class OnnxReduceSumDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, keepdims: int = 1, noop_with_empty_axes: int = 0):
         super().__init__()
@@ -96,24 +106,23 @@ class OnnxReduceSumDynamicAxes(nn.Module):
         return torch.sum(input_tensor, dim=axes, keepdim=self.keepdims)
 
     def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
+        output = self._do_forward(input_tensor, axes)
         if torch.onnx.is_in_onnx_export():
-            with SkipTorchTracing():
-                args = [input_tensor, axes]
-                output = self._do_forward(*args)
-                if axes is None:
-                    args.pop()
+            args = [input_tensor]
+            if axes is not None:
+                args.append(axes)
 
-                return _ReduceSumExportToOnnx.set_output_and_apply(
-                    output,
-                    *args,
-                    int(self.keepdims),
-                    int(self.noop_with_empty_axes),
-                )
+            return _ReduceSumExportToOnnx.set_output_and_apply(
+                output,
+                *args,
+                int(self.keepdims),
+                int(self.noop_with_empty_axes),
+            )
 
-        return self._do_forward(input_tensor, axes)
+        return output
 
 
-class _ReduceSumExportToOnnx(CustomExportToOnnx):
+class _ReduceSumExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
@@ -127,7 +136,7 @@ class _ReduceSumExportToOnnx(CustomExportToOnnx):
         )
 
 
-class OnnxReduceSumStaticAxes(nn.Module):
+class OnnxReduceSumStaticAxes(nn.Module, OnnxToTorchModule):
 
     def __init__(
             self,
@@ -152,11 +161,11 @@ class OnnxReduceSumStaticAxes(nn.Module):
                 return self.math_op_function(input_tensor)
 
             self.axes = list(range(input_tensor.dim()))
-            
+
         return torch.sum(input_tensor, dim=self.axes, keepdim=self.keepdims)
 
 
-class OnnxReduceStaticAxes(nn.Module):
+class OnnxReduceStaticAxes(nn.Module, OnnxToTorchModule):
 
     def __init__(
             self,
@@ -191,8 +200,7 @@ class OnnxReduceStaticAxes(nn.Module):
                 dim=axis if self.keepdims else axis - passed_dims,
                 keepdim=self.keepdims,
             )
-            if isinstance(result, tuple):
-                result = result[0]
+            result = _get_element(result, 0)
 
         return result
 
@@ -269,4 +277,3 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
         torch_module=OnnxReduceSumDynamicAxes(keepdims=keepdims, noop_with_empty_axes=noop_with_empty_axes),
         onnx_mapping=onnx_mapping_from_node(node),
     )
-

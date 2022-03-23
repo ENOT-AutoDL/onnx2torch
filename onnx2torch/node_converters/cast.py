@@ -4,11 +4,12 @@ import torch
 from onnx import TensorProto
 from torch import nn
 
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 # pylint: disable=no-member
 TENSOR_TYPE_TO_TORCH_TYPE = {
@@ -27,7 +28,7 @@ TENSOR_TYPE_TO_TORCH_TYPE = {
 # pylint: enable=no-member
 
 
-class OnnxCast(nn.Module):
+class OnnxCast(nn.Module, OnnxToTorchModule):
 
     def __init__(self, onnx_dtype: int):
         super().__init__()
@@ -44,9 +45,9 @@ class OnnxCast(nn.Module):
 @add_converter(operation_type='Cast', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     node_attributes = node.attributes
-    to = node_attributes.get('to', None)
+    onnx_dtype = node_attributes.get('to', None)
 
     return OperationConverterResult(
-        torch_module=OnnxCast(to),
+        torch_module=OnnxCast(onnx_dtype),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )

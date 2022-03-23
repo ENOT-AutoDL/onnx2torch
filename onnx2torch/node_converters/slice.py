@@ -7,13 +7,17 @@ from typing import Union
 
 import numpy as np
 import torch
+import torch._C as torch_C
 from torch import nn
 
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 def _get_slices(
@@ -63,7 +67,7 @@ def _do_slice(x: torch.Tensor, flip_dims: List, pos_axes_slices: List, neg_axes_
     return x
 
 
-class OnnxSliceV9(nn.Module):
+class OnnxSliceV9(nn.Module, OnnxToTorchModule):
 
     def __init__(self, starts: np.ndarray, ends: np.ndarray, axes: Optional[np.ndarray] = None):
         super().__init__()
@@ -73,7 +77,7 @@ class OnnxSliceV9(nn.Module):
         return _do_slice(input_tensor, self.flip_dims, self.pos_axes_slices, self.neg_axes_slices)
 
 
-class OnnxSlice(nn.Module):
+class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(
             self,
@@ -84,7 +88,24 @@ class OnnxSlice(nn.Module):
             steps: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         flip_dims, pos_axes_slices, neg_axes_slices = _get_slices(starts, ends, axes, steps)
-        return _do_slice(input_tensor, flip_dims, pos_axes_slices, neg_axes_slices)
+        output = _do_slice(input_tensor, flip_dims, pos_axes_slices, neg_axes_slices)
+        if torch.onnx.is_in_onnx_export():
+            args = [input_tensor, starts, ends]
+            if axes is not None:
+                args.append(axes)
+            if steps is not None:
+                args.append(steps)
+
+            return _SliceExportToOnnx.set_output_and_apply(output, *args)
+
+        return output
+
+
+class _SliceExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('Slice', *args, outputs=1)
 
 
 @add_converter(operation_type='Slice', version=9)

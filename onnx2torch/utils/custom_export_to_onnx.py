@@ -1,9 +1,21 @@
-__all__ = ['CustomExportToOnnx']
+__all__ = [
+    'CustomExportToOnnx',
+    'OnnxToTorchModuleWithCustomExport',
+]
 
 from typing import Any
 
 import torch
 from torch import _C as torch_C
+
+from onnx2torch.utils.common import OnnxToTorchModule
+
+
+class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
+    """
+    Marker class for onnx2torch modules with custom export to onnx.
+    """
+    pass
 
 
 class CustomExportToOnnx(torch.autograd.Function):

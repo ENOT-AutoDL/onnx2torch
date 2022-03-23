@@ -6,7 +6,7 @@ import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -51,7 +51,7 @@ def _test_resize(
         outputs_info=outputs_info,
         opset_version=13,
     )
-    check_model(
+    check_onnx_model(
         model,
         test_inputs,
         atol_onnx_torch=10 ** -6,
@@ -84,7 +84,7 @@ def _test_resize_v10(
         outputs_info=outputs_info,
         opset_version=10,
     )
-    check_model(
+    check_onnx_model(
         model,
         test_inputs,
         atol_onnx_torch=10 ** -7,

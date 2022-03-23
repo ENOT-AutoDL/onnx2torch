@@ -1,4 +1,4 @@
-__all__ = ['OnnxWhere']
+__all__ = ['OnnxMatMul']
 
 import torch
 from torch import nn
@@ -11,16 +11,17 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxWhere(nn.Module, OnnxToTorchModule):
+class OnnxMatMul(nn.Module, OnnxToTorchModule):
 
-    def forward(self, condition: torch.Tensor, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        return torch.where(condition, x, y)
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return torch.matmul(x, y)
 
 
-@add_converter(operation_type='Where', version=9)
-@add_converter(operation_type='Where', version=16)
+@add_converter(operation_type='MatMul', version=1)
+@add_converter(operation_type='MatMul', version=9)
+@add_converter(operation_type='MatMul', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
-        torch_module=OnnxWhere(),
+        torch_module=OnnxMatMul(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )

@@ -3,11 +3,12 @@ __all__ = ['OnnxCompare']
 import torch
 from torch import nn
 
-from onnx2torch.common import OperationConverterResult
-from onnx2torch.common import onnx_mapping_from_node
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 _TORCH_FUNCTION_FROM_ONNX_TYPE = {
     'Equal': torch.eq,
@@ -18,14 +19,14 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxCompare(nn.Module):
+class OnnxCompare(nn.Module, OnnxToTorchModule):
 
     def __init__(self, operation_type: str):
         super().__init__()
         self.compare_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    def forward(self, a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-        return self.compare_function(a, b)
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return self.compare_function(x, y)
 
 
 @add_converter(operation_type='Equal', version=7)

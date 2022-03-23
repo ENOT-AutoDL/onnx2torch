@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 import onnx
 
-from tests.utils.common import check_model
+from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
@@ -22,7 +22,7 @@ def _test_flatten(
         **kwargs,
     )
     model = make_model_from_nodes(nodes=node, initializers={}, inputs_example=test_inputs)
-    check_model(model, test_inputs)
+    check_onnx_model(model, test_inputs)
 
 
 def test_flatten() -> None:

@@ -4,14 +4,15 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from onnx2torch.common import OnnxMapping
-from onnx2torch.common import OperationConverterResult
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
 
 
-class OnnxGeneralLinear(nn.Linear):
+class OnnxGeneralLinear(nn.Linear, OnnxToTorchModule):
     """General Linear layer with functionality of ONNX GEMM node.
 
     For additional info https://github.com/onnx/onnx/blob/master/docs/Operators.md#Gemm
