@@ -9,11 +9,12 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxSplit13(nn.Module):
+class OnnxSplit13(nn.Module, OnnxToTorchModule):
     def __init__(self, num_splits: int, axis: int = 0):
         super().__init__()
 
@@ -34,7 +35,7 @@ class OnnxSplit13(nn.Module):
         return torch.split(input_tensor, split_size_or_sections, dim=self.axis)
 
 
-class OnnxSplit(nn.Module):
+class OnnxSplit(nn.Module, OnnxToTorchModule):
     def __init__(self, num_splits: int, axis: int = 0, split: Optional[List[int]] = None):
         super().__init__()
 

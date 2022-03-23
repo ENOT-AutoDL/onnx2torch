@@ -9,10 +9,12 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import old_style_broadcast
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 _TORCH_FUNCTION_FROM_ONNX_TYPE = {
     'Or': torch.logical_or,
@@ -21,7 +23,7 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxNot(nn.Module):
+class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         output = torch.logical_not(input_tensor)
@@ -38,7 +40,7 @@ class _NotExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
         return graph.op('Not', *args, outputs=1)
 
 
-class OnnxLogical(nn.Module):
+class OnnxLogical(nn.Module, OnnxToTorchModule):
     def __init__(self, operation_type: str, broadcast: Optional[int] = None,  axis: Optional[int] = None):
         super().__init__()
         self.broadcast = broadcast

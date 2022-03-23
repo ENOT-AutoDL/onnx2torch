@@ -10,10 +10,11 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 
 
-class OnnxTranspose(nn.Module):
+class OnnxTranspose(nn.Module, OnnxToTorchModule):
 
     def __init__(self, perm: Optional[List[int]] = None):
         super().__init__()
@@ -22,6 +23,7 @@ class OnnxTranspose(nn.Module):
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         if self.perm is None:
             self.perm = list(range(input_tensor.dim()))[::-1]
+
         return input_tensor.permute(self.perm)
 
 

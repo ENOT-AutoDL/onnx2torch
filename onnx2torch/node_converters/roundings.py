@@ -6,9 +6,9 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-
 
 _TORCH_ROUND_FROM_ONNX_TYPE = {
     'Ceil': torch.ceil,
@@ -17,7 +17,7 @@ _TORCH_ROUND_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxRound(nn.Module):
+class OnnxRound(nn.Module, OnnxToTorchModule):
 
     def __init__(self, round_type: str):
         super().__init__()

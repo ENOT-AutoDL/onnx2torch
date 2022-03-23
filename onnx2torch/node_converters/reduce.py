@@ -19,16 +19,19 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_const_value
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 @torch.fx.wrap
 def _get_element(x: Union[List, Tuple], index: int = 0) -> Any:
     if isinstance(x, (tuple, list)):
         return x[index]
+
     return x
 
 
@@ -80,7 +83,7 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxReduceSumDynamicAxes(nn.Module):
+class OnnxReduceSumDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, keepdims: int = 1, noop_with_empty_axes: int = 0):
         super().__init__()
@@ -133,7 +136,7 @@ class _ReduceSumExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-me
         )
 
 
-class OnnxReduceSumStaticAxes(nn.Module):
+class OnnxReduceSumStaticAxes(nn.Module, OnnxToTorchModule):
 
     def __init__(
             self,
@@ -162,7 +165,7 @@ class OnnxReduceSumStaticAxes(nn.Module):
         return torch.sum(input_tensor, dim=self.axes, keepdim=self.keepdims)
 
 
-class OnnxReduceStaticAxes(nn.Module):
+class OnnxReduceStaticAxes(nn.Module, OnnxToTorchModule):
 
     def __init__(
             self,

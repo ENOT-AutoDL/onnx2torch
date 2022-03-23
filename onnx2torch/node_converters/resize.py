@@ -9,6 +9,7 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
@@ -38,7 +39,7 @@ def _onnx_mode_to_torch_mode(onnx_mode: str, dim_size: int) -> str:
     return torch_mode
 
 
-class OnnxResize(nn.Module):
+class OnnxResize(nn.Module, OnnxToTorchModule):
 
     def __init__(
             self,
@@ -90,7 +91,7 @@ class OnnxResize(nn.Module):
         )
 
 
-class OnnxResizeV10(nn.Module):
+class OnnxResizeV10(nn.Module, OnnxToTorchModule):
 
     def __init__(self, mode: str = 'nearest'):
         super().__init__()
