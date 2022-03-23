@@ -15,12 +15,17 @@ class OnnxRoiAlign(nn.Module):
 
     def __init__(
             self,
+            mode: str = 'avg',
             output_height: int = 1,
             output_width: int = 1,
             sampling_ratio: int = 0,
             spatial_scale: float = 1.0,
     ):
         super().__init__()
+
+        if mode != 'avg':
+            raise NotImplementedError(f'"{mode}" roi align mode is not implemented.')
+
         self._output_size = (output_height, output_width)
         self._sampling_ratio = sampling_ratio
         self._spatial_scale = spatial_scale
@@ -51,9 +56,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     output_width = node_attributes.get('output_width', 1)
     sampling_ratio = node_attributes.get('sampling_ratio', 0)
     spatial_scale = node_attributes.get('spatial_scale', 1.0)
-    
-    if mode != 'avg':
-        raise NotImplementedError(f'{mode} roi align mode is not implemented.')
 
     return OperationConverterResult(
         torch_module=OnnxRoiAlign(
