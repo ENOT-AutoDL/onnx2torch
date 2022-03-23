@@ -1,4 +1,6 @@
-__all__ = ['CustomExportToOnnx']
+__all__ = [
+    'CustomExportToOnnx',
+]
 
 from typing import Any
 
