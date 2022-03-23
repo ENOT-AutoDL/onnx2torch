@@ -11,6 +11,13 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 
 
+class OnnxToTorchModule:
+    """
+    Marker class for onnx2torch modules.
+    """
+    pass
+
+
 class OnnxMapping(NamedTuple):
     inputs: Tuple[str, ...]
     outputs: Tuple[str, ...]

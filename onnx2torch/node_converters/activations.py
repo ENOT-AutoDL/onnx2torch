@@ -6,17 +6,18 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxErf(nn.Module):
+class OnnxErf(nn.Module, OnnxToTorchModule):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.erf(input_tensor)
 
 
-class OnnxHardSigmoid(nn.Module):
+class OnnxHardSigmoid(nn.Module, OnnxToTorchModule):
     def __init__(self, alpha: float = 0.2, beta: float = 0.5):
         super().__init__()
         self.alpha = alpha
@@ -26,7 +27,7 @@ class OnnxHardSigmoid(nn.Module):
         return torch.clip(self.alpha * input_tensor + self.beta, min=0.0, max=1.0)
 
 
-class OnnxSoftmaxV1V11(nn.Module):
+class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):
     def __init__(self, axis: int = 1, is_log: bool = False):
         super().__init__()
         self.axis = axis

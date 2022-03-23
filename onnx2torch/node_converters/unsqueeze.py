@@ -14,13 +14,15 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_const_value
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxUnsqueezeStaticAxes(nn.Module):
+class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):
 
     def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
@@ -34,7 +36,7 @@ class OnnxUnsqueezeStaticAxes(nn.Module):
         return result
 
 
-class OnnxUnsqueezeDynamicAxes(nn.Module):
+class OnnxUnsqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     @staticmethod
     def _do_forward(input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:

@@ -12,9 +12,10 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxShape(nn.Module):
+class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, start: Optional[int] = None, end: Optional[int] = None):
         super().__init__()

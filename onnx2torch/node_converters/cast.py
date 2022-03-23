@@ -7,6 +7,7 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
@@ -27,7 +28,7 @@ TENSOR_TYPE_TO_TORCH_TYPE = {
 # pylint: enable=no-member
 
 
-class OnnxCast(nn.Module):
+class OnnxCast(nn.Module, OnnxToTorchModule):
 
     def __init__(self, onnx_dtype: int):
         super().__init__()

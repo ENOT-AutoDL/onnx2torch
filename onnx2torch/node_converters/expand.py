@@ -10,9 +10,10 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxExpand(nn.Module):
+class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
         output = input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
