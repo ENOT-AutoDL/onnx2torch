@@ -77,8 +77,8 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
             kwargs = {
                 'output_height' : self._output_height, 
                 'output_width' : self._output_width, 
-                'sampling_ratio' : self._spatial_scale, 
-                'spatial_scale' : self._sampling_ratio
+                'sampling_ratio' : self._sampling_ratio, 
+                'spatial_scale' : self._spatial_scale
             }
             return _RoiAlignExportToOnnx.set_output_and_apply(output, *args, **kwargs)
 
