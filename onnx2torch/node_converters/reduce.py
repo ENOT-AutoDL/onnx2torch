@@ -259,6 +259,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     if len(node.input_values) == 2:
         try:
             axes = get_const_value(node.input_values[1], graph)
+            axes = axes.tolist()
             return OperationConverterResult(
                 torch_module=OnnxReduceSumStaticAxes(
                     axes=axes,
