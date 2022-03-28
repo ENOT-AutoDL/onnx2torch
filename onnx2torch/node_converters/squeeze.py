@@ -35,7 +35,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModule):
 
     def _default_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.squeeze(input_tensor)
-    
+
     def _specific_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
 
         result = input_tensor

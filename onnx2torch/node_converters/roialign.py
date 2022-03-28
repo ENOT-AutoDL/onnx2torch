@@ -12,7 +12,8 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx, OnnxToTorchModuleWithCustomExport
+from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
 
@@ -25,11 +26,11 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
             spatial_scale: float = 1.0,
     ):
         super().__init__()
-
         if mode != 'avg':
             raise NotImplementedError(f'"{mode}" roi align mode is not implemented.')
 
-        self._output_size = (output_height, output_width)
+        self._output_height = output_height
+        self._output_width = output_width
         self._sampling_ratio = sampling_ratio
         self._spatial_scale = spatial_scale
 
@@ -44,7 +45,6 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
     ) -> torch.Tensor:
 
         batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
-
         batched_rois = torch.concat([batch_indices, rois], dim=1)
 
         return roi_align(
@@ -65,16 +65,22 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
     ) -> torch.Tensor:
 
         output = self._do_forward(
-            input_tensor,
-            rois,
-            batch_indices,
-            self._output_size,
-            self._spatial_scale,
-            self._sampling_ratio,
+            input_tensor=input_tensor,
+            rois=rois,
+            batch_indices=batch_indices,
+            output_size=(self._output_height, self._output_width),
+            spatial_scale=self._spatial_scale,
+            sampling_ratio=self._sampling_ratio,
         )
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor, rois, batch_indices]
-            return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
+            kwargs = {
+                'output_height' : self._output_height, 
+                'output_width' : self._output_width, 
+                'sampling_ratio' : self._spatial_scale, 
+                'spatial_scale' : self._sampling_ratio
+            }
+            return _RoiAlignExportToOnnx.set_output_and_apply(output, *args, **kwargs)
 
         return output
 
