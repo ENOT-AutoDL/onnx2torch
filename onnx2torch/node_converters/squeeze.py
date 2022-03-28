@@ -31,12 +31,12 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModule):
 
         self.axes = axes
         # We specify a forward in order to avoid 'if'-statements in the computational graph
-        self.forward = self._default_forward if not axes else self._specific_forward
+        self.forward = self._torch_squeeze_forward if not axes else self._onnx_squeeze_forward
 
-    def _default_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def _torch_squeeze_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.squeeze(input_tensor)
 
-    def _specific_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def _onnx_squeeze_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
 
         result = input_tensor
         for axes_id in self.axes:
