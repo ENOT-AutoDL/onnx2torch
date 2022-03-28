@@ -1,18 +1,20 @@
 __all__ = ['OnnxRoiAlign']
 
+from typing import Tuple
+
 import torch
+import torch._C as torch_C
 from torch import nn
 from torchvision.ops import roi_align
 
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx, OnnxToTorchModuleWithCustomExport
 
-
-class OnnxRoiAlign(nn.Module, OnnxToTorchModule):
+class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(
             self,
@@ -31,22 +33,56 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModule):
         self._sampling_ratio = sampling_ratio
         self._spatial_scale = spatial_scale
 
+    @staticmethod
+    def _do_forward(
+            input_tensor: torch.Tensor,
+            rois: torch.Tensor,
+            batch_indices: torch.Tensor,
+            output_size: Tuple[int, int],
+            spatial_scale: float,
+            sampling_ratio: int,
+    ) -> torch.Tensor:
+
+        batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
+
+        batched_rois = torch.concat([batch_indices, rois], dim=1)
+
+        return roi_align(
+            input=input_tensor,
+            boxes=batched_rois,
+            output_size=output_size,
+            spatial_scale=spatial_scale,
+            sampling_ratio=sampling_ratio,
+            aligned=False,
+        )
+
     def forward(
             self,
             input_tensor: torch.Tensor,
             rois: torch.Tensor,
             batch_indices: torch.Tensor,
-    ) -> torch.Tensor:
-        batched_rois = torch.concat([batch_indices.unsqueeze(1).to(rois.dtype), rois], dim=1)
 
-        return roi_align(
-            input=input_tensor,
-            boxes=batched_rois,
-            output_size=self._output_size,
-            spatial_scale=self._spatial_scale,
-            sampling_ratio=self._sampling_ratio,
-            aligned=False,
+    ) -> torch.Tensor:
+
+        output = self._do_forward(
+            input_tensor,
+            rois,
+            batch_indices,
+            self._output_size,
+            self._spatial_scale,
+            self._sampling_ratio,
         )
+        if torch.onnx.is_in_onnx_export():
+            args = [input_tensor, rois, batch_indices]
+            return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
+
+        return output
+
+class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('RoiAlign', *args, outputs=1)
 
 
 @add_converter(operation_type='RoiAlign', version=10)
