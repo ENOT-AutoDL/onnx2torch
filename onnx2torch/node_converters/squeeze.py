@@ -30,20 +30,16 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModule):
             axes = sorted(axes, reverse=True)
 
         self.axes = axes
-        # We specify a forward in order to avoid 'if'-statements in the computational graph
-        self.forward = self._torch_squeeze_forward if not axes else self._onnx_squeeze_forward
-
-    def _torch_squeeze_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        return torch.squeeze(input_tensor)
-
-    def _onnx_squeeze_forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-
+    
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        if not self.axes:
+            return torch.squeeze(input_tensor)
+        
         result = input_tensor
         for axes_id in self.axes:
             result = torch.squeeze(result, dim=axes_id)
 
         return result
-
 
 class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
@@ -92,6 +88,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     if len(node.input_values) == 2:
         try:
             axes = get_const_value(node.input_values[1], graph)
+            axes = axes.tolist()
             return OperationConverterResult(
                 torch_module=OnnxSqueezeStaticAxes(axes=axes),
                 onnx_mapping=OnnxMapping(

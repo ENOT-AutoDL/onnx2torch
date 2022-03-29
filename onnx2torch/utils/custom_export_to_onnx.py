@@ -22,7 +22,9 @@ class CustomExportToOnnx(torch.autograd.Function):
     _NEXT_OUTPUT = None
 
     @classmethod
-    def set_output_and_apply(cls, output: Any, *args) -> Any:
+    def set_output_and_apply(cls, output: Any, *args, **kwargs) -> Any:
+        if kwargs:
+            raise ValueError(f'kwargs don\'t support')
         CustomExportToOnnx._NEXT_OUTPUT = output
         return cls.apply(*args)
 

@@ -40,8 +40,8 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
             rois: torch.Tensor,
             batch_indices: torch.Tensor,
             output_size: Tuple[int, int],
-            spatial_scale: float,
             sampling_ratio: int,
+            spatial_scale: float,
     ) -> torch.Tensor:
 
         batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
@@ -69,18 +69,20 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
             rois=rois,
             batch_indices=batch_indices,
             output_size=(self._output_height, self._output_width),
-            spatial_scale=self._spatial_scale,
             sampling_ratio=self._sampling_ratio,
+            spatial_scale=self._spatial_scale,
         )
         if torch.onnx.is_in_onnx_export():
-            args = [input_tensor, rois, batch_indices]
-            kwargs = {
-                'output_height' : self._output_height, 
-                'output_width' : self._output_width, 
-                'sampling_ratio' : self._sampling_ratio, 
-                'spatial_scale' : self._spatial_scale
-            }
-            return _RoiAlignExportToOnnx.set_output_and_apply(output, *args, **kwargs)
+            args = [
+                input_tensor, 
+                rois, 
+                batch_indices, 
+                self._output_height, 
+                self._output_width, 
+                self._sampling_ratio, 
+                self._spatial_scale
+            ]
+            return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
 
         return output
 
@@ -88,7 +90,17 @@ class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-met
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('RoiAlign', *args, outputs=1)
+        input_args = args[:3]
+        output_height, output_width, sampling_ratio, spatial_scale = args[3:]
+        return graph.op(
+            'RoiAlign', 
+            *input_args, 
+            output_height_i=output_height, 
+            output_width_i=output_width, 
+            sampling_ratio_i=sampling_ratio,
+            spatial_scale_f=spatial_scale,
+            outputs=1,
+        )
 
 
 @add_converter(operation_type='RoiAlign', version=10)
