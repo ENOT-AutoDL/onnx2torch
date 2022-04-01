@@ -14,7 +14,6 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxMapping
-from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_const_value
 from onnx2torch.utils.common import onnx_mapping_from_node
@@ -22,7 +21,7 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModule):
+class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
@@ -30,16 +29,26 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModule):
             axes = sorted(axes, reverse=True)
 
         self.axes = axes
-    
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        if not self.axes:
+
+    @staticmethod
+    def _do_forward(input_tensor: torch.Tensor, axes: Optional[List[int]]) -> torch.Tensor:
+        if not axes:
             return torch.squeeze(input_tensor)
-        
+
         result = input_tensor
-        for axes_id in self.axes:
+        for axes_id in axes:
             result = torch.squeeze(result, dim=axes_id)
 
         return result
+
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        output = self._do_forward(input_tensor, self.axes)
+        if torch.onnx.is_in_onnx_export():
+            args = [input_tensor, self.axes]
+
+            return _SqueezeStaticAxesExportToOnnx.set_output_and_apply(output, *args)
+
+        return output
 
 class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
@@ -61,12 +70,19 @@ class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
             if axes is not None:
                 args.append(axes)
 
-            return _SqueezeExportToOnnx.set_output_and_apply(output, *args)
+            return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
 
         return output
 
 
-class _SqueezeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+class _SqueezeStaticAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        input_tensor, axes = args
+        return graph.op('Squeeze', input_tensor, axes_i=axes, outputs=1)
+
+class _SqueezeDynamicAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:

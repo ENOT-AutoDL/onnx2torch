@@ -74,12 +74,12 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
         )
         if torch.onnx.is_in_onnx_export():
             args = [
-                input_tensor, 
-                rois, 
-                batch_indices, 
-                self._output_height, 
-                self._output_width, 
-                self._sampling_ratio, 
+                input_tensor,
+                rois,
+                batch_indices,
+                self._output_height,
+                self._output_width,
+                self._sampling_ratio,
                 self._spatial_scale
             ]
             return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
@@ -93,10 +93,10 @@ class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-met
         input_args = args[:3]
         output_height, output_width, sampling_ratio, spatial_scale = args[3:]
         return graph.op(
-            'RoiAlign', 
-            *input_args, 
-            output_height_i=output_height, 
-            output_width_i=output_width, 
+            'RoiAlign',
+            *input_args,
+            output_height_i=output_height,
+            output_width_i=output_width,
             sampling_ratio_i=sampling_ratio,
             spatial_scale_f=spatial_scale,
             outputs=1,
