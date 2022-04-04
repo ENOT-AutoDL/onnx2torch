@@ -9,6 +9,7 @@ from typing import Optional
 import torch
 import torch._C as torch_C
 from torch import nn
+from torch.onnx.symbolic_helper import _export_onnx_opset_version as opset_version
 
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
@@ -19,7 +20,6 @@ from onnx2torch.utils.common import get_const_value
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
-from torch.onnx.symbolic_helper import _export_onnx_opset_version as opset_version
 
 class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
@@ -43,7 +43,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         output = self._do_forward(input_tensor, self.axes)
-        if torch.onnx.is_in_onnx_export() and opset_version == 13:
+        if torch.onnx.is_in_onnx_export() and opset_version >= 13:
             args = [input_tensor, self.axes]
 
             return _SqueezeStaticAxesExportToOnnx.set_output_and_apply(output, *args)
