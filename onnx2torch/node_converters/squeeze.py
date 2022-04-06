@@ -51,7 +51,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
                     dtype=torch.int64
                 )
                 args.append(axes)
-            return _SqueezeStaticAxesExportToOnnx.set_output_and_apply(output, *args)
+            return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
 
         return output
 
@@ -83,15 +83,6 @@ class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
             return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
 
         return output
-
-
-class _SqueezeStaticAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        input_tensor, axes = args
-
-        return graph.op('Squeeze', input_tensor, axes, outputs=1)
 
 
 class _SqueezeDynamicAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
