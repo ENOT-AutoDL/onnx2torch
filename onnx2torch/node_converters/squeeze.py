@@ -25,14 +25,18 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
-        if axes is not None:
+        if not self.is_empty_axes():
             axes = sorted(axes, reverse=True)
 
         self.axes = axes
 
     @staticmethod
+    def is_empty_axes(axes) -> bool:
+        return axes is None
+    
+    @staticmethod
     def _do_forward(input_tensor: torch.Tensor, axes: Optional[List[int]]) -> torch.Tensor:
-        if not axes:
+        if OnnxSqueezeStaticAxes.is_empty_axes(axes):
             return torch.squeeze(input_tensor)
 
         result = input_tensor
@@ -53,8 +57,12 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     @staticmethod
+    def is_empty_axes(axes) -> bool:
+        return axes is None or axes.nelement() == 0
+
+    @staticmethod
     def _do_forward(input_tensor: torch.Tensor, axes: Optional[torch.Tensor]) -> torch.Tensor:
-        if axes is None or axes.nelement() == 0:
+        if OnnxSqueezeDynamicAxes.is_empty_axes(axes):
             return torch.squeeze(input_tensor)
 
         result = input_tensor
@@ -67,7 +75,7 @@ class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
         output = self._do_forward(input_tensor, axes)
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor]
-            if axes is not None:
+            if not self.is_empty_axes(axes):
                 args.append(axes)
 
             return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
