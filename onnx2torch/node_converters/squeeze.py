@@ -25,13 +25,13 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
-        if not self.is_empty_axes():
+        if not self.is_empty_axes(axes):
             axes = sorted(axes, reverse=True)
 
         self.axes = axes
 
     @staticmethod
-    def is_empty_axes(axes) -> bool:
+    def is_empty_axes(axes: List[int]) -> bool:
         return axes is None
     
     @staticmethod
@@ -57,7 +57,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     @staticmethod
-    def is_empty_axes(axes) -> bool:
+    def is_empty_axes(axes: torch.Tensor) -> bool:
         return axes is None or axes.nelement() == 0
 
     @staticmethod
