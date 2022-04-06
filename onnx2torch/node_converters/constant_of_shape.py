@@ -24,7 +24,7 @@ class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):
         if value.numel() != 1:
             raise ValueError('parameter "value" must be scalar')
 
-        self.value: torch.tensor
+        self.value: torch.Tensor
         self.register_buffer('value', value)
 
     def forward(self, shape: torch.Tensor) -> torch.Tensor:
