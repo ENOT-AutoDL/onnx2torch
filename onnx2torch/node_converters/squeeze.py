@@ -109,20 +109,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
 @add_converter(operation_type='Squeeze', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-    if len(node.input_values) == 2:
-        try:
-            axes = get_const_value(node.input_values[1], graph)
-            axes = axes.tolist()
-            return OperationConverterResult(
-                torch_module=OnnxSqueezeStaticAxes(axes=axes),
-                onnx_mapping=OnnxMapping(
-                    inputs=(node.input_values[0],),
-                    outputs=node.output_values,
-                ),
-            )
-        except KeyError:
-            pass
-
     return OperationConverterResult(
         torch_module=OnnxSqueezeDynamicAxes(),
         onnx_mapping=onnx_mapping_from_node(node),
