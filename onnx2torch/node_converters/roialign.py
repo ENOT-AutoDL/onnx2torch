@@ -15,6 +15,7 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
+
 class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(
@@ -85,6 +86,7 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
             return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
 
         return output
+
 
 class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
