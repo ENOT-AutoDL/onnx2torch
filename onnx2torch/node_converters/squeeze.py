@@ -28,7 +28,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
             axes = sorted(axes, reverse=True)
 
         self.axes = axes
-    
+
     @staticmethod
     def _do_forward(input_tensor: torch.Tensor, axes: Optional[List[int]]) -> torch.Tensor:
         if not axes:
@@ -92,6 +92,7 @@ class _SqueezeStaticAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abs
         input_tensor, axes = args
 
         return graph.op('Squeeze', input_tensor, axes, outputs=1)
+
 
 class _SqueezeDynamicAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 
