@@ -9,12 +9,10 @@ from typing import Optional
 import torch
 import torch._C as torch_C
 from torch import nn
-from torch.onnx import symbolic_helper
 
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxMapping
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_onnx_version
 from onnx2torch.utils.common import onnx_mapping_from_node
