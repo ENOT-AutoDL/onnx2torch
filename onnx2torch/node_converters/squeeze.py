@@ -44,7 +44,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
         output = self._do_forward(input_tensor, self.axes)
         if torch.onnx.is_in_onnx_export() and get_onnx_version() >= 13:
             args = [input_tensor]
-            if not self.axes:
+            if self.axes:
                 axes = torch.tensor(
                     self.axes,
                     device=input_tensor.device,
