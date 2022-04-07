@@ -95,7 +95,6 @@ def test_conv_stride_dilations_pads() -> None:
     )
     all_variants = product(op_type_variants, input_hw_variants, kernel_shape_variants, stride_variants, dilations_variants)
     for op_type, input_hw, kernel_shape, strides, dilations in all_variants:
-        print(op_type, input_hw, kernel_shape, strides, dilations)
         _test_conv(
             op_type=op_type,
             in_channels=16,
