@@ -24,7 +24,7 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):
 
-    def __init__(self, axes: Optional[List[int]] = None):
+    def __init__(self, axes: List[int]):
         super().__init__()
         self.axes = sorted(axes)
 
@@ -75,6 +75,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     try:
         axes = get_const_value(node.input_values[1], graph)
+        axes = axes.tolist()
         return OperationConverterResult(
             torch_module=OnnxUnsqueezeStaticAxes(axes=axes),
             onnx_mapping=OnnxMapping(

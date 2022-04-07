@@ -11,14 +11,19 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_padding_to_torch_padding
 
 _CONV_CLASS_FROM_SPATIAL_RANK = {
-    1: nn.Conv1d,
-    2: nn.Conv2d,
-    3: nn.Conv3d,
+    ('Conv', 1): nn.Conv1d,
+    ('Conv', 2): nn.Conv2d,
+    ('Conv', 3): nn.Conv3d,
+    ('ConvTranspose', 1): nn.ConvTranspose1d,
+    ('ConvTranspose', 2): nn.ConvTranspose2d,
+    ('ConvTranspose', 3): nn.ConvTranspose3d,
 }
 
 
 @add_converter(operation_type='Conv', version=1)
 @add_converter(operation_type='Conv', version=11)
+@add_converter(operation_type='ConvTranspose', version=1)
+@add_converter(operation_type='ConvTranspose', version=11)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     weights_value_name = node.input_values[1]
     weights = graph.initializers[weights_value_name]
@@ -30,8 +35,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     else:
         bias = None
 
+    op_type = node.operation_type
     spatial_rank = len(weights.shape) - 2
-    conv_class = _CONV_CLASS_FROM_SPATIAL_RANK.get(spatial_rank, None)
+    conv_class = _CONV_CLASS_FROM_SPATIAL_RANK.get((op_type, spatial_rank), None)
     if conv_class is None:
         raise NotImplementedError(f'Convolution operation with spatial rank == {spatial_rank} is not implemented')
 
