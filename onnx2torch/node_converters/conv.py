@@ -51,20 +51,41 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         node_attributes.get('pads', [0] * spatial_rank * 2),
         node_attributes.get('auto_pad', 'NOTSET'),
     )
+    if op_type == 'Conv':
+        out_channels = weights.shape[0]
+        in_channels = weights.shape[1]*groups
+        torch_module = conv_class(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            groups=groups,
+            bias=bias is not None,
+        )
+    elif op_type == 'ConvTranspose':
+        output_padding = node_attributes.get('output_padding', [0] * spatial_rank * 2)
+        if len(output_padding) != 2:
+            output_padding = onnx_padding_to_torch_padding(
+                output_padding,
+                node_attributes.get('auto_pad', 'NOTSET'),
+            )
 
-    out_channels = weights.shape[0]
-    in_channels = weights.shape[1]*groups
+        out_channels = weights.shape[1]*groups
+        in_channels = weights.shape[0]
 
-    torch_module = conv_class(
-        in_channels=in_channels,
-        out_channels=out_channels,
-        kernel_size=kernel_size,
-        stride=stride,
-        padding=padding,
-        dilation=dilation,
-        groups=groups,
-        bias=bias is not None,
-    )
+        torch_module = conv_class(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            output_padding=output_padding,
+            dilation=dilation,
+            groups=groups,
+            bias=bias is not None,
+        )
 
     with torch.no_grad():
         torch_module.weight.data = weights

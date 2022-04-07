@@ -41,9 +41,9 @@ def _test_conv(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
-        atol_onnx_torch2onnx=10**-4,
+        atol_onnx_torch=10**-1,
+        atol_torch_cpu_cuda=10**-1,
+        atol_onnx_torch2onnx=10**-1,
     )
 
 
@@ -95,6 +95,7 @@ def test_conv_stride_dilations_pads() -> None:
     )
     all_variants = product(op_type_variants, input_hw_variants, kernel_shape_variants, stride_variants, dilations_variants)
     for op_type, input_hw, kernel_shape, strides, dilations in all_variants:
+        print(op_type, input_hw, kernel_shape, strides, dilations)
         _test_conv(
             op_type=op_type,
             in_channels=16,
@@ -103,4 +104,29 @@ def test_conv_stride_dilations_pads() -> None:
             kernel_shape=kernel_shape,
             strides=strides,
             dilations=dilations,
+        )
+
+def test_conv_transpose_output_pads() -> None:
+    input_hw_variants = ((230, 234), (5, 5), (6, 6), (7, 7))
+    stride_variants = (
+        (4, 4), (3, 4), (4, 3), (3, 3),
+    )
+    dilations_variants = (
+        (3, 3), (2, 3), (3, 2),
+    )
+    output_pads_variants = (
+       (1, 1), (2, 2),
+    )
+
+    all_variants = product(input_hw_variants, stride_variants, dilations_variants, output_pads_variants)
+    for input_hw, strides, dilations, output_pads in all_variants:
+        _test_conv(
+            op_type='ConvTranspose',
+            in_channels=16,
+            out_channels=32,
+            input_hw=input_hw,
+            kernel_shape=(3, 3),
+            strides=strides,
+            dilations=dilations,
+            output_padding=output_pads,
         )
