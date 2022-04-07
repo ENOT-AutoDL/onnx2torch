@@ -4,8 +4,9 @@ from typing import Tuple
 from typing import Union
 
 import torch
-from onnx import ValueInfoProto
 from torch import nn
+from torch.onnx import symbolic_helper
+from onnx import ValueInfoProto
 
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
@@ -33,6 +34,9 @@ def onnx_mapping_from_node(node: OnnxNode) -> OnnxMapping:
         inputs=node.input_values,
         outputs=node.output_values,
     )
+
+def get_onnx_version():
+    return symbolic_helper._export_onnx_opset_version
 
 
 def get_shape_from_value_info(value_info: ValueInfoProto) -> List[int]:
