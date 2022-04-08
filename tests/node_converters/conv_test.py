@@ -106,7 +106,7 @@ def test_conv_stride_dilations_pads() -> None:
         )
 
 def test_conv_transpose_output_pads() -> None:
-    input_hw_variants = ((7, 5, 5), (4, 6, 6), (3, 7, 7))
+    input_hw_variants = ((5, 5), (6, 6), (7, 7))
     stride_variants = (
         (4, 4), (3, 4), (4, 3), (3, 3),
     )
