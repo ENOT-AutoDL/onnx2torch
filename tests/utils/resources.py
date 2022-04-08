@@ -12,6 +12,8 @@ _BASE_URL = 'https://gitlab.expasoft.com/p.ivanov/onnx2torch_data/-/raw/main/mod
 _CHKP_DETECTION_URL = f'{_BASE_URL}/detection'
 _CHKP_SEGMENTATION_URL = f'{_BASE_URL}/segmentation'
 _CHKP_TRANSFORMERS_URL = f'{_BASE_URL}/transformers'
+_CHKP_KEYPOINTS_URL = f'{_BASE_URL}/keypoints'
+_CHKP_OTHER_URL = f'{_BASE_URL}/other'
 
 _ONNX_MODELS_IDS = {
     'deeplabv3_mnv3_large': f'{_CHKP_SEGMENTATION_URL}/deeplabv3_mobilenet_v3_large.onnx',
@@ -26,6 +28,8 @@ _ONNX_MODELS_IDS = {
     'swin': f'{_CHKP_TRANSFORMERS_URL}/swin.onnx',
     'vit': f'{_CHKP_TRANSFORMERS_URL}/vit.onnx',
     'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
+    '3d_gan': f'{_CHKP_OTHER_URL}/3d_gan.onnx',
+    'shelfnet': f'{_CHKP_KEYPOINTS_URL}/shelfnet.onnx'
 }
 
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'
