@@ -51,6 +51,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         node_attributes.get('pads', [0] * spatial_rank * 2),
         node_attributes.get('auto_pad', 'NOTSET'),
     )
+
     if op_type == 'Conv':
         out_channels = weights.shape[0]
         in_channels = weights.shape[1]*groups
@@ -66,7 +67,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         )
     elif op_type == 'ConvTranspose':
         output_padding = node_attributes.get('output_padding', [0] * spatial_rank * 2)
-        if len(output_padding) != 2:
+        if len(output_padding) > 3:
             output_padding = onnx_padding_to_torch_padding(
                 output_padding,
                 node_attributes.get('auto_pad', 'NOTSET'),

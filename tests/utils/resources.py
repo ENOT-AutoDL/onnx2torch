@@ -26,6 +26,7 @@ _ONNX_MODELS_IDS = {
     'swin': f'{_CHKP_TRANSFORMERS_URL}/swin.onnx',
     'vit': f'{_CHKP_TRANSFORMERS_URL}/vit.onnx',
     'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
+    '3d_gan': f'{_CHKP_SEGMENTATION_URL}/3d_gan.onnx'
 }
 
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'
