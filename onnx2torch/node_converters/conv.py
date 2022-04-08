@@ -74,7 +74,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 
     torch_module = conv_class(
         **common_kwargs,
-        **special_kwargs
+        **special_kwargs,
     )
 
     with torch.no_grad():
