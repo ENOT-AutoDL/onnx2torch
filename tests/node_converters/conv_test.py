@@ -1,106 +1,212 @@
-from itertools import chain
-from itertools import product
 from typing import Tuple
 
 import numpy as np
 import onnx
+import pytest
+import torchvision
+from PIL import Image
+from onnx import version_converter
 
 from tests.utils.common import check_onnx_model
-from tests.utils.common import make_model_from_nodes
+from tests.utils.common import check_torch_model
+from tests.utils.resources import get_minimal_dataset_path
+from tests.utils.resources import get_model_path
+
+_COCO_MEAN = np.array([0.406, 0.485, 0.456], dtype=np.float32)
+_COCO_STD = np.array([0.225, 0.224, 0.229], dtype=np.float32)
 
 
-def _test_conv(
-        op_type: str,
-        in_channels: int,
-        out_channels: int,
-        kernel_shape: Tuple[int, int],
-        input_hw: Tuple[int, int],
-        **kwargs,
-) -> None:
-    group = kwargs.get('group', 1)
+def create_test_batch(
+        bs: int = 32,
+        target_size: Tuple[int, int] = (224, 224),
+) -> np.ndarray:
+    minimal_dataset_path = get_minimal_dataset_path()
 
-    x_shape = (2, in_channels) + input_hw
-    x = np.random.uniform(low=-1.0, high=1.0, size=x_shape).astype(np.float32)
-    if op_type == 'Conv':
-        weights_shape = (out_channels, in_channels//group) + kernel_shape
-    elif op_type == 'ConvTranspose':
-        weights_shape = (in_channels, out_channels//group) + kernel_shape
-    weights = np.random.uniform(low=-1.0, high=1.0, size=weights_shape).astype(np.float32)
+    batch = []
+    for i, image_path in enumerate(minimal_dataset_path.glob('*.jpg')):
+        if i >= bs:
+            break
 
-    test_inputs = {'x': x}
-    initializers = {'weights': weights}
-    node = onnx.helper.make_node(
-        op_type=op_type,
-        inputs=['x', 'weights'],
-        outputs=['y'],
-        kernel_shape=kernel_shape,
-        **kwargs,
-    )
+        image = Image.open(image_path).convert('RGB')
+        image = image.resize(size=target_size)
+        image = (np.array(image, dtype=np.float32) / 255.0 - _COCO_MEAN) / _COCO_STD
+        image = image.transpose([2, 0, 1])
 
-    model = make_model_from_nodes(nodes=node, initializers=initializers, inputs_example=test_inputs)
+        batch.append(image)
+    else:
+        raise ValueError('Batch size ({n}) is too large.')
+
+    return np.array(batch)
+
+
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
+def test_resnet50():
+    model_path = get_model_path('resnet50')
+    model = onnx.load_model(str(model_path.resolve()))
+    model = version_converter.convert_version(model, 11)
+
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: np.random.randn(1, 3, 224, 224).astype(dtype=np.float32)
+    }
+
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
-        atol_onnx_torch2onnx=10**-4,
+        atol_onnx_torch=10 ** -5,
+        atol_torch_cpu_cuda=10 ** -5,
+        atol_onnx_torch2onnx=10 ** -5,
     )
 
 
-def test_conv2d_base_params() -> None:
-    op_type_variants = ('ConvTranspose', 'Conv')
-    in_channels_variants = (1, 2, 3, 4, 16)
-    out_channels_variants = (1, 2, 3, 4, 16)
-    input_hw_variants = ((32, 32), (32, 31), (31, 32), (31, 31))
-    kernel_shape_variants = tuple(chain(
-        ((i, i) for i in range(1, 6)),
-        ((1, 2), (1, 3), (1, 5)),
-        ((2, 2), (2, 3), (2, 5)),
-    ))
-    all_variants = product(op_type_variants, in_channels_variants, out_channels_variants, input_hw_variants, kernel_shape_variants)
-    for op_type, in_channels, out_channels, input_hw, kernel_shape in all_variants:
-        _test_conv(
-            op_type=op_type,
-            in_channels=in_channels,
-            out_channels=out_channels,
-            input_hw=input_hw,
-            kernel_shape=kernel_shape,
-        )
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
+@pytest.mark.parametrize(
+    'model,resolution',
+    (
+            ('retinanet', (604, 604)),
+            ('ssd300_vgg', (604, 604)),
+            ('ssdlite', (224, 224)),
+            ('yolov3_d53', (604, 604)),
+            ('yolov5_ultralitics', (672, 256)),
+            ('deeplabv3_mnv3_large', (320, 320)),
+            ('deeplabv3_plus_resnet101', (486, 500)),
+            ('hrnet', (321, 321)),
+            ('unet', (320, 320)),
+    ),
+)
+def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
+    model_path = get_model_path(model)
+    model = onnx.load_model(str(model_path.resolve()))
 
-    in_out_channels_variants = (2, 3, 4, 16)
-    all_variants = product(op_type_variants, in_out_channels_variants, input_hw_variants, kernel_shape_variants)
-    for op_type, in_out_channels, input_hw, kernel_shape in all_variants:
-        _test_conv(
-            op_type=op_type,
-            in_channels=in_out_channels,
-            out_channels=in_out_channels,
-            input_hw=input_hw,
-            kernel_shape=kernel_shape,
-            group=in_out_channels,
-        )
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: create_test_batch(bs=1, target_size=resolution),
+    }
 
-
-def test_conv_stride_dilations_pads() -> None:
-    op_type_variants = ('ConvTranspose', 'Conv')
-    input_hw_variants = ((32, 32), (32, 27), (27, 32), (27, 27))
-    kernel_shape_variants = tuple(chain(
-        ((i, i) for i in range(1, 4)),
-        ((1, 2), (1, 3), (2, 3)),
-    ))
-    stride_variants = (
-        (1, 1), (2, 2), (3, 3), (1, 2), (2, 1), (1, 3), (3, 1),
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -3,
+        atol_torch_cpu_cuda=10 ** -3,
+        atol_onnx_torch2onnx=10 ** -3,
     )
-    dilations_variants = (
-        (1, 1), (2, 2), (1, 2), (2, 1),
+
+
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
+@pytest.mark.parametrize(
+    'model',
+    (
+            'resnet18',
+            'resnet50',
+            'mobilenet_v2',
+            'mobilenet_v3_large',
+            'efficientnet_b0',
+            'efficientnet_b1',
+            'efficientnet_b2',
+            'efficientnet_b3',
+            'wide_resnet50_2',
+            'resnext50_32x4d',
+            'vgg16',
+            'googlenet',
+            'mnasnet1_0',
+            'regnet_y_400mf',
+            'regnet_y_16gf',
     )
-    all_variants = product(op_type_variants, input_hw_variants, kernel_shape_variants, stride_variants, dilations_variants)
-    for op_type, input_hw, kernel_shape, strides, dilations in all_variants:
-        _test_conv(
-            op_type=op_type,
-            in_channels=16,
-            out_channels=16,
-            input_hw=input_hw,
-            kernel_shape=kernel_shape,
-            strides=strides,
-            dilations=dilations,
-        )
+)
+def test_torchvision_classification(model: str) -> None:
+    torch_model = getattr(torchvision.models, model)(pretrained=True)
+    test_inputs = {
+        'inputs': create_test_batch(bs=32),
+    }
+
+    check_torch_model(
+        torch_model,
+        test_inputs,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
+    )
+
+
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
+@pytest.mark.parametrize(
+    'model',
+    (
+            'fcn_resnet50',
+            'deeplabv3_resnet50',
+            'lraspp_mobilenet_v3_large',
+    )
+)
+def test_torchvision_segmentation(model: str) -> None:
+    torch_model = getattr(torchvision.models.segmentation, model)(pretrained=True)
+    test_inputs = {
+        'inputs': create_test_batch(bs=8),
+    }
+
+    check_torch_model(
+        torch_model,
+        test_inputs,
+        atol_onnx_torch=10 ** -3,
+        atol_torch_cpu_cuda=10 ** -3,
+        atol_onnx_torch2onnx=10 ** -3,
+    )
+
+
+@pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
+@pytest.mark.parametrize(
+    'model',
+    (
+            'vit',
+            'swin',
+    )
+)
+def test_transformer_models(model: str) -> None:
+    model_path = get_model_path(model)
+    model = onnx.load_model(str(model_path.resolve()))
+
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: create_test_batch(bs=8, target_size=(224, 224)),
+    }
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
+    )
+
+def test_3d_gan() -> None:
+    model_path = get_model_path('3d_gan')
+    model = onnx.load_model(model_path)
+
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: np.random.randn(32, 200).astype(dtype=np.float32)
+    }
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
+    )
+
+def test_shelfnet() -> None:
+    model_path = get_model_path('shelfnet')
+    model = onnx.load_model(model_path)
+
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: np.random.randn(8,3,384,288).astype(dtype=np.float32)
+    }
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
+    )
