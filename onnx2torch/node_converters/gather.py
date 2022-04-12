@@ -1,5 +1,5 @@
 __all__ = [
-    'OnnxGather', 
+    'OnnxGather',
     'OnnxGatherElements',
 ]
 
@@ -14,8 +14,8 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport

@@ -38,7 +38,7 @@ def _test_gather(
 def test_gather() -> None:
     op_type_variants = ('Gather', 'GatherElements')
     axis_variants = (0, 1)
-    
+
     input_tensor = np.asarray(
         [
             [1.0, 1.2, 1.9],
