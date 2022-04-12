@@ -1,4 +1,7 @@
-__all__ = ['OnnxGather']
+__all__ = [
+    'OnnxGather',
+    'OnnxGatherElements',
+]
 
 from typing import List
 from typing import Tuple
@@ -11,10 +14,21 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+
+
+class OnnxGatherElements(nn.Module, OnnxToTorchModule):
+
+    def __init__(self, axis: int = 0):
+        super().__init__()
+        self.axis = axis
+
+    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+        return torch.gather(input_tensor, dim=self.axis, index=indices)
 
 
 class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
@@ -60,6 +74,20 @@ class _GatherExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-metho
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     torch_module = OnnxGather(
+        axis=axis,
+    )
+
+    return OperationConverterResult(
+        torch_module=torch_module,
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='GatherElements', version=11)
+@add_converter(operation_type='GatherElements', version=13)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+    axis = node.attributes.get('axis', 0)
+    torch_module = OnnxGatherElements(
         axis=axis,
     )
 
