@@ -1,7 +1,6 @@
-from itertools import product
-
 import numpy as np
 import onnx
+import pytest
 
 from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
@@ -35,9 +34,23 @@ def _test_gather(
     check_onnx_model(model, test_inputs)
 
 
-def test_gather() -> None:
-    op_type_variants = ('Gather', 'GatherElements')
-    axis_variants = (0, 1)
+@pytest.mark.parametrize(
+    'op_type,axis,opset_version',
+    (
+        ('Gather', 0, 13),
+        ('Gather', 0, 11),
+        ('Gather', 0, 9),
+        ('Gather', 1, 13),
+        ('Gather', 1, 11),
+        ('Gather', 1, 9),
+        ('GatherElements', 0, 13),
+        ('GatherElements', 0, 11),
+        ('GatherElements', 1, 13),
+        ('GatherElements', 1, 11),
+
+    )
+)
+def test_gather(op_type: str, axis: int, opset_version: int) -> None:
 
     input_tensor = np.asarray(
         [
@@ -53,11 +66,4 @@ def test_gather() -> None:
         ],
         dtype=np.int64,
     )
-
-    all_variants = product(op_type_variants, axis_variants)
-    for op_type, axis in all_variants:
-        _test_gather(op_type=op_type, input_array=input_tensor, indices=indices, axis=axis, opset_version=13)
-        _test_gather(op_type=op_type, input_array=input_tensor, indices=indices, axis=axis, opset_version=11)
-
-    _test_gather(op_type='Gather', input_array=input_tensor, indices=indices, axis=0, opset_version=9)
-    _test_gather(op_type='Gather', input_array=input_tensor, indices=indices, axis=1, opset_version=9)
+    _test_gather(op_type=op_type, input_array=input_tensor, indices=indices, axis=axis, opset_version=opset_version)
