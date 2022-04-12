@@ -1,3 +1,5 @@
+from itertools import product
+
 import numpy as np
 import onnx
 
@@ -6,6 +8,7 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_gather(
+        op_type: str,
         input_array: np.ndarray,
         indices: np.ndarray,
         opset_version: int,
@@ -17,7 +20,7 @@ def _test_gather(
     }
 
     node = onnx.helper.make_node(
-        'Gather',
+        op_type,
         inputs=list(test_inputs),
         outputs=['y'],
         **kwargs,
@@ -33,6 +36,9 @@ def _test_gather(
 
 
 def test_gather() -> None:
+    op_type_variants = ('Gather', 'GatherElements')
+    axis_variants = (0, 1)
+    
     input_tensor = np.asarray(
         [
             [1.0, 1.2, 1.9],
@@ -47,7 +53,11 @@ def test_gather() -> None:
         ],
         dtype=np.int64,
     )
-    _test_gather(input_array=input_tensor, indices=indices, axis=0, opset_version=9)
-    _test_gather(input_array=input_tensor, indices=indices, axis=1, opset_version=9)
-    _test_gather(input_array=input_tensor, indices=indices, axis=0, opset_version=13)
-    _test_gather(input_array=input_tensor, indices=indices, axis=1, opset_version=13)
+
+    all_variants = product(op_type_variants, axis_variants)
+    for op_type, axis in all_variants:
+        _test_gather(op_type=op_type, input_array=input_tensor, indices=indices, axis=axis, opset_version=13)
+        _test_gather(op_type=op_type, input_array=input_tensor, indices=indices, axis=axis, opset_version=11)
+
+    _test_gather(op_type='Gather', input_array=input_tensor, indices=indices, axis=0, opset_version=9)
+    _test_gather(op_type='Gather', input_array=input_tensor, indices=indices, axis=1, opset_version=9)
