@@ -20,6 +20,7 @@ from onnx2torch.node_converters.logical import *
 from onnx2torch.node_converters.matmul import *
 from onnx2torch.node_converters.max_pool import *
 from onnx2torch.node_converters.nms import *
+from onnx2torch.node_converters.pad import *
 from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
 from onnx2torch.node_converters.reduce import *
