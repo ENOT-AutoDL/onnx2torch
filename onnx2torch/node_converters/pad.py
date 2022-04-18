@@ -43,59 +43,31 @@ class OnnxPadStatic(nn.Module, OnnxToTorchModule):
         )
 
 
-class OnnxPadDynamic(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
 
     def __init__(self, mode: str = 'constant'):
         super().__init__()
-        self.mode = mode
-
-    @staticmethod
-    def _do_forward(
-        input_tensor: torch.Tensor,
-        mode: str,
-        pads: torch.Tensor,
-        constant_value: Optional[float],
-    ) -> torch.Tensor:
-
-        if constant_value is not None:
-            return torch.nn.functional.pad(input_tensor, mode=mode, pad=pads, value=constant_value)
-
-        return torch.nn.functional.pad(input_tensor, mode=mode, pad=pads)
+        self.mode = mode 
 
     def forward(
         self,
         input_tensor: torch.Tensor,
         pads: torch.Tensor,
-        constant_value: Optional[float] = None,
+        constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
 
         if torch.unique(pads).shape[0] > 1:
             raise NotImplementedError(f'Only uniform padding on all axes is implemented ({pads})')
 
-        pads = tuple(pads.tolist())
-        output = self._do_forward(input_tensor, self.mode, pads, constant_value)
-        if torch.onnx.is_in_onnx_export():
-            args = [self.mode, input_tensor, torch.tensor(pads, dtype=torch.int64)]
-            if constant_value is not None:
-                args.append(constant_value)
-            return _OnnxPadDynamicExportToOnnx.set_output_and_apply(output, *args)
-
-        return output
-
-
-class _OnnxPadDynamicExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        mode = args[0]
-        args = args[1:]
-        return graph.op('Pad', *args, mode_s=mode, outputs=1)
+        return torch.nn.functional.pad(input_tensor, mode=self.mode, pad=tuple(pads), value=constant_value)
 
 
 @add_converter(operation_type='Pad', version=11)
 @add_converter(operation_type='Pad', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
+    if mode != 'constant':
+        raise NotImplementedError(f'"{mode}" pad mode is not implemented.')
     torch_module = OnnxPadDynamic(
         mode=mode,
     )
@@ -112,7 +84,15 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 @add_converter(operation_type='Pad', version=2)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
-    pads = tuple(node.attributes.get('pads'))
+
+    if mode != 'constant':
+        raise NotImplementedError(f'"{mode}" pad mode is not implemented.')
+
+    pads = node.attributes.get('pads')
+
+    if len(set(pads)) > 1:
+            raise NotImplementedError(f'Only uniform padding on all axes is implemented ({pads})')
+
     constant_value = node.attributes.get('constant_value', 0.0)
     torch_module = OnnxPadStatic(
         mode=mode,
