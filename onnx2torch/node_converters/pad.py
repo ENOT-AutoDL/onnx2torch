@@ -7,7 +7,6 @@ from typing import List
 from typing import Optional
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -17,9 +16,6 @@ from onnx2torch.utils.common import OnnxMapping
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
-from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
-
 
 class OnnxPadStatic(nn.Module, OnnxToTorchModule):
 
@@ -47,7 +43,7 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
 
     def __init__(self, mode: str = 'constant'):
         super().__init__()
-        self.mode = mode 
+        self.mode = mode
 
     def forward(
         self,
@@ -91,7 +87,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
     pads = node.attributes.get('pads')
 
     if len(set(pads)) > 1:
-            raise NotImplementedError(f'Only uniform padding on all axes is implemented ({pads})')
+        raise NotImplementedError(f'Only uniform padding on all axes is implemented ({pads})')
 
     constant_value = node.attributes.get('constant_value', 0.0)
     torch_module = OnnxPadStatic(
