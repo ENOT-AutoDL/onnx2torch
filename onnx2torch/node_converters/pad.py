@@ -18,7 +18,7 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-def onnx_padding_to_torch(pads: List[int]) -> List[int]:
+def _onnx_padding_to_torch(pads: List[int]) -> List[int]:
     middle = len(pads) // 2
     onnx_pad_begin, onnx_pad_end = pads[:middle], pads[middle:]
     onnx_pad_begin, onnx_pad_end = onnx_pad_begin[::-1], onnx_pad_end[::-1]
@@ -63,7 +63,7 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
 
-        torch_pads = onnx_padding_to_torch(pads.tolist())
+        torch_pads = _onnx_padding_to_torch(pads.tolist())
         return torch.nn.functional.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)
 
 
