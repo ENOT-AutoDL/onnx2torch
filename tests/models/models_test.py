@@ -211,7 +211,7 @@ def test_shelfnet() -> None:
         atol_onnx_torch2onnx=10 ** -4,
     )
 
-def test_point_arch_model() -> None:
+def test_model_with_pad_node() -> None:
     model_path = get_model_path('point_arch')
     model = onnx.load_model(model_path)
 
