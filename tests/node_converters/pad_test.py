@@ -9,7 +9,6 @@ from tests.utils.common import make_model_from_nodes
 def _test_pad(
         input_array: np.ndarray,
         opset_version: int,
-        input_pads: np.ndarray = None,
         **kwargs,
 ) -> None:
 
@@ -17,8 +16,8 @@ def _test_pad(
         'x': input_array,
     }
 
-    if opset_version >= 11:
-        test_inputs['pads'] = input_pads
+    if opset_version != 2:
+        test_inputs['pads'] = np.array(kwargs.pop('pads'), dtype=np.int64)
 
     node = onnx.helper.make_node(
         'Pad',
@@ -69,6 +68,7 @@ def test_pad(pads: np.array, mode: str) -> None:
         dtype=np.float32
     )
 
-    _test_pad(input_array=input_tensor, mode=mode, opset_version=13, input_pads=np.array(pads, dtype=np.int64))
-    _test_pad(input_array=input_tensor, mode=mode, opset_version=11, input_pads=np.array(pads, dtype=np.int64))
-    _test_pad(input_array=input_tensor, mode=mode, opset_version=2, pads=pads)
+    opset_version_variants = (2, 11, 13)
+
+    for opset_version in opset_version_variants:
+        _test_pad(input_array=input_tensor, mode=mode, opset_version=opset_version, pads=pads)

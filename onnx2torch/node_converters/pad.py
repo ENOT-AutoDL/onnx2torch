@@ -28,7 +28,7 @@ ONNX_TO_TORCH_MODE = {
 def _torch_padding_to_mode_format(pads: List[int], mode: str) -> bool:
     if mode in ('replicate', 'reflect'):
         batch_channel_pads = pads[-4:]
-        if set(batch_channel_pads) == set(0):
+        if set(batch_channel_pads) == {0}:
             return pads[:-4]
 
         raise RuntimeError(f'{mode} padding is implemented for padding the last 3 dimensions of 5D input tensor, \
