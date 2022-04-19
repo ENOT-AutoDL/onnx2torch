@@ -19,6 +19,9 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 def _onnx_padding_to_torch(pads: List[int]) -> List[int]:
+    # Convert padding from onnx format to torch format
+    # onnx format: [x1_begin, x2_begin, ... , x1_end, x2_end, ...]
+    # torch format [xn_begin, xn_end, ... , x2_begin, x2_end, x1_begin, x1_end]
     middle = len(pads) // 2
     onnx_pad_begin, onnx_pad_end = pads[:middle], pads[middle:]
     onnx_pad_begin, onnx_pad_end = onnx_pad_begin[::-1], onnx_pad_end[::-1]
@@ -94,7 +97,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
         raise NotImplementedError(f'"{mode}" pad mode is not implemented.')
 
     pads = node.attributes.get('pads')
-    torch_pads = onnx_padding_to_torch(pads)
+    torch_pads = _onnx_padding_to_torch(pads)
 
     constant_value = node.attributes.get('constant_value', 0.0)
     torch_module = OnnxPadStatic(
