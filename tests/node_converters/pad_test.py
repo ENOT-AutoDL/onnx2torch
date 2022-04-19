@@ -37,16 +37,19 @@ def _test_pad(
 
 
 @pytest.mark.parametrize(
-    'pads',
+    'pads,mode',
     (
-        ([0,0,0,0,0,0,0,0]),
-        ([0,1,1,1,1,0,0,0]),
-        ([0,2,0,2,0,2,0,2]),
-        ([1,2,1,2,1,2,1,2]),
-        ([0,2,4,2,0,4,4,0]),
+        ([0,0,0,0,0,0,0,0], 'constant'),
+        ([0,1,1,1,1,0,0,0], 'constant'),
+        ([0,2,0,2,0,2,0,2], 'constant'),
+        ([1,2,4,2,5,4,4,2], 'constant'),
+        ([0,0,0,0,0,0,0,0], 'edge'),
+        ([0,0,2,3,0,0,2,3], 'edge'),
+        ([0,0,0,0,0,0,0,0], 'reflect'),
+        ([0,0,2,1,0,0,2,1], 'reflect'),
     )
 )
-def test_pad(pads: np.array) -> None:
+def test_pad(pads: np.array, mode: str) -> None:
 
     input_tensor = np.asarray(
         [
@@ -66,6 +69,6 @@ def test_pad(pads: np.array) -> None:
         dtype=np.float32
     )
 
-    _test_pad(input_array=input_tensor, opset_version=13, input_pads=np.array(pads, dtype=np.int64))
-    _test_pad(input_array=input_tensor, opset_version=11, input_pads=np.array(pads, dtype=np.int64))
-    _test_pad(input_array=input_tensor, opset_version=2, pads=pads)
+    _test_pad(input_array=input_tensor, mode=mode, opset_version=13, input_pads=np.array(pads, dtype=np.int64))
+    _test_pad(input_array=input_tensor, mode=mode, opset_version=11, input_pads=np.array(pads, dtype=np.int64))
+    _test_pad(input_array=input_tensor, mode=mode, opset_version=2, pads=pads)

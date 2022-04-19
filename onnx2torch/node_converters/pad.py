@@ -18,6 +18,19 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
+def _torch_padding_to_mode_format(pads: List[int], mode: str) -> bool:
+    if mode in ('replicate', 'reflect'):
+        pads_ = set(pads[-4:])
+        print(pads)
+        if len(pads_) == 1 and pads_.pop() == 0:
+            return pads[:-4]
+
+        raise RuntimeError(f'{mode} padding is implemented for padding the last 3 dimensions of 5D input tensor, \
+            or the last 2 dimensions of 4D input tensor, or the last dimension of 3D input tensor.')
+
+    return pads
+
+
 def _onnx_padding_to_torch(pads: List[int]) -> List[int]:
     # Convert padding from onnx format to torch format
     # onnx format: [x1_begin, x2_begin, ... , x1_end, x2_end, ...]
@@ -30,6 +43,7 @@ def _onnx_padding_to_torch(pads: List[int]) -> List[int]:
         torch_pads.extend([begin, end])
 
     return torch_pads
+
 
 class OnnxPadStatic(nn.Module, OnnxToTorchModule):
 
@@ -67,6 +81,8 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
     ) -> torch.Tensor:
 
         torch_pads = _onnx_padding_to_torch(pads.tolist())
+        torch_pads = _torch_padding_to_mode_format(torch_pads, self.mode)
+
         return torch.nn.functional.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)
 
 
@@ -74,10 +90,9 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
 @add_converter(operation_type='Pad', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
-    if mode != 'constant':
-        raise NotImplementedError(f'"{mode}" pad mode is not implemented.')
+
     torch_module = OnnxPadDynamic(
-        mode=mode,
+        mode='replicate' if mode == 'edge' else mode,
     )
 
     return OperationConverterResult(
@@ -92,12 +107,11 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 @add_converter(operation_type='Pad', version=2)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
-
-    if mode != 'constant':
-        raise NotImplementedError(f'"{mode}" pad mode is not implemented.')
+    mode='replicate' if mode == 'edge' else mode
 
     pads = node.attributes.get('pads')
     torch_pads = _onnx_padding_to_torch(pads)
+    torch_pads = _torch_padding_to_mode_format(torch_pads, mode)
 
     constant_value = node.attributes.get('constant_value', 0.0)
     torch_module = OnnxPadStatic(
