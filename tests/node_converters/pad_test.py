@@ -48,7 +48,10 @@ def _test_pad(
         ([0,0,2,1,0,0,2,1], 'reflect'),
     )
 )
-def test_pad(pads: np.array, mode: str) -> None:
+@pytest.mark.parametrize(
+    'opset_version', (2, 11, 13)
+)
+def test_pad(pads: np.array, mode: str, opset_version: int) -> None:
 
     input_tensor = np.asarray(
         [
@@ -68,7 +71,4 @@ def test_pad(pads: np.array, mode: str) -> None:
         dtype=np.float32
     )
 
-    opset_version_variants = (2, 11, 13)
-
-    for opset_version in opset_version_variants:
-        _test_pad(input_array=input_tensor, mode=mode, opset_version=opset_version, pads=pads)
+    _test_pad(input_array=input_tensor, mode=mode, opset_version=opset_version, pads=pads)
