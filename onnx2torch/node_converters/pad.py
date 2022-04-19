@@ -17,6 +17,17 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
+
+def onnx_padding_to_torch(pads: List[int]) -> List[int]:
+    middle = len(pads) // 2
+    onnx_pad_begin, onnx_pad_end = pads[:middle], pads[middle:]
+    onnx_pad_begin, onnx_pad_end = onnx_pad_begin[::-1], onnx_pad_end[::-1]
+    torch_pads = []
+    for begin, end in zip(onnx_pad_begin, onnx_pad_end):
+        torch_pads.extend([begin, end])
+
+    return torch_pads
+
 class OnnxPadStatic(nn.Module, OnnxToTorchModule):
 
     def __init__(
@@ -52,10 +63,8 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
 
-        if torch.unique(pads).shape[0] > 1:
-            raise NotImplementedError(f'Only uniform padding on all axes is implemented ({pads})')
-
-        return torch.nn.functional.pad(input_tensor, mode=self.mode, pad=tuple(pads), value=constant_value)
+        torch_pads = onnx_padding_to_torch(pads.tolist())
+        return torch.nn.functional.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)
 
 
 @add_converter(operation_type='Pad', version=11)
@@ -85,14 +94,12 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
         raise NotImplementedError(f'"{mode}" pad mode is not implemented.')
 
     pads = node.attributes.get('pads')
-
-    if len(set(pads)) > 1:
-        raise NotImplementedError(f'Only uniform padding on all axes is implemented ({pads})')
+    torch_pads = onnx_padding_to_torch(pads)
 
     constant_value = node.attributes.get('constant_value', 0.0)
     torch_module = OnnxPadStatic(
         mode=mode,
-        pads=pads,
+        pads=torch_pads,
         constant_value=constant_value,
     )
 
