@@ -101,12 +101,8 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
     if mode is None:
         raise NotImplementedError(f'{mode} mode is not implemented')
 
-    torch_module = OnnxPadDynamic(
-        mode=mode,
-    )
-
     return OperationConverterResult(
-        torch_module=torch_module,
+        torch_module=OnnxPadDynamic(mode=mode),
         onnx_mapping=OnnxMapping(
             inputs=node.input_values,
             outputs=node.output_values,
