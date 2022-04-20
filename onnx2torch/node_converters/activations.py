@@ -62,6 +62,14 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     )
 
 
+@add_converter(operation_type='HardSwish', version=14)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    return OperationConverterResult(
+        torch_module=nn.Hardswish(),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
 @add_converter(operation_type='LeakyRelu', version=1)
 @add_converter(operation_type='LeakyRelu', version=6)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
@@ -75,8 +83,10 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
 @add_converter(operation_type='LogSoftmax', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    dim = node.attributes.get('axis', -1)
+
     return OperationConverterResult(
-        torch_module=nn.LogSoftmax(dim=node.attributes.get('axis', -1)),
+        torch_module=nn.LogSoftmax(dim=dim),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 
@@ -84,8 +94,10 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 @add_converter(operation_type='LogSoftmax', version=1)
 @add_converter(operation_type='LogSoftmax', version=11)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    axis = node.attributes.get('axis', 1)
+
     return OperationConverterResult(
-        torch_module=OnnxSoftmaxV1V11(axis=node.attributes.get('axis', 1), is_log=True),
+        torch_module=OnnxSoftmaxV1V11(axis=axis, is_log=True),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 
@@ -96,6 +108,45 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=nn.ReLU(),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='Elu', version=6)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+    alpha = node.attributes.get('alpha', 1.0)
+
+    return OperationConverterResult(
+        torch_module=nn.ELU(alpha=alpha),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='Celu', version=12)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+    alpha = node.attributes.get('alpha', 1.0)
+
+    return OperationConverterResult(
+        torch_module=nn.CELU(alpha=alpha),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='Selu', version=6)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+    default_alpha = 1.67326319217681884765625
+    default_gamma = 1.05070102214813232421875
+
+    alpha = node.attributes.get('alpha', default_alpha)
+    gamma = node.attributes.get('gamma', default_gamma)
+
+    if alpha != default_alpha:
+        raise ValueError(f'alpha parameter must be {default_alpha}, not {alpha}')
+    if gamma != default_gamma:
+        raise ValueError(f'gamma parameter must be {default_gamma}, not {gamma}')
+
+    return OperationConverterResult(
+        torch_module=nn.SELU(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 
@@ -113,15 +164,37 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 @add_converter(operation_type='Softmax', version=1)
 @add_converter(operation_type='Softmax', version=11)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    axis = node.attributes.get('axis', 1)
+
     return OperationConverterResult(
-        torch_module=OnnxSoftmaxV1V11(axis=node.attributes.get('axis', 1)),
+        torch_module=OnnxSoftmaxV1V11(axis=axis),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 
 
 @add_converter(operation_type='Softmax', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    dim = node.attributes.get('axis', -1)
+
     return OperationConverterResult(
-        torch_module=torch.nn.Softmax(dim=node.attributes.get('axis', -1)),
+        torch_module=torch.nn.Softmax(dim=dim),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='Softsign', version=1)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    return OperationConverterResult(
+        torch_module=torch.nn.Softsign(),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+@add_converter(operation_type='Softplus', version=1)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    beta = node.attributes.get('beta', 1.0)
+    threshold = node.attributes.get('threshold', 20.0)
+
+    return OperationConverterResult(
+        torch_module=torch.nn.Softplus(beta=beta, threshold=threshold),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )

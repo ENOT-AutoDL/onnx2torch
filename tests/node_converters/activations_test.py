@@ -23,19 +23,25 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
 
 
 @pytest.mark.parametrize(
-    'activation,input_shape',
+    'activation,input_shape,opset_version',
     (
-            ('Erf', [8, 3, 32, 32]),
-            ('HardSigmoid', [8, 3, 32, 32]),
-            ('LeakyRelu', [8, 3, 32, 32]),
-            ('LogSoftmax', [8, 3, 32, 32]),
-            ('Relu', [8, 3, 32, 32]),
-            ('Sigmoid', [8, 3, 32, 32]),
+            ('Erf', [8, 3, 32, 32], 11),
+            ('HardSigmoid', [8, 3, 32, 32], 11),
+            ('HardSwish', [8, 3, 32, 32], 14),
+            ('LeakyRelu', [8, 3, 32, 32], 11),
+            ('LogSoftmax', [8, 3, 32, 32], 11),
+            ('Softsign', [8, 3, 32, 32], 1),
+            ('Softplus', [8, 3, 32, 32], 1),
+            ('Relu', [8, 3, 32, 32], 11),
+            ('Elu', [8, 3, 32, 32], 6),
+            ('Celu', [8, 3, 32, 32], 12),
+            ('Selu', [8, 3, 32, 32], 6),
+            ('Sigmoid', [8, 3, 32, 32], 11),
     ),
 )
-def test_common_activations(activation: str, input_shape: List[int]) -> None:
+def test_common_activations(activation: str, input_shape: List[int], opset_version: int) -> None:
     data = np.random.randn(*input_shape).astype(np.float32)
-    _test_activation(activation, data=data, opset_version=11)
+    _test_activation(activation, data=data, opset_version=opset_version)
 
 
 @pytest.mark.parametrize(
