@@ -20,7 +20,7 @@ def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs)
     )
 
     check_onnx_model(
-        model, 
+        model,
         test_inputs,
         atol_onnx_torch=10**-6,
         atol_torch_cpu_cuda=10**-6,
