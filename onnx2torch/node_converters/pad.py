@@ -21,7 +21,7 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 ONNX_TO_TORCH_MODE = {
     'constant': 'constant',
     'reflect': 'reflect',
-    'edge': 'replicate'
+    'edge': 'replicate',
 }
 
 

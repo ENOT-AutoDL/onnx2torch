@@ -36,39 +36,45 @@ def _test_pad(
 
 
 @pytest.mark.parametrize(
-    'pads,mode',
+    'pads,mode,dimension',
     (
-        ([0,0,0,0,0,0,0,0], 'constant'),
-        ([0,1,1,1,1,0,0,0], 'constant'),
-        ([0,2,0,2,0,2,0,2], 'constant'),
-        ([1,2,4,2,5,4,4,2], 'constant'),
-        ([0,0,0,0,0,0,0,0], 'edge'),
-        ([0,0,2,3,0,0,2,3], 'edge'),
-        ([0,0,0,0,0,0,0,0], 'reflect'),
-        ([0,0,2,1,0,0,2,1], 'reflect'),
+        ([0,1,1,1,1,0,0,0,1,1], 'constant', 5),
+        ([0,0,5,3,7,0,0,2,3,11], 'edge', 5),
+        ([0,0,2,3,1,0,0,2,3,1], 'reflect', 5),
+        ([0,0,0,0,0,0,0,0], 'constant', 4),
+        ([0,1,1,1,1,0,0,0], 'constant', 4),
+        ([0,2,0,2,0,2,0,2], 'constant', 4),
+        ([1,2,4,2,5,4,4,2], 'constant', 4),
+        ([0,0,0,0,0,0,0,0], 'edge', 4),
+        ([0,0,2,3,0,0,2,3], 'edge', 4),
+        ([0,0,0,0,0,0,0,0], 'reflect', 4),
+        ([0,0,2,1,0,0,2,1], 'reflect', 4),
+        ([0,4,0,1,0,1], 'constant', 3),
+        ([0,0,3,0,0,3], 'edge', 3),
+        ([0,0,1,0,0,1], 'reflect', 3),
     )
 )
-@pytest.mark.parametrize(
-    'opset_version', (2, 11, 13)
-)
-def test_pad(pads: np.array, mode: str, opset_version: int) -> None:
+@pytest.mark.parametrize('opset_version', (2, 11, 13))
+def test_pad(pads: np.array, mode: str, dimension: int, opset_version: int) -> None:
 
     input_tensor = np.asarray(
         [
             [
-                [
-                    [1.0, 1.2],
-                    [2.3, 3.4],
-                    [4.5, 5.6],
-                ],
-                [
-                    [0.1, 2.1],
-                    [3.2, 4.3],
-                    [3.4, 4.5],
-                ]
+                [1.0, 1.2],
+                [2.3, 3.4],
+                [4.5, 5.6],
+            ],
+            [
+                [0.1, 2.1],
+                [3.2, 4.3],
+                [3.4, 4.5],
             ]
         ],
         dtype=np.float32
     )
+
+
+    dims = list(range(dimension - input_tensor.ndim))
+    input_tensor = np.expand_dims(input_tensor, dims)
 
     _test_pad(input_array=input_tensor, mode=mode, opset_version=opset_version, pads=pads)
