@@ -210,3 +210,20 @@ def test_shelfnet() -> None:
         atol_torch_cpu_cuda=10 ** -4,
         atol_onnx_torch2onnx=10 ** -4,
     )
+
+def test_model_with_pad_node() -> None:
+    model_path = get_model_path('point_arch')
+    model = onnx.load_model(model_path)
+
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: np.random.randn(1, 49, 40, 1).astype(dtype=np.float32)
+    }
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
+    )

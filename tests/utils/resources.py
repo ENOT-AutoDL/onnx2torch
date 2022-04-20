@@ -29,7 +29,8 @@ _ONNX_MODELS_IDS = {
     'vit': f'{_CHKP_TRANSFORMERS_URL}/vit.onnx',
     'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
     '3d_gan': f'{_CHKP_OTHER_URL}/3d_gan.onnx',
-    'shelfnet': f'{_CHKP_KEYPOINTS_URL}/shelfnet.onnx'
+    'shelfnet': f'{_CHKP_KEYPOINTS_URL}/shelfnet.onnx',
+    'point_arch': f'{_CHKP_OTHER_URL}/point_arch_nq.onnx',
 }
 
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'
