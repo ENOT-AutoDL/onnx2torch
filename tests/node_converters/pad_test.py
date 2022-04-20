@@ -68,7 +68,7 @@ def test_pad(pads: np.array, mode: str, opset_version: int) -> None:
                 [0.1, 2.1],
                 [3.2, 4.3],
                 [3.4, 4.5],
-            ],
+            ]
         ],
         dtype=np.float32
     )
