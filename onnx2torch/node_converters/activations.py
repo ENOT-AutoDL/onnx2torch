@@ -1,5 +1,7 @@
 __all__ = ['OnnxErf', 'OnnxHardSigmoid', 'OnnxSoftmaxV1V11']
 
+import numpy as np
+
 import torch
 from torch import nn
 
@@ -140,9 +142,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
     alpha = node.attributes.get('alpha', default_alpha)
     gamma = node.attributes.get('gamma', default_gamma)
 
-    if alpha != default_alpha:
+    if not np.isclose(alpha, default_alpha):
         raise ValueError(f'alpha parameter must be {default_alpha}, not {alpha}')
-    if gamma != default_gamma:
+    if not np.isclose(gamma, default_gamma):
         raise ValueError(f'gamma parameter must be {default_gamma}, not {gamma}')
 
     return OperationConverterResult(
