@@ -104,28 +104,3 @@ def test_conv_stride_dilations_pads() -> None:
             strides=strides,
             dilations=dilations,
         )
-
-def test_conv_transpose_output_pads() -> None:
-    input_hw_variants = ((5, 5), (6, 6), (7, 7))
-    stride_variants = (
-        (4, 4), (3, 4), (4, 3), (3, 3),
-    )
-    dilations_variants = (
-        (3, 3), (2, 3), (3, 2),
-    )
-    output_pads_variants = (
-       (1, 1), (2, 2),
-    )
-
-    all_variants = product(input_hw_variants, stride_variants, dilations_variants, output_pads_variants)
-    for input_hw, strides, dilations, output_pads in all_variants:
-        _test_conv(
-            op_type='ConvTranspose',
-            in_channels=16,
-            out_channels=32,
-            input_hw=input_hw,
-            kernel_shape=(3, 3),
-            strides=strides,
-            dilations=dilations,
-            output_padding=output_pads,
-        )

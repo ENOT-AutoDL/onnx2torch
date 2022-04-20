@@ -176,37 +176,3 @@ def test_transformer_models(model: str) -> None:
         atol_torch_cpu_cuda=10 ** -4,
         atol_onnx_torch2onnx=10 ** -4,
     )
-
-def test_3d_gan() -> None:
-    model_path = get_model_path('3d_gan')
-    model = onnx.load_model(model_path)
-
-    input_name = model.graph.input[0].name
-    test_inputs = {
-        input_name: np.random.randn(32, 200).astype(dtype=np.float32)
-    }
-
-    check_onnx_model(
-        model,
-        test_inputs,
-        atol_onnx_torch=10 ** -4,
-        atol_torch_cpu_cuda=10 ** -4,
-        atol_onnx_torch2onnx=10 ** -4,
-    )
-
-def test_shelfnet() -> None:
-    model_path = get_model_path('shelfnet')
-    model = onnx.load_model(model_path)
-
-    input_name = model.graph.input[0].name
-    test_inputs = {
-        input_name: np.random.randn(8,3,384,288).astype(dtype=np.float32)
-    }
-
-    check_onnx_model(
-        model,
-        test_inputs,
-        atol_onnx_torch=10 ** -4,
-        atol_torch_cpu_cuda=10 ** -4,
-        atol_onnx_torch2onnx=10 ** -4,
-    )

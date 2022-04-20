@@ -42,39 +42,28 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         raise NotImplementedError(f'Convolution operation with spatial rank == {spatial_rank} is not implemented')
 
     node_attributes = node.attributes
-    common_kwargs = dict(
-        kernel_size=node_attributes.get('kernel_shape', weights.shape[2:]),
-        stride=node_attributes.get('strides', 1),
-        dilation=node_attributes.get('dilations', 1),
-        groups=node_attributes.get('group', 1),
-        padding=onnx_padding_to_torch_padding(
-            node_attributes.get('pads', [0] * spatial_rank * 2),
-            node_attributes.get('auto_pad', 'NOTSET'),
-        ),
-        bias = bias is not None,
+    kernel_size = node_attributes.get('kernel_shape', weights.shape[2:])
+    stride = node_attributes.get('strides', 1)
+    dilation = node_attributes.get('dilations', 1)
+    groups = node_attributes.get('group', 1)
+
+    padding = onnx_padding_to_torch_padding(
+        node_attributes.get('pads', [0] * spatial_rank * 2),
+        node_attributes.get('auto_pad', 'NOTSET'),
     )
 
-    if op_type == 'Conv':
-        special_kwargs = dict(
-            out_channels=weights.shape[0],
-            in_channels=weights.shape[1]*common_kwargs['groups'],
-        )
-    elif op_type == 'ConvTranspose':
-        output_padding = node_attributes.get('output_padding', [0] * spatial_rank * 2)
-        if len(output_padding) > 3:
-            output_padding = onnx_padding_to_torch_padding(
-                output_padding,
-                node_attributes.get('auto_pad', 'NOTSET'),
-            )
-        special_kwargs = dict(
-            out_channels=weights.shape[1]*common_kwargs['groups'],
-            in_channels=weights.shape[0],
-            output_padding=output_padding,
-        )
+    out_channels = weights.shape[0]
+    in_channels = weights.shape[1]*groups
 
     torch_module = conv_class(
-        **common_kwargs,
-        **special_kwargs,
+        in_channels=in_channels,
+        out_channels=out_channels,
+        kernel_size=kernel_size,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        groups=groups,
+        bias=bias is not None,
     )
 
     with torch.no_grad():
