@@ -20,32 +20,37 @@ def _arbitrary_dim_shift_and_insert_zero(
 
     t_shape = input_tensor.shape
     insert_dim_size = t_shape[insert_dim]
+
     rh_tensor = torch.index_select(
         input=input_tensor,
         dim=insert_dim,
         index=torch.arange(0, insert_dim_size-1, dtype=torch.int32, device=input_tensor.device),
     )
+
+    insert_index = torch.arange(1, insert_dim_size, dtype=torch.int64, device=input_tensor.device)
+    index_shape = [1] * len(t_shape)
+    index_shape[insert_dim] = insert_dim_size - 1
+
+    insert_index = torch.reshape(insert_index, index_shape)
+    insert_index = torch.broadcast_tensors(insert_index, rh_tensor)[0]
+
+    input_tensor = torch.scatter(
+        input=input_tensor,
+        dim=insert_dim,
+        index=insert_index,
+        src=rh_tensor,
+    )
+
     index = [slice(dim_shape) for dim_shape in t_shape]
     index[insert_dim] = slice(1, t_shape[insert_dim])
-    input_tensor[index] = rh_tensor
 
-    # idx = torch.broadcast_tensors(idx, rh_tensor)[0]
-    #
-    # input_tensor = torch.scatter(
-    #     input=input_tensor,
-    #     dim=insert_dim,
-    #     index=idx,
-    #     src=rh_tensor,
-    # )
+    input_tensor = torch.index_fill(
+        input_tensor,
+        dim=insert_dim,
+        index=torch.zeros((1,), dtype=input_tensor.dtype, device=input_tensor.device),
+        value=0,
+    )
 
-    index = [slice(dim_shape) for dim_shape in t_shape]
-    index[insert_dim] = 0
-    input_tensor[index] = torch.zeros((1,), dtype=input_tensor.dtype, device=input_tensor.device)
-    # input_tensor.scatter_(
-    #     dim=insert_dim,
-    #     index=torch.zeros(1, dtype=torch.int64, device=input_tensor.device).reshape([1]*len(t_shape)),
-    #     src=torch.zeros((1,), dtype=input_tensor.dtype, device=input_tensor.device).reshape([1]*len(t_shape)),
-    # )
     print(input_tensor)
     return input_tensor
 
