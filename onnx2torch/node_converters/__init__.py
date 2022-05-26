@@ -9,6 +9,7 @@ from onnx2torch.node_converters.concat import *
 from onnx2torch.node_converters.constant import *
 from onnx2torch.node_converters.constant_of_shape import *
 from onnx2torch.node_converters.conv import *
+from onnx2torch.node_converters.cumsum import *
 from onnx2torch.node_converters.expand import *
 from onnx2torch.node_converters.flatten import *
 from onnx2torch.node_converters.functions import *
