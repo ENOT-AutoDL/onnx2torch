@@ -16,9 +16,8 @@ def _arbitrary_dim_shift_and_insert_zero(
         insert_dim: int,
 ) -> torch.Tensor:
 
-    input_tensor = deepcopy(input_tensor)
-
     t_shape = input_tensor.shape
+    insert_dim = torch.arange(start=0, end=len(t_shape), dtype=torch.int64)[insert_dim]
     insert_dim_size = t_shape[insert_dim]
 
     rh_tensor = torch.index_select(
@@ -32,7 +31,7 @@ def _arbitrary_dim_shift_and_insert_zero(
     index_shape[insert_dim] = insert_dim_size - 1
 
     insert_index = torch.reshape(insert_index, index_shape)
-    insert_index = torch.broadcast_tensors(insert_index, rh_tensor)[0]
+    insert_index = insert_index + torch.zeros_like(rh_tensor, dtype=torch.int64, device=input_tensor.device)
 
     input_tensor = torch.scatter(
         input=input_tensor,
@@ -41,48 +40,15 @@ def _arbitrary_dim_shift_and_insert_zero(
         src=rh_tensor,
     )
 
-    index = [slice(dim_shape) for dim_shape in t_shape]
-    index[insert_dim] = slice(1, t_shape[insert_dim])
-
-    input_tensor = torch.index_fill(
-        input_tensor,
-        dim=insert_dim,
-        index=torch.zeros((1,), dtype=input_tensor.dtype, device=input_tensor.device),
-        value=0,
-    )
-
-    print(input_tensor)
+    if len(t_shape)-1 != insert_dim:
+        shuffled_input_tensor = torch.transpose(input_tensor, len(t_shape)-1, insert_dim)
+        shuffled_input_tensor[..., 0] = 0
+        input_tensor = torch.transpose(shuffled_input_tensor, len(t_shape)-1, insert_dim)
+    elif len(t_shape)-1 == 0:
+        input_tensor[0] = 0
+    else:
+        input_tensor[..., 0] = 0
     return input_tensor
-
-#
-# def _arbitrary_dim_shift_and_insert_zero(
-#         input_tensor: torch.Tensor,
-#         insert_dim: int,
-#         inplace: bool = False,
-# ) -> torch.Tensor:
-#     input_tensor.shape
-#
-#     if not inplace:
-#         input_tensor = deepcopy(input_tensor)
-#
-#     # single item shift
-#     lh_indexing, rh_indexing = [[slice(dim_shape) for dim_shape in ]] * 2
-#
-#     lh_indexing[insert_dim] = slice(1, None)
-#     lh_indexing = tuple(lh_indexing)
-#
-#     rh_indexing[insert_dim] = slice(0, -1)
-#     rh_indexing = tuple(rh_indexing)
-#
-#     input_tensor[lh_indexing] = input_tensor[rh_indexing].clone()
-#
-#     print('after_slice', input_tensor.shape)
-#
-#     input_tensor = input_tensor.index_fill(insert_dim, 0, 0)
-#
-#     print('after_insert', input_tensor.shape)
-#
-#     return input_tensor
 
 
 class OnnxCumSum(nn.Module, OnnxToTorchModule):
@@ -97,12 +63,11 @@ class OnnxCumSum(nn.Module, OnnxToTorchModule):
 
     def forward(self, input_tensor: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
         axis = axis.item()
+        if self.reverse:
+            input_tensor = torch.flip(input_tensor, dims=(axis,))
 
         if self.exclusive:
             input_tensor = _arbitrary_dim_shift_and_insert_zero(input_tensor, insert_dim=axis)
-
-        if self.reverse:
-            input_tensor = torch.flip(input_tensor, dims=(axis,))
 
         input_tensor = torch.cumsum(input_tensor, dim=axis)
 
