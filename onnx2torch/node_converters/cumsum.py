@@ -15,34 +15,33 @@ def _arbitrary_dim_shift_and_insert_zero(
         input_tensor: torch.Tensor,
         insert_dim: int,
 ) -> torch.Tensor:
-
     t_shape = input_tensor.shape
     insert_dim = torch.arange(start=0, end=len(t_shape), dtype=torch.int64)[insert_dim]
     insert_dim_size = t_shape[insert_dim]
 
-    rh_tensor = torch.index_select(
+    tensor_slice = torch.index_select(
         input=input_tensor,
         dim=insert_dim,
-        index=torch.arange(0, insert_dim_size-1, dtype=torch.int32, device=input_tensor.device),
+        index=torch.arange(start=0, end=insert_dim_size-1, dtype=torch.int32, device=input_tensor.device),
     )
 
-    insert_index = torch.arange(1, insert_dim_size, dtype=torch.int64, device=input_tensor.device)
+    insert_index = torch.arange(start=1, end=insert_dim_size, dtype=torch.int64, device=input_tensor.device)
     index_shape = [1] * len(t_shape)
     index_shape[insert_dim] = insert_dim_size - 1
 
     insert_index = torch.reshape(insert_index, index_shape)
-    insert_index = insert_index + torch.zeros_like(rh_tensor, dtype=torch.int64, device=input_tensor.device)
+    insert_index = insert_index + torch.zeros_like(tensor_slice, dtype=torch.int64, device=input_tensor.device)
 
     input_tensor = torch.scatter(
         input=input_tensor,
         dim=insert_dim,
         index=insert_index,
-        src=rh_tensor,
+        src=tensor_slice,
     )
 
-    shuffled_input_tensor = torch.transpose(input_tensor, len(t_shape) - 1, insert_dim)
+    shuffled_input_tensor = torch.transpose(input=input_tensor, dim0=len(t_shape) - 1, dim1=insert_dim)
     shuffled_input_tensor[..., 0] = 0
-    input_tensor = torch.transpose(shuffled_input_tensor, len(t_shape) - 1, insert_dim)
+    input_tensor = torch.transpose(input=shuffled_input_tensor, dim0=len(t_shape) - 1, dim1=insert_dim)
     return input_tensor
 
 
