@@ -35,6 +35,7 @@ def onnx_mapping_from_node(node: OnnxNode) -> OnnxMapping:
         outputs=node.output_values,
     )
 
+
 def get_onnx_version():
     return symbolic_helper._export_onnx_opset_version
 
