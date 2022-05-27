@@ -40,14 +40,9 @@ def _arbitrary_dim_shift_and_insert_zero(
         src=rh_tensor,
     )
 
-    if len(t_shape)-1 != insert_dim:
-        shuffled_input_tensor = torch.transpose(input_tensor, len(t_shape)-1, insert_dim)
-        shuffled_input_tensor[..., 0] = 0
-        input_tensor = torch.transpose(shuffled_input_tensor, len(t_shape)-1, insert_dim)
-    elif len(t_shape)-1 == 0:
-        input_tensor[0] = 0
-    else:
-        input_tensor[..., 0] = 0
+    shuffled_input_tensor = torch.transpose(input_tensor, len(t_shape) - 1, insert_dim)
+    shuffled_input_tensor[..., 0] = 0
+    input_tensor = torch.transpose(shuffled_input_tensor, len(t_shape) - 1, insert_dim)
     return input_tensor
 
 

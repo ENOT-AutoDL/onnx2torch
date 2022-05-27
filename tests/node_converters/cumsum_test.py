@@ -41,44 +41,30 @@ def _test_cumsum(
     check_onnx_model(model, test_inputs)
 
 
-# @pytest.mark.parametrize(
-#     'input_tensor,axis',
-#     (
-#             (np.random.randint(-10, 10, size=(10, )), 0),
-#             (np.random.randint(-10, 10, size=(10, 10)), 0),
-#             (np.random.randint(-10, 10, size=(10, 10)), 1),
-#             (np.random.randint(-10, 10, size=(10, 10)), -1),
-#             (np.random.randint(-10, 10, size=(10, 10)), -2),
-#             (np.random.randint(-10, 10, size=(10, 10, 5)), 0),
-#             (np.random.randint(-10, 10, size=(10, 10, 5)), 1),
-#             (np.random.randint(-10, 10, size=(10, 10, 5)), 2),
-#             (np.random.randint(-10, 10, size=(10, 10, 5)), -1),
-#             (np.random.randint(-10, 10, size=(10, 10, 5)), -2),
-#             (np.random.randint(-10, 10, size=(10, 10, 5)), -3),
-#      ),
-# )
-# @pytest.mark.parametrize(
-#     'exclusive,reverse',
-#     (
-#             # (0, 0),
-#             # (0, 1),
-#             (1, 0),
-#             (1, 1),
-#     ),
-# )
-# def test_cumsum(input_tensor, axis, exclusive, reverse) -> None:
-#     _test_cumsum(
-#         input_tensor=input_tensor,
-#         axis=axis,
-#         exclusive=exclusive,
-#         reverse=reverse,
-#     )
-
-
-if __name__ == '__main__':
-    _test_cumsum(
-        input_tensor=np.random.randint(-10, 10, size=(12, 12)),
-        axis=0,
-        exclusive=1,
-        reverse=0,
-    )
+@pytest.mark.parametrize(
+    'tensor_size',
+    (
+            (10,),
+            (10, 10),
+            (10, 10, 5),
+            (10, 10, 5, 6),
+    ),
+)
+@pytest.mark.parametrize(
+    'exclusive,reverse',
+    (
+            (0, 0),
+            (0, 1),
+            (1, 0),
+            (1, 1),
+    ),
+)
+def test_cumsum(tensor_size, exclusive, reverse) -> None:
+    input_tensor = np.random.randint(low=-10, high=10, size=tensor_size)
+    for axis in range(-len(tensor_size), len(tensor_size)-1):
+        _test_cumsum(
+            input_tensor=input_tensor,
+            axis=axis,
+            exclusive=exclusive,
+            reverse=reverse,
+        )
