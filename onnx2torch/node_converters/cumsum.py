@@ -15,18 +15,17 @@ def _arbitrary_dim_shift_and_insert_zero(
         input_tensor: torch.Tensor,
         insert_dim: int,
 ) -> torch.Tensor:
-    t_shape = input_tensor.shape
-    insert_dim = torch.arange(start=0, end=len(t_shape), dtype=torch.int64)[insert_dim]
-    insert_dim_size = t_shape[insert_dim]
 
-    tensor_slice = torch.index_select(
-        input=input_tensor,
-        dim=insert_dim,
-        index=torch.arange(start=0, end=insert_dim_size-1, dtype=torch.int32, device=input_tensor.device),
-    )
+    # single item shift
+    slice_index, insertion = [[slice(None)] * len(input_tensor.shape)] * 2
+    insert_dim_size = input_tensor.shape[insert_dim]
+
+    slice_index[insert_dim] = slice(0, -1)
+    slice_index = tuple(slice_index)
+    tensor_slice = input_tensor[slice_index]
 
     insert_index = torch.arange(start=1, end=insert_dim_size, dtype=torch.int64, device=input_tensor.device)
-    index_shape = [1] * len(t_shape)
+    index_shape = [1] * len(input_tensor.shape)
     index_shape[insert_dim] = insert_dim_size - 1
 
     insert_index = torch.reshape(insert_index, index_shape)
@@ -39,9 +38,10 @@ def _arbitrary_dim_shift_and_insert_zero(
         src=tensor_slice,
     )
 
-    shuffled_input_tensor = torch.transpose(input=input_tensor, dim0=len(t_shape) - 1, dim1=insert_dim)
-    shuffled_input_tensor[..., 0] = 0
-    input_tensor = torch.transpose(input=shuffled_input_tensor, dim0=len(t_shape) - 1, dim1=insert_dim)
+    insertion[insert_dim] = slice(0, 1)
+    insertion = tuple(insertion)
+    input_tensor[insertion] = 0
+
     return input_tensor
 
 
