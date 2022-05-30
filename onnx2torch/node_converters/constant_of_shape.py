@@ -19,7 +19,7 @@ class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):
         super().__init__()
 
         if value is None:
-            value = torch.Tensor(0.0, dtype=torch.float32)
+            value = torch.tensor(0.0, dtype=torch.float32)
 
         if value.numel() != 1:
             raise ValueError('parameter "value" must be scalar')
