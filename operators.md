@@ -1,175 +1,177 @@
 # Currently supported operations
 
-| Operation type            | Support            | Opset versions     |
-|---------------------------|--------------------|--------------------|
-| Abs                       | Supported          | [6, 13]            |
-| Acos                      | Supported          | [7]                |
-| Acosh                     | Can't be supported | []                 |
-| Add                       | Supported          | [14, 13, 7, 6, 1]  |
-| And                       | Supported          | [7, 1]             |
-| ArgMax                    | Planned            | []                 |
-| ArgMin                    | Planned            | []                 |
-| Asin                      | Supported          | [7]                |
-| Asinh                     | Can't be supported | []                 |
-| Atan                      | Supported          | [7]                |
-| Atanh                     | Can't be supported | []                 |
-| AveragePool               | Supported          | [11, 10, 7]        |
-| BatchNormalization        | Supported          | [9, 14, 15]        |
-| BitShift                  | Not supported      | []                 |
-| Cast                      | Supported          | [13, 9]            |
-| Ceil                      | Supported          | [6, 13]            |
-| Clip                      | Supported          | [13, 12, 11, 6]    |
-| Compress                  | Not supported      | []                 |
-| Concat                    | Supported          | [13, 11, 4]        |
-| ConcatFromSequence        | Not supported      | []                 |
-| Constant                  | Supported          | [13, 12, 11, 9]    |
-| ConstantOfShape           | Supported          | [9]                |
-| Conv                      | Supported          | [11, 1]            |
-| ConvInteger               | Not supported      | []                 |
-| ConvTranspose             | Supported          | [11, 1]            |
-| Cos                       | Supported          | [7]                |
-| Cosh                      | Can't be supported | []                 |
-| CumSum                    | Planned            | []                 |
-| DepthToSpace              | Not supported      | []                 |
-| DequantizeLinear          | Not supported      | []                 |
-| Det                       | Not supported      | []                 |
-| Div                       | Supported          | [14, 13, 7, 6, 1]  |
-| Dropout                   | Planned            | []                 |
-| Einsum                    | Not supported      | []                 |
-| Elu                       | Supported          | [6]                |
-| Equal                     | Supported          | [13, 11, 7]        |
-| Erf                       | Supported          | [13, 9]            |
-| Exp                       | Supported          | [13, 6]            |
-| Expand                    | Supported          | [13, 8]            |
-| EyeLike                   | Planned            | []                 |
-| Flatten                   | Supported          | [9, 11, 13]        |
-| Floor                     | Supported          | [6, 13]            |
-| GRU                       | Not supported      | []                 |
-| Gather                    | Supported          | [13, 11, 1]        |
-| GatherElements            | Supported          | [13, 11]           |
-| GatherND                  | Planned            | []                 |
-| Gemm                      | Supported          | [13, 11, 9]        |
-| GlobalAveragePool         | Supported          | [1]                |
-| GlobalLpPool              | Not supported      | []                 |
-| GlobalMaxPool             | Not supported      | []                 |
-| Greater                   | Supported          | [13, 9, 7]         |
-| GridSample                | Not supported      | []                 |
-| HardSigmoid               | Supported          | [6, 1]             |
-| Hardmax                   | Planned            | []                 |
-| Identity                  | Supported          | [1, 13, 14, 16]    |
-| If                        | Not supported      | []                 |
-| InstanceNormalization     | Planned            | []                 |
-| IsInf                     | Not supported      | []                 |
-| IsNaN                     | Not supported      | []                 |
-| LRN                       | Not supported      | []                 |
-| LSTM                      | Not supported      | []                 |
-| LeakyRelu                 | Supported          | [6, 1]             |
-| Less                      | Supported          | [13, 9, 7]         |
-| Log                       | Supported          | [6, 13]            |
-| Loop                      | Not supported      | []                 |
-| LpNormalization           | Planned            | []                 |
-| LpPool                    | Planned            | []                 |
-| MatMul                    | Supported          | [13, 9, 1]         |
-| MatMulInteger             | Not supported      | []                 |
-| Max                       | Planned            | []                 |
-| MaxPool                   | Supported          | [8, 10, 11, 12]    |
-| MaxRoiPool                | Not supported      | []                 |
-| MaxUnpool                 | Not supported      | []                 |
-| Mean                      | Planned            | []                 |
-| Min                       | Planned            | []                 |
-| Mod                       | Planned            | []                 |
-| Mul                       | Supported          | [14, 13, 7, 6, 1]  |
-| Multinomial               | Not supported      | []                 |
-| Neg                       | Planned            | []                 |
-| NonMaxSuppression         | Supported          | [11, 10]           |
-| NonZero                   | Planned            | []                 |
-| Not                       | Supported          | [1]                |
-| OneHot                    | Not supported      | []                 |
-| Optional                  | Not supported      | []                 |
-| OptionalGetElement        | Not supported      | []                 |
-| OptionalHasElement        | Not supported      | []                 |
-| Or                        | Supported          | [7, 1]             |
-| PRelu                     | Planned            | []                 |
-| Pad                       | Supported          | [13, 11, 2]        |
-| Pow                       | Supported          | [15, 13, 12, 7, 1] |
-| QLinearConv               | Not supported      | []                 |
-| QLinearMatMul             | Not supported      | []                 |
-| QuantizeLinear            | Not supported      | []                 |
-| RNN                       | Not supported      | []                 |
-| RandomNormal              | Planned            | []                 |
-| RandomNormalLike          | Planned            | []                 |
-| RandomUniform             | Planned            | []                 |
-| RandomUniformLike         | Planned            | []                 |
-| Reciprocal                | Not supported      | []                 |
-| ReduceL1                  | Supported          | [13, 11, 1]        |
-| ReduceL2                  | Supported          | [13, 11, 1]        |
-| ReduceLogSum              | Supported          | [13, 11, 1]        |
-| ReduceLogSumExp           | Supported          | [13, 11, 1]        |
-| ReduceMax                 | Supported          | [13, 12, 11, 1]    |
-| ReduceMean                | Supported          | [13, 11, 1]        |
-| ReduceMin                 | Supported          | [13, 12, 11, 1]    |
-| ReduceProd                | Supported          | [13, 11, 1]        |
-| ReduceSum                 | Supported          | [11, 1, 13]        |
-| ReduceSumSquare           | Supported          | [13, 11, 1]        |
-| Relu                      | Supported          | [14, 13, 6]        |
-| Reshape                   | Supported          | [14, 13, 5]        |
-| Resize                    | Supported          | [10, 13, 11]       |
-| ReverseSequence           | Not supported      | []                 |
-| RoiAlign                  | Supported          | [10]               |
-| Round                     | Supported          | [11]               |
-| Scan                      | Not supported      | []                 |
-| Scatter(deprecated)       | Not supported      | []                 |
-| ScatterElements           | Not supported      | []                 |
-| ScatterND                 | Supported          | [13, 11]           |
-| Selu                      | Supported          | [6]                |
-| SequenceAt                | Not supported      | []                 |
-| SequenceConstruct         | Not supported      | []                 |
-| SequenceEmpty             | Not supported      | []                 |
-| SequenceErase             | Not supported      | []                 |
-| SequenceInsert            | Not supported      | []                 |
-| SequenceLength            | Not supported      | []                 |
-| Shape                     | Supported          | [15, 13, 1]        |
-| Shrink                    | Planned            | []                 |
-| Sigmoid                   | Supported          | [13, 6, 1]         |
-| Sign                      | Supported          | [9, 13]            |
-| Sin                       | Supported          | [7]                |
-| Sinh                      | can't support      | []                 |
-| Size                      | Planned            | []                 |
-| Slice                     | Supported          | [9, 13, 11, 10]    |
-| Softplus                  | Supported          | [1]                |
-| Softsign                  | Supported          | [1]                |
-| SpaceToDepth              | Planned            | []                 |
-| Split                     | Supported          | [13, 2, 11]        |
-| SplitToSequence           | Not supported      | []                 |
-| Sqrt                      | Supported          | [13, 6, 1]         |
-| Squeeze                   | Supported          | [11, 1, 13]        |
-| StringNormalizer          | Not supported      | []                 |
-| Sub                       | Supported          | [14, 13, 7, 6, 1]  |
-| Sum                       | Planned            | []                 |
-| Tan                       | Supported          | [7]                |
-| Tanh                      | Supported          | [6, 13]            |
-| TfIdfVectorizer           | Not supported      | []                 |
-| ThresholdedRelu           | Not supported      | []                 |
-| Tile                      | Supported          | [13, 6]            |
-| TopK                      | Supported          | [11, 10, 1]        |
-| Transpose                 | Supported          | [13, 1]            |
-| Trilu                     | Planned            | []                 |
-| Unique                    | Planned            | []                 |
-| Unsqueeze                 | Supported          | [11, 1, 13]        |
-| Upsample(deprecated)      | Planned            | []                 |
-| Where                     | Supported          | [16, 9]            |
-| Xor                       | Supported          | [7, 1]             |
-| Function                  | Not supported      | []                 |
-| Bernoulli                 | Planned            | []                 |
-| CastLike                  | Planned            | []                 |
-| Celu                      | Supported          | [12]               |
-| DynamicQuantizeLinear     | Not supported      | []                 |
-| GreaterOrEqual            | Supported          | [12]               |
-| HardSwish                 | Supported          | [14]               |
-| LessOrEqual               | Supported          | [12]               |
-| LogSoftmax                | Supported          | [13, 11, 1]        |
-| MeanVarianceNormalization | Planned            | []                 |
-| NegativeLogLikelihoodLoss | Planned            | []                 |
-| Range                     | Supported          | [11]               |
-| SequenceMap               | Not supported      | []                 |
-| Softmax                   | Supported          | [11, 1, 13]        |
+Minimal tested opset version 9, maximum tested opset version 15, recommended opset version 13
+
+| Operation type            | Supported | Restrictions                                                                                                                                                        |
+|---------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Abs                       | Y         |                                                                                                                                                                     |
+| Acos                      | Y         |                                                                                                                                                                     |
+| Acosh                     | N         |                                                                                                                                                                     |
+| Add                       | Y         |                                                                                                                                                                     |
+| And                       | Y         |                                                                                                                                                                     |
+| ArgMax                    | N         |                                                                                                                                                                     |
+| ArgMin                    | N         |                                                                                                                                                                     |
+| Asin                      | Y         |                                                                                                                                                                     |
+| Asinh                     | N         |                                                                                                                                                                     |
+| Atan                      | Y         |                                                                                                                                                                     |
+| Atanh                     | N         |                                                                                                                                                                     |
+| AveragePool               | Y         | Average pool operation with spatial rank > 3 is not implemented                                                                                                     |
+| BatchNormalization        | Y         | BatchNorm operation with spatial rank > 3 is not implemented. BatchNorm nodes in training mode are not supported.                                                   |
+| BitShift                  | N         |                                                                                                                                                                     |
+| Cast                      | Y         |                                                                                                                                                                     |
+| Ceil                      | Y         |                                                                                                                                                                     |
+| Clip                      | Y         | Dynamic value of min/max is not implemented                                                                                                                         |
+| Compress                  | N         |                                                                                                                                                                     |
+| Concat                    | Y         |                                                                                                                                                                     |
+| ConcatFromSequence        | N         |                                                                                                                                                                     |
+| Constant                  | Y         |                                                                                                                                                                     |
+| ConstantOfShape           | Y         | Parameter "value" must be scalar                                                                                                                                    |
+| Conv                      | Y         | Convolution operation with spatial rank > 3 is not implemented                                                                                                      |
+| ConvInteger               | N         |                                                                                                                                                                     |
+| ConvTranspose             | Y         | Convolution operation with spatial rank > 3 is not implemented                                                                                                      |
+| Cos                       | Y         |                                                                                                                                                                     |
+| Cosh                      | N         |                                                                                                                                                                     |
+| CumSum                    | N         |                                                                                                                                                                     |
+| DepthToSpace              | N         |                                                                                                                                                                     |
+| DequantizeLinear          | N         |                                                                                                                                                                     |
+| Det                       | N         |                                                                                                                                                                     |
+| Div                       | Y         |                                                                                                                                                                     |
+| Dropout                   | N         |                                                                                                                                                                     |
+| Einsum                    | N         |                                                                                                                                                                     |
+| Elu                       | Y         |                                                                                                                                                                     |
+| Equal                     | Y         |                                                                                                                                                                     |
+| Erf                       | Y         |                                                                                                                                                                     |
+| Exp                       | Y         |                                                                                                                                                                     |
+| Expand                    | Y         |                                                                                                                                                                     |
+| EyeLike                   | N         |                                                                                                                                                                     |
+| Flatten                   | Y         |                                                                                                                                                                     |
+| Floor                     | Y         |                                                                                                                                                                     |
+| GRU                       | N         |                                                                                                                                                                     |
+| Gather                    | Y         |                                                                                                                                                                     |
+| GatherElements            | Y         |                                                                                                                                                                     |
+| GatherND                  | N         |                                                                                                                                                                     |
+| Gemm                      | Y         |                                                                                                                                                                     |
+| GlobalAveragePool         | Y         |                                                                                                                                                                     |
+| GlobalLpPool              | N         |                                                                                                                                                                     |
+| GlobalMaxPool             | N         |                                                                                                                                                                     |
+| Greater                   | Y         |                                                                                                                                                                     |
+| GridSample                | N         |                                                                                                                                                                     |
+| HardSigmoid               | Y         |                                                                                                                                                                     |
+| Hardmax                   | N         |                                                                                                                                                                     |
+| Identity                  | Y         |                                                                                                                                                                     |
+| If                        | N         |                                                                                                                                                                     |
+| InstanceNormalization     | N         |                                                                                                                                                                     |
+| IsInf                     | N         |                                                                                                                                                                     |
+| IsNaN                     | N         |                                                                                                                                                                     |
+| LRN                       | N         |                                                                                                                                                                     |
+| LSTM                      | N         |                                                                                                                                                                     |
+| LeakyRelu                 | Y         |                                                                                                                                                                     |
+| Less                      | Y         |                                                                                                                                                                     |
+| Log                       | Y         |                                                                                                                                                                     |
+| Loop                      | N         |                                                                                                                                                                     |
+| LpNormalization           | N         |                                                                                                                                                                     |
+| LpPool                    | N         |                                                                                                                                                                     |
+| MatMul                    | Y         |                                                                                                                                                                     |
+| MatMulInteger             | N         |                                                                                                                                                                     |
+| Max                       | N         |                                                                                                                                                                     |
+| MaxPool                   | Y         | Max pool operation with spatial rank > 3 is not implemented                                                                                                         |
+| MaxRoiPool                | N         |                                                                                                                                                                     |
+| MaxUnpool                 | N         |                                                                                                                                                                     |
+| Mean                      | N         |                                                                                                                                                                     |
+| Min                       | N         |                                                                                                                                                                     |
+| Mod                       | N         |                                                                                                                                                                     |
+| Mul                       | Y         |                                                                                                                                                                     |
+| Multinomial               | N         |                                                                                                                                                                     |
+| Neg                       | N         |                                                                                                                                                                     |
+| NonMaxSuppression         | Y         |                                                                                                                                                                     |
+| NonZero                   | N         |                                                                                                                                                                     |
+| Not                       | Y         |                                                                                                                                                                     |
+| OneHot                    | N         |                                                                                                                                                                     |
+| Optional                  | N         |                                                                                                                                                                     |
+| OptionalGetElement        | N         |                                                                                                                                                                     |
+| OptionalHasElement        | N         |                                                                                                                                                                     |
+| Or                        | Y         |                                                                                                                                                                     |
+| PRelu                     | N         |                                                                                                                                                                     |
+| Pad                       | Y         | Padding is implemented for padding the last 3 dimensions of 5D input tensor, or the last 2 dimensions of 4D input tensor, or the last dimension of 3D input tensor. |
+| Pow                       | Y         |                                                                                                                                                                     |
+| QLinearConv               | N         |                                                                                                                                                                     |
+| QLinearMatMul             | N         |                                                                                                                                                                     |
+| QuantizeLinear            | N         |                                                                                                                                                                     |
+| RNN                       | N         |                                                                                                                                                                     |
+| RandomNormal              | N         |                                                                                                                                                                     |
+| RandomNormalLike          | N         |                                                                                                                                                                     |
+| RandomUniform             | N         |                                                                                                                                                                     |
+| RandomUniformLike         | N         |                                                                                                                                                                     |
+| Reciprocal                | N         |                                                                                                                                                                     |
+| ReduceL1                  | Y         |                                                                                                                                                                     |
+| ReduceL2                  | Y         |                                                                                                                                                                     |
+| ReduceLogSum              | Y         |                                                                                                                                                                     |
+| ReduceLogSumExp           | Y         |                                                                                                                                                                     |
+| ReduceMax                 | Y         |                                                                                                                                                                     |
+| ReduceMean                | Y         |                                                                                                                                                                     |
+| ReduceMin                 | Y         |                                                                                                                                                                     |
+| ReduceProd                | Y         |                                                                                                                                                                     |
+| ReduceSum                 | Y         |                                                                                                                                                                     |
+| ReduceSumSquare           | Y         |                                                                                                                                                                     |
+| Relu                      | Y         |                                                                                                                                                                     |
+| Reshape                   | Y         | Allowzero=1 is not implemented                                                                                                                                      |
+| Resize                    | Y         | Roi logic is not implemented. Pytorch's interpolate cannot resize channel or batch dimensions.                                                                      |
+| ReverseSequence           | N         |                                                                                                                                                                     |
+| RoiAlign                  | Y         | only mode=avg supported                                                                                                                                             |
+| Round                     | Y         |                                                                                                                                                                     |
+| Scan                      | N         |                                                                                                                                                                     |
+| Scatter(deprecated)       | N         |                                                                                                                                                                     |
+| ScatterElements           | N         |                                                                                                                                                                     |
+| ScatterND                 | Y         |                                                                                                                                                                     |
+| Selu                      | Y         | alpha and gamma parameters must be default                                                                                                                          |
+| SequenceAt                | N         |                                                                                                                                                                     |
+| SequenceConstruct         | N         |                                                                                                                                                                     |
+| SequenceEmpty             | N         |                                                                                                                                                                     |
+| SequenceErase             | N         |                                                                                                                                                                     |
+| SequenceInsert            | N         |                                                                                                                                                                     |
+| SequenceLength            | N         |                                                                                                                                                                     |
+| Shape                     | Y         |                                                                                                                                                                     |
+| Shrink                    | N         |                                                                                                                                                                     |
+| Sigmoid                   | Y         |                                                                                                                                                                     |
+| Sign                      | Y         |                                                                                                                                                                     |
+| Sin                       | Y         |                                                                                                                                                                     |
+| Sinh                      | N         |                                                                                                                                                                     |
+| Size                      | N         |                                                                                                                                                                     |
+| Slice                     | Y         |                                                                                                                                                                     |
+| Softplus                  | Y         |                                                                                                                                                                     |
+| Softsign                  | Y         |                                                                                                                                                                     |
+| SpaceToDepth              | N         |                                                                                                                                                                     |
+| Split                     | Y         |                                                                                                                                                                     |
+| SplitToSequence           | N         |                                                                                                                                                                     |
+| Sqrt                      | Y         |                                                                                                                                                                     |
+| Squeeze                   | Y         |                                                                                                                                                                     |
+| StringNormalizer          | N         |                                                                                                                                                                     |
+| Sub                       | Y         |                                                                                                                                                                     |
+| Sum                       | N         |                                                                                                                                                                     |
+| Tan                       | Y         |                                                                                                                                                                     |
+| Tanh                      | Y         |                                                                                                                                                                     |
+| TfIdfVectorizer           | N         |                                                                                                                                                                     |
+| ThresholdedRelu           | N         |                                                                                                                                                                     |
+| Tile                      | Y         |                                                                                                                                                                     |
+| TopK                      | Y         |                                                                                                                                                                     |
+| Transpose                 | Y         |                                                                                                                                                                     |
+| Trilu                     | N         |                                                                                                                                                                     |
+| Unique                    | N         |                                                                                                                                                                     |
+| Unsqueeze                 | Y         |                                                                                                                                                                     |
+| Upsample(deprecated)      | N         |                                                                                                                                                                     |
+| Where                     | Y         |                                                                                                                                                                     |
+| Xor                       | Y         |                                                                                                                                                                     |
+| Function                  | N         |                                                                                                                                                                     |
+| Bernoulli                 | N         |                                                                                                                                                                     |
+| CastLike                  | N         |                                                                                                                                                                     |
+| Celu                      | Y         |                                                                                                                                                                     |
+| DynamicQuantizeLinear     | N         |                                                                                                                                                                     |
+| GreaterOrEqual            | Y         |                                                                                                                                                                     |
+| HardSwish                 | Y         |                                                                                                                                                                     |
+| LessOrEqual               | Y         |                                                                                                                                                                     |
+| LogSoftmax                | Y         |                                                                                                                                                                     |
+| MeanVarianceNormalization | N         |                                                                                                                                                                     |
+| NegativeLogLikelihoodLoss | N         |                                                                                                                                                                     |
+| Range                     | Y         |                                                                                                                                                                     |
+| SequenceMap               | N         |                                                                                                                                                                     |
+| Softmax                   | Y         |                                                                                                                                                                     |
