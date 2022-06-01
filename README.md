@@ -31,8 +31,6 @@ Let us know which models you use or want to convert from onnx to torch [here](ht
 
 ## Installation
 
-### From PyPi
-
 ```bash
 pip install onnx2torch
 ```
