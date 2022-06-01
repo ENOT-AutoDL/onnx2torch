@@ -1,4 +1,22 @@
-# onnx2torch
+<div align="center">
+  <img src="assets/logo/onnx2torch_light.png#gh-light-mode-only">
+  <img src="assets/logo/onnx2torch_dark.png#gh-dark-mode-only">
+</div>
+
+<p align="center">
+    <a href="https://pypi.org/project/onnx2torch">
+        <img src="https://badgen.net/pypi/v/onnx2torch" />
+    </a>
+    <a href="https://pypi.org/project/onnx2torch">
+        <img src="https://badgen.net/pypi/license/onnx2torch" />
+    </a>
+    <a href="https://pypi.org/project/onnx2torch">
+        <img src="https://img.shields.io/pypi/format/onnx2torch" />
+    </a>
+    <a href="https://github.com/ENOT-AutoDL/onnx2torch/stargazers">
+        <img src="https://img.shields.io/github/stars/ENOT-AutoDL/onnx2torch.svg?style=social&label=Star&maxAge=2592000" />
+    </a>
+</p>
 
 onnx2torch is an ONNX to PyTorch converter. 
 Our converter:
@@ -12,8 +30,6 @@ Please note that this converter covers only a limited number of PyTorch / ONNX m
 Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
 
 ## Installation
-
-### From PyPi
 
 ```bash
 pip install onnx2torch
@@ -89,6 +105,8 @@ Classification from __torchvision__:
 - [x] MnasNet
 - [x] RegNet
 
+#### :page_facing_up: List of currently supported operations can be founded [here](operators.md).
+
 ## How to add new operations to converter
 
 Here we show how to add the module:
@@ -137,3 +155,8 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 ```
 
 Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ExpandExportToOnnx``.
+
+## Acknowledgments
+
+Thanks to Dmitry Chudakov [@cakeofwar42](https://github.com/cakeofwar42) for his contributions.\
+Special thanks to Andrey Denisov [@denisovap2013](https://github.com/denisovap2013) for the logo design.
