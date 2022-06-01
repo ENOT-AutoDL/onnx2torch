@@ -155,3 +155,8 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 ```
 
 Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ExpandExportToOnnx``.
+
+## Acknowledgments
+
+Thanks to Dmitry Chudakov [@cakeofwar42](https://github.com/cakeofwar42) for his contributions.\
+Special thanks to Andrey Denisov [@denisovap2013](https://github.com/denisovap2013) for the logo design.
