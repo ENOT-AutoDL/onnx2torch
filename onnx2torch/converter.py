@@ -88,7 +88,7 @@ def convert(
         for opsetid_proto in onnx_model.opset_import
     }
 
-    onnx_model = infer_shapes(onnx_model)
+    # onnx_model = infer_shapes(onnx_model)
     onnx_graph = OnnxGraph(onnx_model.graph)  # pylint: disable=no-member
     torch_graph = fx.Graph()
 
