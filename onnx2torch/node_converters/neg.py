@@ -1,5 +1,6 @@
 __all__ = ['OnnxNeg']
 
+import torch
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -12,8 +13,8 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 class OnnxNeg(nn.Module, OnnxToTorchModule):
 
-    def forward(self, x):
-        return -x
+    def forward(self, input_tensor: torch.Tensor):
+        return -input_tensor
 
 
 @add_converter(operation_type='Neg', version=1)
