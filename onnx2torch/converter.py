@@ -7,6 +7,7 @@ import onnx
 import torch
 from onnx.onnx_ml_pb2 import ModelProto
 from onnx.shape_inference import infer_shapes
+from onnx.shape_inference import infer_shapes_path
 from torch import fx
 from torch import nn
 
@@ -73,8 +74,9 @@ def convert(
     """
 
     if isinstance(onnx_model_or_path, ModelProto):
-        onnx_model = onnx_model_or_path
+        onnx_model = infer_shapes(onnx_model_or_path)
     else:
+        infer_shapes_path(onnx_model_or_path)
         onnx_model = onnx.load(onnx_model_or_path)
 
     if onnx_model.ir_version < 3:
@@ -88,7 +90,6 @@ def convert(
         for opsetid_proto in onnx_model.opset_import
     }
 
-    # onnx_model = infer_shapes(onnx_model)
     onnx_graph = OnnxGraph(onnx_model.graph)  # pylint: disable=no-member
     torch_graph = fx.Graph()
 
