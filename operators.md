@@ -37,7 +37,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | Det                       | N         |                                                                                                                                                                     |
 | Div                       | Y         |                                                                                                                                                                     |
 | Dropout                   | N         |                                                                                                                                                                     |
-| Einsum                    | N         |                                                                                                                                                                     |
+| Einsum                    | Y         |                                                                                                                                                                     |
 | Elu                       | Y         |                                                                                                                                                                     |
 | Equal                     | Y         |                                                                                                                                                                     |
 | Erf                       | Y         |                                                                                                                                                                     |
@@ -82,7 +82,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | Mod                       | N         |                                                                                                                                                                     |
 | Mul                       | Y         |                                                                                                                                                                     |
 | Multinomial               | N         |                                                                                                                                                                     |
-| Neg                       | N         |                                                                                                                                                                     |
+| Neg                       | Y         |                                                                                                                                                                     |
 | NonMaxSuppression         | Y         |                                                                                                                                                                     |
 | NonZero                   | N         |                                                                                                                                                                     |
 | Not                       | Y         |                                                                                                                                                                     |
@@ -102,7 +102,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | RandomNormalLike          | N         |                                                                                                                                                                     |
 | RandomUniform             | N         |                                                                                                                                                                     |
 | RandomUniformLike         | N         |                                                                                                                                                                     |
-| Reciprocal                | N         |                                                                                                                                                                     |
+| Reciprocal                | Y         |                                                                                                                                                                     |
 | ReduceL1                  | Y         |                                                                                                                                                                     |
 | ReduceL2                  | Y         |                                                                                                                                                                     |
 | ReduceLogSum              | Y         |                                                                                                                                                                     |

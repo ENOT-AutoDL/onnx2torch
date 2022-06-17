@@ -1,7 +1,6 @@
 __all__ = ['OnnxErf', 'OnnxHardSigmoid', 'OnnxSoftmaxV1V11']
 
 import numpy as np
-
 import torch
 from torch import nn
 
@@ -26,7 +25,7 @@ class OnnxHardSigmoid(nn.Module, OnnxToTorchModule):
         self.beta = beta
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        return torch.clip(self.alpha * input_tensor + self.beta, min=0.0, max=1.0)
+        return torch.clip(input_tensor * self.alpha + self.beta, min=0.0, max=1.0)
 
 
 class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):
@@ -190,6 +189,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
         torch_module=torch.nn.Softsign(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
+
 
 @add_converter(operation_type='Softplus', version=1)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
