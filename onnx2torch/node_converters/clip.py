@@ -1,4 +1,6 @@
-__all__ = ['OnnxClip']
+__all__ = [
+    'OnnxClip',
+]
 
 from typing import Optional
 

@@ -1,4 +1,6 @@
-__all__ = ['OnnxNeg']
+__all__ = [
+    'OnnxNeg',
+]
 
 import torch
 from torch import nn

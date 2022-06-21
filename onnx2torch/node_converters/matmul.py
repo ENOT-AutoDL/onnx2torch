@@ -1,4 +1,6 @@
-__all__ = ['OnnxMatMul']
+__all__ = [
+    'OnnxMatMul',
+]
 
 import torch
 from torch import nn

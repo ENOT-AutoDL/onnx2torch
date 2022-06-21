@@ -1,4 +1,7 @@
-__all__ = ['OnnxNot', 'OnnxLogical']
+__all__ = [
+    'OnnxNot',
+    'OnnxLogical',
+]
 
 from typing import Optional
 

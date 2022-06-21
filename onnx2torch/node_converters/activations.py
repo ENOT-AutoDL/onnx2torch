@@ -1,4 +1,8 @@
-__all__ = ['OnnxErf', 'OnnxHardSigmoid', 'OnnxSoftmaxV1V11']
+__all__ = [
+    'OnnxErf',
+    'OnnxHardSigmoid',
+    'OnnxSoftmaxV1V11',
+]
 
 import numpy as np
 import torch

@@ -1,4 +1,6 @@
-__all__ = ['OnnxGlobalAveragePool']
+__all__ = [
+    'OnnxGlobalAveragePool',
+]
 
 import torch
 from torch import nn

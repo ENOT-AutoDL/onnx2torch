@@ -1,4 +1,6 @@
-__all__ = ['OnnxConcat']
+__all__ = [
+    'OnnxConcat',
+]
 
 import torch
 from torch import nn

@@ -1,4 +1,6 @@
-__all__ = ['OnnxCast']
+__all__ = [
+    'OnnxCast',
+]
 
 import torch
 from onnx import TensorProto

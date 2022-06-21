@@ -1,4 +1,6 @@
-__all__ = ['OnnxConstant']
+__all__ = [
+    'OnnxConstant',
+]
 
 from typing import Any
 
