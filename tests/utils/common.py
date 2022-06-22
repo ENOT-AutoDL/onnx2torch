@@ -1,30 +1,16 @@
 import io
-from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Tuple
-from typing import Type
-from typing import Union
-
-import torch
+from typing import (Any, Callable, Dict, List, Optional, Sequence, Tuple, Type,
+                    Union)
 
 import numpy as np
 import onnx
 import onnxruntime as ort
-
-from onnx import defs
-from onnx import numpy_helper
-from onnx.helper import make_graph
-from onnx.helper import make_model
-from onnx.helper import make_operatorsetid
-from onnx.helper import make_tensor_value_info
+import torch
+from onnx import defs, numpy_helper
+from onnx.helper import (make_graph, make_model, make_operatorsetid,
+                         make_tensor_value_info)
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
-from onnx.onnx_ml_pb2 import ModelProto
-from onnx.onnx_ml_pb2 import NodeProto
-from onnx.onnx_ml_pb2 import ValueInfoProto
+from onnx.onnx_ml_pb2 import ModelProto, NodeProto, ValueInfoProto
 from onnx.shape_inference import infer_shapes
 
 from onnx2torch.converter import convert

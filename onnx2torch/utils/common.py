@@ -1,12 +1,9 @@
-from typing import List
-from typing import NamedTuple
-from typing import Tuple
-from typing import Union
+from typing import List, NamedTuple, Tuple, Union
 
 import torch
+from onnx import ValueInfoProto
 from torch import nn
 from torch.onnx import symbolic_helper
-from onnx import ValueInfoProto
 
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode

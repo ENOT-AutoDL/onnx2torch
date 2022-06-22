@@ -6,9 +6,8 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxMapping
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import onnx_padding_to_torch_padding
+from onnx2torch.utils.common import (OnnxMapping, OperationConverterResult,
+                                     onnx_padding_to_torch_padding)
 
 _CONV_CLASS_FROM_SPATIAL_RANK = {
     ('Conv', 1): nn.Conv1d,

@@ -4,13 +4,11 @@ import numpy as np
 import onnx
 import pytest
 import torchvision
-from PIL import Image
 from onnx import version_converter
+from PIL import Image
 
-from tests.utils.common import check_onnx_model
-from tests.utils.common import check_torch_model
-from tests.utils.resources import get_minimal_dataset_path
-from tests.utils.resources import get_model_path
+from tests.utils.common import check_onnx_model, check_torch_model
+from tests.utils.resources import get_minimal_dataset_path, get_model_path
 
 _COCO_MEAN = np.array([0.406, 0.485, 0.456], dtype=np.float32)
 _COCO_STD = np.array([0.225, 0.224, 0.229], dtype=np.float32)

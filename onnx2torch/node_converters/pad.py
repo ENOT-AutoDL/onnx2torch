@@ -3,8 +3,7 @@ __all__ = [
     'OnnxPadDynamic',
 ]
 
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import torch
 from torch import nn
@@ -12,11 +11,9 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxMapping
-from onnx2torch.utils.common import OnnxToTorchModule
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import onnx_mapping_from_node
-
+from onnx2torch.utils.common import (OnnxMapping, OnnxToTorchModule,
+                                     OperationConverterResult,
+                                     onnx_mapping_from_node)
 
 ONNX_TO_TORCH_MODE = {
     'constant': 'constant',

@@ -5,10 +5,10 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import get_shape_from_value_info
-from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.common import onnx_padding_to_torch_padding
+from onnx2torch.utils.common import (OperationConverterResult,
+                                     get_shape_from_value_info,
+                                     onnx_mapping_from_node,
+                                     onnx_padding_to_torch_padding)
 
 _MAXPOOL_CLASS_FROM_SPATIAL_RANK = {
     1: nn.MaxPool1d,

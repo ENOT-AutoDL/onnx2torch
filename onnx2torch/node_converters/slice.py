@@ -1,9 +1,6 @@
 __all__ = ['OnnxSlice']
 
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -13,11 +10,11 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxToTorchModule
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
-from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+from onnx2torch.utils.common import (OnnxToTorchModule,
+                                     OperationConverterResult,
+                                     onnx_mapping_from_node)
+from onnx2torch.utils.custom_export_to_onnx import (
+    CustomExportToOnnx, OnnxToTorchModuleWithCustomExport)
 
 
 def _get_slices(

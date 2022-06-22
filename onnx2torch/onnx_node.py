@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 from types import MappingProxyType
-from typing import Any
-from typing import Mapping
-from typing import Tuple
+from typing import Any, Mapping, Tuple
 
-from onnx.onnx_ml_pb2 import AttributeProto
-from onnx.onnx_ml_pb2 import NodeProto
+from onnx.onnx_ml_pb2 import AttributeProto, NodeProto
 
 from onnx2torch.onnx_tensor import OnnxTensor
 

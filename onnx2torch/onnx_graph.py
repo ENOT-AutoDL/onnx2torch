@@ -1,11 +1,9 @@
 from collections import OrderedDict
 from enum import Enum
 from types import MappingProxyType
-from typing import Mapping
-from typing import Tuple
+from typing import Mapping, Tuple
 
-from onnx.onnx_ml_pb2 import GraphProto
-from onnx.onnx_ml_pb2 import ValueInfoProto
+from onnx.onnx_ml_pb2 import GraphProto, ValueInfoProto
 
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.onnx_tensor import OnnxTensor
@@ -92,7 +90,7 @@ class OnnxGraph:
 
         if value_name in self._initializers:
             return ValueType.GRAPH_INITIALIZER
-        
+
         if value_name == '':
             return ValueType.EMPTY
 

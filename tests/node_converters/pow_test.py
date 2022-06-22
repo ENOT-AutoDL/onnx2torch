@@ -1,8 +1,7 @@
 import numpy as np
 import onnx
 
-from tests.utils.common import check_onnx_model
-from tests.utils.common import make_model_from_nodes
+from tests.utils.common import check_onnx_model, make_model_from_nodes
 
 
 def test_pow() -> None:
@@ -31,7 +30,7 @@ def test_pow() -> None:
         )
 
         model = make_model_from_nodes(
-            nodes=node, 
+            nodes=node,
             initializers=initializers,
             inputs_example=test_inputs,
         )
