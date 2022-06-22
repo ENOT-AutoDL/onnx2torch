@@ -58,7 +58,7 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
             sizes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         torch_mode = _onnx_mode_to_torch_mode(self.onnx_mode, input_tensor.dim() - 2)
-        if roi is not None and roi.nelement() != 0:
+        if roi is not None and roi.nelement() != 0 and roi.nelement() != (roi==1).sum():
             raise NotImplementedError('roi logic is not implemented.')
 
         # Format of onnx scales and sizes is [n, c, d, h, w]
