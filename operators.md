@@ -36,7 +36,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | DequantizeLinear          | N         |                                                                                                                                                                     |
 | Det                       | N         |                                                                                                                                                                     |
 | Div                       | Y         |                                                                                                                                                                     |
-| Dropout                   | N         |                                                                                                                                                                     |
+| Dropout                   | Y         |                                                                                                                                                                     |
 | Einsum                    | Y         |                                                                                                                                                                     |
 | Elu                       | Y         |                                                                                                                                                                     |
 | Equal                     | Y         |                                                                                                                                                                     |
