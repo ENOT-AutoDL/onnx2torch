@@ -6,8 +6,9 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import (OnnxMapping, OperationConverterResult,
-                                     get_shape_from_value_info)
+from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import get_shape_from_value_info
 
 _BN_CLASS_FROM_SPATIAL_RANK = {
     0: nn.BatchNorm1d,

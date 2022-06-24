@@ -3,7 +3,8 @@ from typing import List
 import numpy as np
 import onnx
 
-from tests.utils.common import check_onnx_model, make_model_from_nodes
+from tests.utils.common import check_onnx_model
+from tests.utils.common import make_model_from_nodes
 
 
 def _test_global_avg_pool(

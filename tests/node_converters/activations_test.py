@@ -1,10 +1,12 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import numpy as np
 import onnx
 import pytest
 
-from tests.utils.common import check_onnx_model, make_model_from_nodes
+from tests.utils.common import check_onnx_model
+from tests.utils.common import make_model_from_nodes
 
 
 def _test_activation(activation: str, data: np.ndarray, opset_version, **kwargs) -> None:

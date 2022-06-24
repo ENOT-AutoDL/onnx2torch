@@ -1,4 +1,7 @@
-from typing import List, NamedTuple, Tuple, Union
+from typing import List
+from typing import NamedTuple
+from typing import Tuple
+from typing import Union
 
 import torch
 from onnx import ValueInfoProto

@@ -8,9 +8,11 @@ from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import (OnnxMapping, OnnxToTorchModule,
-                                     OperationConverterResult, get_const_value,
-                                     onnx_mapping_from_node)
+from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import get_const_value
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxClip(nn.Module, OnnxToTorchModule):

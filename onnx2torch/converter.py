@@ -7,10 +7,12 @@ import onnx
 import torch
 from onnx.onnx_ml_pb2 import ModelProto
 from onnx.shape_inference import infer_shapes
-from torch import fx, nn
+from torch import fx
+from torch import nn
 
 from onnx2torch.node_converters import get_converter
-from onnx2torch.onnx_graph import OnnxGraph, ValueType
+from onnx2torch.onnx_graph import OnnxGraph
+from onnx2torch.onnx_graph import ValueType
 
 
 def _remove_initializers_from_input(model: ModelProto) -> ModelProto:

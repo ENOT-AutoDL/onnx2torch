@@ -1,5 +1,6 @@
 import logging
-from typing import Callable, NamedTuple
+from typing import Callable
+from typing import NamedTuple
 
 from onnx import defs
 

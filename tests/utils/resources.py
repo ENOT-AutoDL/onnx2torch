@@ -4,7 +4,8 @@ from pathlib import Path
 
 from google_drive_downloader import GoogleDriveDownloader
 
-from tests import DATASETS_DIR, MODELS_DIR
+from tests import DATASETS_DIR
+from tests import MODELS_DIR
 
 _BASE_URL = 'https://gitlab.expasoft.com/p.ivanov/onnx2torch_data/-/raw/main/models_for_tests'
 
