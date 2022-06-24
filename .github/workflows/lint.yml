@@ -1,0 +1,40 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint-python:
+    name: Pylint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+        python -m pip install -r requirements.txt
+    - name: Analysing the code with pylint
+      run: |
+        pylint --rcfile .pylintrc --output-format=colorized $(git ls-files '*.py')
+
+  lint-python-format:
+    name: Python format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+      - uses: psf/black@stable
+        with:
+          options: "--check --diff --color"
+      - uses: isort/isort-action@master
+        with:
+          configuration: "--force-single-line-imports --ensure-newline-before-comments --line-length=120 --profile=black"
