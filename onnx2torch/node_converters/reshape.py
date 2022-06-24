@@ -1,4 +1,6 @@
-__all__ = ['OnnxReshape']
+__all__ = [
+    'OnnxReshape',
+]
 
 import torch
 import torch._C as torch_C

@@ -1,4 +1,6 @@
-__all__ = ['OnnxRound']
+__all__ = [
+    'OnnxRound',
+]
 
 import torch
 from torch import nn

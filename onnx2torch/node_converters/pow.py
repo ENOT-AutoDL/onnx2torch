@@ -1,4 +1,7 @@
-__all__ = ['OnnxPow', 'OnnxSqrt']
+__all__ = [
+    'OnnxPow',
+    'OnnxSqrt',
+]
 
 from typing import Optional
 

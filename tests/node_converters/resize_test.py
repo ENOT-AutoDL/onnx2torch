@@ -56,7 +56,6 @@ def _test_resize(
         test_inputs,
         atol_onnx_torch=10 ** -6,
         atol_torch_cpu_cuda=10 ** -6,
-        atol_onnx_torch2onnx=10 ** -6,
     )
 
 
@@ -89,7 +88,7 @@ def _test_resize_v10(
         test_inputs,
         atol_onnx_torch=10 ** -7,
         atol_torch_cpu_cuda=10 ** -7,
-        atol_onnx_torch2onnx=10 ** -7,
+        atol_onnx_torch2onnx=0.0,
     )
 
 

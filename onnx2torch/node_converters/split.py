@@ -1,4 +1,7 @@
-__all__ = ['OnnxSplit', 'OnnxSplit13']
+__all__ = [
+    'OnnxSplit',
+    'OnnxSplit13',
+]
 
 from typing import List
 from typing import Optional

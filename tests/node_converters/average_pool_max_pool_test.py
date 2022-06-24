@@ -29,8 +29,6 @@ def _test_pool_op(
         model,
         test_inputs,
         atol_onnx_torch=atol_onnx_torch,
-        atol_torch_cpu_cuda=0,
-        atol_onnx_torch2onnx=0,
     )
 
 

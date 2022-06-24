@@ -1,4 +1,6 @@
-__all__ = ['OnnxResize']
+__all__ = [
+    'OnnxResize',
+]
 
 import warnings
 from typing import Optional

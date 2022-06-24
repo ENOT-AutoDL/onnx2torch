@@ -1,4 +1,6 @@
-__all__ = ['OnnxNonMaxSuppression']
+__all__ = [
+    'OnnxNonMaxSuppression',
+]
 
 from typing import Optional
 

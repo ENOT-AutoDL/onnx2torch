@@ -1,4 +1,6 @@
-__all__ = ['OnnxCompare']
+__all__ = [
+    'OnnxCompare',
+]
 
 import torch
 from torch import nn

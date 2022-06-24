@@ -1,4 +1,6 @@
-__all__ = ['OnnxGeneralLinear']
+__all__ = [
+    'OnnxGeneralLinear',
+]
 
 import torch
 import torch.nn.functional as F

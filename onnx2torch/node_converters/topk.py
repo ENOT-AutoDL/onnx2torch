@@ -1,4 +1,6 @@
-__all__ = ['OnnxTopK']
+__all__ = [
+    'OnnxTopK',
+]
 
 from typing import Tuple
 from typing import Union

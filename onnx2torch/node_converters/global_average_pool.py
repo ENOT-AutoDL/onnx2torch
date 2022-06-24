@@ -1,4 +1,7 @@
-__all__ = ['OnnxGlobalAveragePool', 'OnnxGlobalAveragePoolWithKnownInputShape']
+__all__ = [
+    'OnnxGlobalAveragePool',
+    'OnnxGlobalAveragePoolWithKnownInputShape',
+]
 
 from typing import List
 

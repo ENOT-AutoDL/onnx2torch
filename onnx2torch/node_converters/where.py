@@ -1,4 +1,6 @@
-__all__ = ['OnnxWhere']
+__all__ = [
+    'OnnxWhere',
+]
 
 import torch
 from torch import nn

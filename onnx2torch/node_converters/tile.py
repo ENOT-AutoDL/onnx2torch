@@ -1,4 +1,6 @@
-__all__ = ['OnnxTile']
+__all__ = [
+    'OnnxTile',
+]
 
 import torch
 import torch._C as torch_C

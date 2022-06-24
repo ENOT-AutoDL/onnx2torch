@@ -3,16 +3,15 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Union
 
-import onnx
 import torch
 from onnx.onnx_ml_pb2 import ModelProto
-from onnx.shape_inference import infer_shapes
 from torch import fx
 from torch import nn
 
 from onnx2torch.node_converters import get_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_graph import ValueType
+from onnx2torch.utils.safe_shape_inference import safe_shape_inference
 
 
 def _remove_initializers_from_input(model: ModelProto) -> ModelProto:
@@ -72,10 +71,7 @@ def convert(
 
     """
 
-    if isinstance(onnx_model_or_path, ModelProto):
-        onnx_model = onnx_model_or_path
-    else:
-        onnx_model = onnx.load(onnx_model_or_path)
+    onnx_model = safe_shape_inference(onnx_model_or_path)
 
     if onnx_model.ir_version < 3:
         raise NotImplementedError(
@@ -88,7 +84,6 @@ def convert(
         for opsetid_proto in onnx_model.opset_import
     }
 
-    onnx_model = infer_shapes(onnx_model)
     onnx_graph = OnnxGraph(onnx_model.graph)  # pylint: disable=no-member
     torch_graph = fx.Graph()
 

@@ -37,5 +37,4 @@ def test_matmul() -> None:
             test_inputs,
             atol_onnx_torch=10 ** -6,
             atol_torch_cpu_cuda=10 ** -6,
-            atol_onnx_torch2onnx=10 ** -6,
         )

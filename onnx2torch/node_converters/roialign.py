@@ -1,4 +1,6 @@
-__all__ = ['OnnxRoiAlign']
+__all__ = [
+    'OnnxRoiAlign',
+]
 
 from typing import Tuple
 

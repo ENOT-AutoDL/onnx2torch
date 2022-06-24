@@ -1,4 +1,6 @@
-__all__ = ['OnnxScatterND']
+__all__ = [
+    'OnnxScatterND',
+]
 
 import torch
 import torch._C as torch_C

@@ -1,4 +1,6 @@
-__all__ = ['OnnxExpand']
+__all__ = [
+    'OnnxExpand',
+]
 
 import torch
 import torch._C as torch_C

@@ -10,6 +10,7 @@ from onnx2torch.node_converters.constant import *
 from onnx2torch.node_converters.constant_of_shape import *
 from onnx2torch.node_converters.conv import *
 from onnx2torch.node_converters.cumsum import *
+from onnx2torch.node_converters.einsum import *
 from onnx2torch.node_converters.expand import *
 from onnx2torch.node_converters.flatten import *
 from onnx2torch.node_converters.functions import *
@@ -20,10 +21,12 @@ from onnx2torch.node_converters.identity import *
 from onnx2torch.node_converters.logical import *
 from onnx2torch.node_converters.matmul import *
 from onnx2torch.node_converters.max_pool import *
+from onnx2torch.node_converters.neg import *
 from onnx2torch.node_converters.nms import *
 from onnx2torch.node_converters.pad import *
 from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
+from onnx2torch.node_converters.reciprocal import *
 from onnx2torch.node_converters.reduce import *
 from onnx2torch.node_converters.reshape import *
 from onnx2torch.node_converters.resize import *

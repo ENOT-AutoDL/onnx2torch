@@ -1,4 +1,6 @@
-__all__ = ['OnnxTranspose']
+__all__ = [
+    'OnnxTranspose',
+]
 
 from typing import List
 from typing import Optional

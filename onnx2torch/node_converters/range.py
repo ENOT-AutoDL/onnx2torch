@@ -1,4 +1,6 @@
-__all__ = ['OnnxRange']
+__all__ = [
+    'OnnxRange',
+]
 
 from typing import Union
 

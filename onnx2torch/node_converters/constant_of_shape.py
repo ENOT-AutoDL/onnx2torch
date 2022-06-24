@@ -1,4 +1,6 @@
-__all__ = ['OnnxConstantOfShape']
+__all__ = [
+    'OnnxConstantOfShape',
+]
 
 from typing import Optional
 

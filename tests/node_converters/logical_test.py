@@ -50,7 +50,7 @@ def test_not() -> None:
         node = onnx.helper.make_node(
             op_type='Not',
             inputs=['x'],
-            outputs=['z'],
+            outputs=['y'],
         )
 
         model = make_model_from_nodes(nodes=node, initializers=initializers, inputs_example=test_inputs)

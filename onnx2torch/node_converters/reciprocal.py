@@ -1,5 +1,5 @@
 __all__ = [
-    'OnnxMatMul',
+    'OnnxReciprocal',
 ]
 
 import torch
@@ -13,17 +13,17 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxMatMul(nn.Module, OnnxToTorchModule):
+class OnnxReciprocal(nn.Module, OnnxToTorchModule):
 
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        return torch.matmul(x, y)
+    def forward(self, x):
+        return torch.reciprocal(x)
 
 
-@add_converter(operation_type='MatMul', version=1)
-@add_converter(operation_type='MatMul', version=9)
-@add_converter(operation_type='MatMul', version=13)
+@add_converter(operation_type='Reciprocal', version=1)
+@add_converter(operation_type='Reciprocal', version=6)
+@add_converter(operation_type='Reciprocal', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
-        torch_module=OnnxMatMul(),
+        torch_module=OnnxReciprocal(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
