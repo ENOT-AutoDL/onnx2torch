@@ -1,7 +1,6 @@
 from typing import Tuple
 
 import numpy as np
-import onnx
 import pytest
 import torchvision
 from PIL import Image
@@ -10,7 +9,7 @@ from onnx import version_converter
 from tests.utils.common import check_onnx_model
 from tests.utils.common import check_torch_model
 from tests.utils.resources import get_minimal_dataset_path
-from tests.utils.resources import get_model_path
+from tests.utils.resources import get_model
 
 _COCO_MEAN = np.array([0.406, 0.485, 0.456], dtype=np.float32)
 _COCO_STD = np.array([0.225, 0.224, 0.229], dtype=np.float32)
@@ -41,8 +40,7 @@ def create_test_batch(
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_resnet50():
-    model_path = get_model_path('resnet50')
-    model = onnx.load_model(str(model_path.resolve()))
+    model = get_model('resnet50')
     model = version_converter.convert_version(model, 11)
 
     input_name = model.graph.input[0].name
@@ -55,13 +53,12 @@ def test_resnet50():
         test_inputs,
         atol_onnx_torch=10 ** -5,
         atol_torch_cpu_cuda=10 ** -5,
-        atol_onnx_torch2onnx=10 ** -5,
     )
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
-    'model,resolution',
+    'model_name,resolution',
     (
             ('retinanet', (604, 604)),
             ('ssd300_vgg', (604, 604)),
@@ -74,10 +71,8 @@ def test_resnet50():
             ('unet', (320, 320)),
     ),
 )
-def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
-    model_path = get_model_path(model)
-    model = onnx.load_model(str(model_path.resolve()))
-
+def test_onnx_models(model_name: str, resolution: Tuple[int, int]) -> None:
+    model = get_model(model_name)
     input_name = model.graph.input[0].name
     test_inputs = {
         input_name: create_test_batch(bs=1, target_size=resolution),
@@ -94,7 +89,7 @@ def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
-    'model',
+    'model_name',
     (
             'resnet18',
             'resnet50',
@@ -113,8 +108,8 @@ def test_onnx_models(model: str, resolution: Tuple[int, int]) -> None:
             'regnet_y_16gf',
     )
 )
-def test_torchvision_classification(model: str) -> None:
-    torch_model = getattr(torchvision.models, model)(pretrained=True)
+def test_torchvision_classification(model_name: str) -> None:
+    torch_model = getattr(torchvision.models, model_name)(pretrained=True)
     test_inputs = {
         'inputs': create_test_batch(bs=32),
     }
@@ -130,15 +125,15 @@ def test_torchvision_classification(model: str) -> None:
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
-    'model',
+    'model_name',
     (
             'fcn_resnet50',
             'deeplabv3_resnet50',
             'lraspp_mobilenet_v3_large',
     )
 )
-def test_torchvision_segmentation(model: str) -> None:
-    torch_model = getattr(torchvision.models.segmentation, model)(pretrained=True)
+def test_torchvision_segmentation(model_name: str) -> None:
+    torch_model = getattr(torchvision.models.segmentation, model_name)(pretrained=True)
     test_inputs = {
         'inputs': create_test_batch(bs=8),
     }
@@ -154,16 +149,14 @@ def test_torchvision_segmentation(model: str) -> None:
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 @pytest.mark.parametrize(
-    'model',
+    'model_name',
     (
             'vit',
             'swin',
     )
 )
-def test_transformer_models(model: str) -> None:
-    model_path = get_model_path(model)
-    model = onnx.load_model(str(model_path.resolve()))
-
+def test_transformer_models(model_name: str) -> None:
+    model = get_model(model_name)
     input_name = model.graph.input[0].name
     test_inputs = {
         input_name: create_test_batch(bs=8, target_size=(224, 224)),
@@ -177,10 +170,9 @@ def test_transformer_models(model: str) -> None:
         atol_onnx_torch2onnx=10 ** -4,
     )
 
-def test_3d_gan() -> None:
-    model_path = get_model_path('3d_gan')
-    model = onnx.load_model(model_path)
 
+def test_3d_gan() -> None:
+    model = get_model('3d_gan')
     input_name = model.graph.input[0].name
     test_inputs = {
         input_name: np.random.randn(32, 200).astype(dtype=np.float32)
@@ -191,16 +183,14 @@ def test_3d_gan() -> None:
         test_inputs,
         atol_onnx_torch=10 ** -4,
         atol_torch_cpu_cuda=10 ** -4,
-        atol_onnx_torch2onnx=10 ** -4,
     )
 
-def test_shelfnet() -> None:
-    model_path = get_model_path('shelfnet')
-    model = onnx.load_model(model_path)
 
+def test_shelfnet() -> None:
+    model = get_model('shelfnet')
     input_name = model.graph.input[0].name
     test_inputs = {
-        input_name: np.random.randn(8,3,384,288).astype(dtype=np.float32)
+        input_name: np.random.randn(8, 3, 384, 288).astype(dtype=np.float32)
     }
 
     check_onnx_model(
@@ -208,13 +198,11 @@ def test_shelfnet() -> None:
         test_inputs,
         atol_onnx_torch=10 ** -4,
         atol_torch_cpu_cuda=10 ** -4,
-        atol_onnx_torch2onnx=10 ** -4,
     )
 
-def test_model_with_pad_node() -> None:
-    model_path = get_model_path('point_arch')
-    model = onnx.load_model(model_path)
 
+def test_model_with_pad_node() -> None:
+    model = get_model('point_arch')
     input_name = model.graph.input[0].name
     test_inputs = {
         input_name: np.random.randn(1, 49, 40, 1).astype(dtype=np.float32)
@@ -225,5 +213,20 @@ def test_model_with_pad_node() -> None:
         test_inputs,
         atol_onnx_torch=10 ** -4,
         atol_torch_cpu_cuda=10 ** -4,
-        atol_onnx_torch2onnx=10 ** -4,
+    )
+
+
+def test_gptj() -> None:
+    model = get_model('gptj_2_random_blocks')
+    input_name = model.graph.input[0].name
+    test_inputs = {
+        input_name: np.random.randint(low=1, high=1024, size=[4, 256], dtype=np.int64),
+    }
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10 ** -5,
+        atol_torch_cpu_cuda=10 ** -5,
+        atol_onnx_torch2onnx=10 ** -7,
     )
