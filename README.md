@@ -105,6 +105,11 @@ Classification from __torchvision__:
 - [x] MnasNet
 - [x] RegNet
 
+Transformers:
+- [x] Vit
+- [x] Swin
+- [x] GPT-J
+
 #### :page_facing_up: List of currently supported operations can be founded [here](operators.md).
 
 ## How to add new operations to converter
