@@ -152,10 +152,10 @@ def convert(
                     )
                     torch_nodes[torch_buffer_name] = torch_graph.get_attr(f'initializers.{torch_buffer_name}')
                 args.append(torch_nodes[torch_buffer_name])
-            
+
             elif value_type == ValueType.EMPTY:
                 args.append(None)
-            
+
             else:
                 raise RuntimeError(f'Got unexpected input value type ({value_type})')
 

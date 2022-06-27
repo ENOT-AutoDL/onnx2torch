@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args:
+          [
+            "--force-single-line-imports",
+            "--ensure-newline-before-comments",
+            "--line-length=120",
+          ]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace

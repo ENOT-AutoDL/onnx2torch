@@ -28,6 +28,9 @@ from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
 from onnx2torch.node_converters.reciprocal import *
 from onnx2torch.node_converters.reduce import *
+from onnx2torch.node_converters.registry import OperationDescription
+from onnx2torch.node_converters.registry import TConverter
+from onnx2torch.node_converters.registry import get_converter
 from onnx2torch.node_converters.reshape import *
 from onnx2torch.node_converters.resize import *
 from onnx2torch.node_converters.roialign import *
@@ -42,7 +45,3 @@ from onnx2torch.node_converters.topk import *
 from onnx2torch.node_converters.transpose import *
 from onnx2torch.node_converters.unsqueeze import *
 from onnx2torch.node_converters.where import *
-
-from onnx2torch.node_converters.registry import OperationDescription
-from onnx2torch.node_converters.registry import TConverter
-from onnx2torch.node_converters.registry import get_converter

@@ -3,8 +3,8 @@ from typing import Tuple
 import numpy as np
 import pytest
 import torchvision
-from PIL import Image
 from onnx import version_converter
+from PIL import Image
 
 from tests.utils.common import check_onnx_model
 from tests.utils.common import check_torch_model

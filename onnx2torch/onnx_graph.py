@@ -92,7 +92,7 @@ class OnnxGraph:
 
         if value_name in self._initializers:
             return ValueType.GRAPH_INITIALIZER
-        
+
         if value_name == '':
             return ValueType.EMPTY
 

@@ -31,7 +31,7 @@ def test_pow() -> None:
         )
 
         model = make_model_from_nodes(
-            nodes=node, 
+            nodes=node,
             initializers=initializers,
             inputs_example=test_inputs,
         )

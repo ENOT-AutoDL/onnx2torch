@@ -9,12 +9,10 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-import torch
-
 import numpy as np
 import onnx
 import onnxruntime as ort
-
+import torch
 from onnx import defs
 from onnx import numpy_helper
 from onnx.helper import make_graph
