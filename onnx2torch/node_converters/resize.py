@@ -48,11 +48,13 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
             mode: str = 'nearest',
             align_corners: Optional[bool] = None,
             ignore_roi: bool = False,
+            ignore_bs_ch_size: bool = False,
     ):
         super().__init__()
         self.onnx_mode = mode
         self.align_corners = align_corners
         self.ignore_roi = ignore_roi
+        self.ignore_bs_ch_size = ignore_bs_ch_size
 
     def forward(
             self,
@@ -71,7 +73,7 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
             if sizes.nelement() != 0:
                 sizes = sizes.tolist()
                 input_shape = list(input_tensor.shape)
-                if input_shape[:2] != sizes[:2]:
+                if not self.ignore_bs_ch_size and input_shape[:2] != sizes[:2]:
                     raise NotImplementedError('Pytorch\'s interpolate cannot resize channel or batch dimensions.')
                 sizes = sizes[2:]
             else:
