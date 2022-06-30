@@ -17,7 +17,6 @@ from onnx2torch.utils.common import OperationConverterResult
 
 
 class OnnxTranspose(nn.Module, OnnxToTorchModule):
-
     def __init__(self, perm: Optional[List[int]] = None):
         super().__init__()
         self.perm = perm

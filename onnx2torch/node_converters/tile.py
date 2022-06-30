@@ -16,7 +16,6 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxTile(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     def forward(self, input_tensor: torch.Tensor, repeats: torch.Tensor) -> torch.Tensor:
         # torch.tile(input_tensor, repeats) is not supported for exporting
         output = input_tensor.repeat(torch.Size(repeats))
@@ -27,7 +26,6 @@ class OnnxTile(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _TileExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('Tile', *args, outputs=1)

@@ -17,7 +17,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxTopK(nn.Module, OnnxToTorchModule):
-
     def __init__(self, dim: int = -1, largest: int = 1, sorted_: int = 1):
         super().__init__()
         self.dim = dim

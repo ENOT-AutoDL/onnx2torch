@@ -31,7 +31,6 @@ class OnnxPow(nn.Module, OnnxToTorchModule):
 
 
 class OnnxSqrt(nn.Module, OnnxToTorchModule):
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.sqrt(input_tensor)
 

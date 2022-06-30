@@ -16,7 +16,6 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     def forward(self, data: torch.Tensor, indices: torch.Tensor, updates: torch.Tensor) -> torch.Tensor:
         # There is no scatter nd for torch, use following formula:
         # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
@@ -29,7 +28,7 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
         # last dimension is a partial-index into data
         indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
         # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
-        updates = updates.reshape((-1, *updates.shape[ind_dim - 1:]))
+        updates = updates.reshape((-1, *updates.shape[ind_dim - 1 :]))
         output[indices] = updates
 
         return output

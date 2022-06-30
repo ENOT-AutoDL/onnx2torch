@@ -30,8 +30,10 @@ def _torch_padding_to_mode_format(pads: List[int], mode: str) -> bool:
         if set(batch_channel_pads) == {0}:
             return pads[:-4]
 
-        raise RuntimeError(f'{mode} padding is implemented for padding the last 3 dimensions of 5D input tensor, \
-            or the last 2 dimensions of 4D input tensor, or the last dimension of 3D input tensor.')
+        raise RuntimeError(
+            f'{mode} padding is implemented for padding the last 3 dimensions of 5D input tensor, \
+            or the last 2 dimensions of 4D input tensor, or the last dimension of 3D input tensor.'
+        )
 
     return pads
 
@@ -51,7 +53,6 @@ def _onnx_padding_to_torch(pads: List[int]) -> List[int]:
 
 
 class OnnxPadStatic(nn.Module, OnnxToTorchModule):
-
     def __init__(
         self,
         pads: List[int],
@@ -73,7 +74,6 @@ class OnnxPadStatic(nn.Module, OnnxToTorchModule):
 
 
 class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
-
     def __init__(self, mode: str = 'constant'):
         super().__init__()
         self.mode = mode
@@ -93,7 +93,7 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):
 
 @add_converter(operation_type='Pad', version=11)
 @add_converter(operation_type='Pad', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
     mode = ONNX_TO_TORCH_MODE.get(mode, None)
 
@@ -110,7 +110,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 
 
 @add_converter(operation_type='Pad', version=2)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
     mode = ONNX_TO_TORCH_MODE.get(mode, None)
 

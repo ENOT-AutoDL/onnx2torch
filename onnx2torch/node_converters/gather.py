@@ -22,7 +22,6 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxGatherElements(nn.Module, OnnxToTorchModule):
-
     def __init__(self, axis: int = 0):
         super().__init__()
         self.axis = axis
@@ -40,9 +39,9 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     @staticmethod
     def slice_from_axis(
-            input_tensor: torch.Tensor,
-            axis: int,
-            indices: torch.Tensor,
+        input_tensor: torch.Tensor,
+        axis: int,
+        indices: torch.Tensor,
     ) -> Tuple[Union[slice, torch.Tensor], ...]:
         axis = input_tensor.dim() + axis if axis < 0 else axis
         skip_axis: List[Union[slice, torch.Tensor]] = [slice(None)] * axis
@@ -71,7 +70,7 @@ class _GatherExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-metho
 @add_converter(operation_type='Gather', version=1)
 @add_converter(operation_type='Gather', version=11)
 @add_converter(operation_type='Gather', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     torch_module = OnnxGather(
         axis=axis,
@@ -85,7 +84,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 
 @add_converter(operation_type='GatherElements', version=11)
 @add_converter(operation_type='GatherElements', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     torch_module = OnnxGatherElements(
         axis=axis,

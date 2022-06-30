@@ -14,7 +14,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxConcat(nn.Module, OnnxToTorchModule):
-
     def __init__(self, axis: int):
         super().__init__()
         self.axis = axis
@@ -26,7 +25,7 @@ class OnnxConcat(nn.Module, OnnxToTorchModule):
 @add_converter(operation_type='Concat', version=4)
 @add_converter(operation_type='Concat', version=11)
 @add_converter(operation_type='Concat', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     torch_module = OnnxConcat(
         axis=axis,

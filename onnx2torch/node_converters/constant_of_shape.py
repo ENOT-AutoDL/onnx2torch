@@ -16,7 +16,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):
-
     def __init__(self, value: Optional[torch.Tensor] = None):
         super().__init__()
 

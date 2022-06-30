@@ -31,7 +31,6 @@ TENSOR_TYPE_TO_TORCH_TYPE = {
 
 
 class OnnxCast(nn.Module, OnnxToTorchModule):
-
     def __init__(self, onnx_dtype: int):
         super().__init__()
         try:

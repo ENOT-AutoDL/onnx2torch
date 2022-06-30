@@ -15,6 +15,7 @@ class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
     """
     Marker class for onnx2torch modules with custom export to onnx.
     """
+
     pass
 
 

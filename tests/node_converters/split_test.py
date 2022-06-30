@@ -12,12 +12,14 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_split(
-        x: np.ndarray,
-        expected_output: List[np.ndarray],
-        opset_version: int,
-        **kwargs,
+    x: np.ndarray,
+    expected_output: List[np.ndarray],
+    opset_version: int,
+    **kwargs,
 ) -> None:
-    inputs = ['x', ]
+    inputs = [
+        'x',
+    ]
     test_inputs = {'x': x}
 
     if opset_version >= 13 and kwargs.get('split') is not None:
@@ -51,11 +53,8 @@ def _test_split(
     check_onnx_model(model, test_inputs)
 
 
-INPUT_1D = np.array([1., 2., 3., 4., 5., 6.]).astype(np.float32)
-INPUT_2D = np.array([
-    [1., 2., 3., 4., 5., 6.],
-    [7., 8., 9., 10., 11., 12.]
-]).astype(np.float32)
+INPUT_1D = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).astype(np.float32)
+INPUT_2D = np.array([[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], [7.0, 8.0, 9.0, 10.0, 11.0, 12.0]]).astype(np.float32)
 
 EMPTY_INPUT = np.array([]).astype(np.float32)
 EXPECTED_EMPTY_OUT = [np.array([]).astype(np.float32), np.array([]).astype(np.float32), np.array([]).astype(np.float32)]
@@ -64,13 +63,13 @@ EXPECTED_EMPTY_OUT = [np.array([]).astype(np.float32), np.array([]).astype(np.fl
 @pytest.mark.parametrize(
     'input_array,expected_out,axis,split',
     (
-            (INPUT_1D, np.split(INPUT_1D, 3), None, None),
-            (INPUT_1D, np.split(INPUT_1D, 3), 0, None),
-            (INPUT_1D, np.split(INPUT_1D, [2]), None, np.array([2, 4]).astype(np.int64)),
-            (INPUT_1D, np.split(INPUT_1D, [2]), 0, np.array([2, 4]).astype(np.int64)),
-            (INPUT_2D, np.split(INPUT_2D, 2, axis=1), 1, None),
-            (INPUT_2D, np.split(INPUT_2D, [2], axis=1), 1, np.array([2, 4]).astype(np.int64)),
-            (EMPTY_INPUT, EXPECTED_EMPTY_OUT, None, np.array([0, 0, 0]).astype(np.int64))
+        (INPUT_1D, np.split(INPUT_1D, 3), None, None),
+        (INPUT_1D, np.split(INPUT_1D, 3), 0, None),
+        (INPUT_1D, np.split(INPUT_1D, [2]), None, np.array([2, 4]).astype(np.int64)),
+        (INPUT_1D, np.split(INPUT_1D, [2]), 0, np.array([2, 4]).astype(np.int64)),
+        (INPUT_2D, np.split(INPUT_2D, 2, axis=1), 1, None),
+        (INPUT_2D, np.split(INPUT_2D, [2], axis=1), 1, np.array([2, 4]).astype(np.int64)),
+        (EMPTY_INPUT, EXPECTED_EMPTY_OUT, None, np.array([0, 0, 0]).astype(np.int64)),
     ),
 )
 @pytest.mark.parametrize('opset_version', (13, 11, 2))

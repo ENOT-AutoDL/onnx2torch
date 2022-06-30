@@ -25,9 +25,9 @@ class OnnxSplit13(nn.Module, OnnxToTorchModule):
         self.num_splits = num_splits
 
     def forward(
-            self,
-            input_tensor: torch.Tensor,
-            split: Optional[torch.Tensor] = None,
+        self,
+        input_tensor: torch.Tensor,
+        split: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         if split is None:
             axis_len = input_tensor.shape[self.axis]

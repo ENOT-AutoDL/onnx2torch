@@ -14,11 +14,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_squeeze(
-        input_tensor: np.ndarray,
-        axes: Optional[List[int]],
-        opset_version: int,
-        **kwargs,
-
+    input_tensor: np.ndarray,
+    axes: Optional[List[int]],
+    opset_version: int,
+    **kwargs,
 ) -> None:
     test_inputs: Dict[str, Any] = {'input_tensor': input_tensor}
 
@@ -28,10 +27,7 @@ def _test_squeeze(
         else:
             kwargs['axes'] = axes
 
-        output_shape = np.squeeze(
-            input_tensor,
-            axis=tuple(a for a in axes if input_tensor.shape[a] == 1)
-        ).shape
+        output_shape = np.squeeze(input_tensor, axis=tuple(a for a in axes if input_tensor.shape[a] == 1)).shape
     else:
         output_shape = np.squeeze(input_tensor).shape
 
@@ -47,11 +43,13 @@ def _test_squeeze(
         initializers={},
         inputs_example=test_inputs,
         opset_version=opset_version,
-        outputs_info=(make_tensor_value_info(
-            name='y',
-            elem_type=NP_TYPE_TO_TENSOR_TYPE[input_tensor.dtype],
-            shape=output_shape,
-        ),),
+        outputs_info=(
+            make_tensor_value_info(
+                name='y',
+                elem_type=NP_TYPE_TO_TENSOR_TYPE[input_tensor.dtype],
+                shape=output_shape,
+            ),
+        ),
     )
     check_onnx_model(model, test_inputs)
 
@@ -60,28 +58,27 @@ def _test_squeeze(
 @pytest.mark.parametrize(
     'shape,axes,opset_version',
     (
-            ([1, 3, 4, 5], [0], 11),
-            ([1, 3, 1, 5], [-2], 11),
-            ([1, 3, 1, 5], [0, 2], 11),
-            ([1, 3, 1, 5], [2, 0], 11),
-            ([1, 3, 1, 1, 1, 5, 1], [2, 0, 6], 11),
-            ([1, 3, 1, 5], [0, -2], 11),
-            ([1, 3, 1, 5], [-2, 0], 11),
-            ([1, 3, 1, 5], None, 11),
-            ([1, 1, 1, 1], None, 11),
-            ([1], None, 11),
-            ([3, 3, 3], None, 11),
-
-            ([1, 3, 4, 5], [0], 13),
-            ([1, 3, 1, 5], [-2], 13),
-            ([1, 3, 1, 5], [0, 2], 13),
-            ([1, 3, 1, 5], [2, 0], 13),
-            ([1, 3, 1, 5], [0, -2], 13),
-            ([1, 3, 1, 5], [-2, 0], 13),
-            ([1, 3, 1, 5], None, 13),
-            ([1, 1, 1, 1], None, 13),
-            ([1], None, 13),
-            ([3, 3, 3], None, 13),
+        ([1, 3, 4, 5], [0], 11),
+        ([1, 3, 1, 5], [-2], 11),
+        ([1, 3, 1, 5], [0, 2], 11),
+        ([1, 3, 1, 5], [2, 0], 11),
+        ([1, 3, 1, 1, 1, 5, 1], [2, 0, 6], 11),
+        ([1, 3, 1, 5], [0, -2], 11),
+        ([1, 3, 1, 5], [-2, 0], 11),
+        ([1, 3, 1, 5], None, 11),
+        ([1, 1, 1, 1], None, 11),
+        ([1], None, 11),
+        ([3, 3, 3], None, 11),
+        ([1, 3, 4, 5], [0], 13),
+        ([1, 3, 1, 5], [-2], 13),
+        ([1, 3, 1, 5], [0, 2], 13),
+        ([1, 3, 1, 5], [2, 0], 13),
+        ([1, 3, 1, 5], [0, -2], 13),
+        ([1, 3, 1, 5], [-2, 0], 13),
+        ([1, 3, 1, 5], None, 13),
+        ([1, 1, 1, 1], None, 13),
+        ([1], None, 13),
+        ([3, 3, 3], None, 13),
     ),
 )
 def test_squeeze(shape: List[int], axes: List[int], opset_version: int) -> None:

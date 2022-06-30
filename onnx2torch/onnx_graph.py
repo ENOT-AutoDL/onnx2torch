@@ -34,22 +34,13 @@ class OnnxGraph:
             unique_names.append(f'{name}_{name_counter}')
 
         self._nodes = OrderedDict(
-            (name, OnnxNode(node, unique_name=name))
-            for name, node in zip(unique_names, onnx_graph_proto.node)
+            (name, OnnxNode(node, unique_name=name)) for name, node in zip(unique_names, onnx_graph_proto.node)
         )
-        self._initializers = {
-            initializer.name: OnnxTensor(initializer)
-            for initializer in onnx_graph_proto.initializer
-        }
+        self._initializers = {initializer.name: OnnxTensor(initializer) for initializer in onnx_graph_proto.initializer}
         self._node_output_values = {
-            output_name: (node, i)
-            for node in self._nodes.values()
-            for i, output_name in enumerate(node.output_values)
+            output_name: (node, i) for node in self._nodes.values() for i, output_name in enumerate(node.output_values)
         }
-        self._value_info = {
-            value_info.name: value_info
-            for value_info in onnx_graph_proto.value_info
-        }
+        self._value_info = {value_info.name: value_info for value_info in onnx_graph_proto.value_info}
         for input_value_info in onnx_graph_proto.input:
             self._value_info[input_value_info.name] = input_value_info
         for output_value_info in onnx_graph_proto.output:

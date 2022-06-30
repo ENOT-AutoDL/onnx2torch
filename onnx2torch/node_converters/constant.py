@@ -26,7 +26,6 @@ _CONSTANT_PARSING_MAPPING = {
 
 
 class OnnxConstant(nn.Module, OnnxToTorchModule):
-
     def __init__(self, value: Any):
         super().__init__()
         # We need it for placing constant to cuda.

@@ -13,11 +13,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_unsqueeze(
-        input_tensor: np.ndarray,
-        axes: List[int],
-        opset_version: int,
-        **kwargs,
-
+    input_tensor: np.ndarray,
+    axes: List[int],
+    opset_version: int,
+    **kwargs,
 ) -> None:
     test_inputs: Dict[str, Any] = {'input_tensor': input_tensor}
 
@@ -38,11 +37,13 @@ def _test_unsqueeze(
         initializers={},
         inputs_example=test_inputs,
         opset_version=opset_version,
-        outputs_info=(make_tensor_value_info(
-            name='y',
-            elem_type=NP_TYPE_TO_TENSOR_TYPE[input_tensor.dtype],
-            shape=np.expand_dims(input_tensor, axis=axes).shape,
-        ),),
+        outputs_info=(
+            make_tensor_value_info(
+                name='y',
+                elem_type=NP_TYPE_TO_TENSOR_TYPE[input_tensor.dtype],
+                shape=np.expand_dims(input_tensor, axis=axes).shape,
+            ),
+        ),
     )
     check_onnx_model(model, test_inputs)
 
@@ -54,23 +55,22 @@ def _test_unsqueeze(
 @pytest.mark.parametrize(
     'shape,axes,opset_version',
     (
-            ([2, 3, 16, 16], [0], 11),
-            ([2, 3, 16, 16], [2], 11),
-            ([2, 3, 16, 16], [-1], 11),
-            ([2, 3, 16, 16], [-3], 11),
-            ([2, 3, 16, 16], [0, 1], 11),
-            ([2, 3, 16, 16], [1, 2, 3, 4, 5], 11),
-            ([2, 3, 16, 16], [1, -2], 11),
-            ([2, 3, 16, 16], [-2, 1], 11),
-
-            ([2, 3, 16, 16], [0], 13),
-            ([2, 3, 16, 16], [2], 13),
-            ([2, 3, 16, 16], [-1], 13),
-            ([2, 3, 16, 16], [-3], 13),
-            ([2, 3, 16, 16], [0, 1], 13),
-            ([2, 3, 16, 16], [1, 2, 3, 4, 5], 13),
-            ([2, 3, 16, 16], [1, -2], 13),
-            ([2, 3, 16, 16], [-2, 1], 13),
+        ([2, 3, 16, 16], [0], 11),
+        ([2, 3, 16, 16], [2], 11),
+        ([2, 3, 16, 16], [-1], 11),
+        ([2, 3, 16, 16], [-3], 11),
+        ([2, 3, 16, 16], [0, 1], 11),
+        ([2, 3, 16, 16], [1, 2, 3, 4, 5], 11),
+        ([2, 3, 16, 16], [1, -2], 11),
+        ([2, 3, 16, 16], [-2, 1], 11),
+        ([2, 3, 16, 16], [0], 13),
+        ([2, 3, 16, 16], [2], 13),
+        ([2, 3, 16, 16], [-1], 13),
+        ([2, 3, 16, 16], [-3], 13),
+        ([2, 3, 16, 16], [0, 1], 13),
+        ([2, 3, 16, 16], [1, 2, 3, 4, 5], 13),
+        ([2, 3, 16, 16], [1, -2], 13),
+        ([2, 3, 16, 16], [-2, 1], 13),
     ),
 )
 def test_unsqueeze(shape: List[int], axes: List[int], opset_version: int) -> None:

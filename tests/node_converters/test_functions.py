@@ -13,7 +13,8 @@ def _test_functions(function: str, data: np.ndarray, opset_version, **kwargs) ->
 
     node = onnx.helper.make_node(op_type=function, inputs=['input_tensor'], outputs=['y'], **kwargs)
     model = make_model_from_nodes(
-        nodes=node, initializers={},
+        nodes=node,
+        initializers={},
         inputs_example=test_inputs,
         opset_version=opset_version,
     )
@@ -24,9 +25,9 @@ def _test_functions(function: str, data: np.ndarray, opset_version, **kwargs) ->
 @pytest.mark.parametrize(
     'function,input_shape',
     (
-            ('Ceil', [8, 3, 32, 32]),
-            ('Floor', [8, 3, 32, 32]),
-            ('Round', [8, 3, 32, 32]),
+        ('Ceil', [8, 3, 32, 32]),
+        ('Floor', [8, 3, 32, 32]),
+        ('Round', [8, 3, 32, 32]),
     ),
 )
 def test_roundings(function: str, input_shape: List[int]) -> None:
@@ -37,13 +38,13 @@ def test_roundings(function: str, input_shape: List[int]) -> None:
 @pytest.mark.parametrize(
     'function,input_shape',
     (
-            ('Abs', [8, 3, 32, 32]),
-            ('Cos', [8, 3, 32, 32]),
-            ('Exp', [8, 3, 32, 32]),
-            ('Log', [8, 3, 32, 32]),
-            ('Sign', [8, 3, 32, 32]),
-            ('Sin', [8, 3, 32, 32]),
-            ('Tan', [8, 3, 32, 32])
+        ('Abs', [8, 3, 32, 32]),
+        ('Cos', [8, 3, 32, 32]),
+        ('Exp', [8, 3, 32, 32]),
+        ('Log', [8, 3, 32, 32]),
+        ('Sign', [8, 3, 32, 32]),
+        ('Sin', [8, 3, 32, 32]),
+        ('Tan', [8, 3, 32, 32]),
     ),
 )
 def test_common_functions(function: str, input_shape: List[int]) -> None:
@@ -56,9 +57,9 @@ def test_common_functions(function: str, input_shape: List[int]) -> None:
 @pytest.mark.parametrize(
     'function,input_shape',
     (
-            ('Acos', [8, 3, 32, 32]),
-            ('Asin', [8, 3, 32, 32]),
-            ('Atan', [8, 3, 32, 32]),
+        ('Acos', [8, 3, 32, 32]),
+        ('Asin', [8, 3, 32, 32]),
+        ('Atan', [8, 3, 32, 32]),
     ),
 )
 def test_arc_functions(function: str, input_shape: List[int]) -> None:
@@ -72,9 +73,7 @@ def test_arc_functions(function: str, input_shape: List[int]) -> None:
 
 @pytest.mark.parametrize(
     'function,input_shape',
-    (
-            ('Tanh', [8, 3, 32, 32]),
-    ),
+    (('Tanh', [8, 3, 32, 32]),),
 )
 def test_hyperbolic_functions(function: str, input_shape: List[int]) -> None:
     data = np.random.randn(*input_shape).astype(np.float32)

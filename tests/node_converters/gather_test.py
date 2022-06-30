@@ -7,11 +7,11 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_gather(
-        op_type: str,
-        input_array: np.ndarray,
-        indices: np.ndarray,
-        opset_version: int,
-        **kwargs,
+    op_type: str,
+    input_array: np.ndarray,
+    indices: np.ndarray,
+    opset_version: int,
+    **kwargs,
 ) -> None:
     test_inputs = {
         'x': input_array,
@@ -47,8 +47,7 @@ def _test_gather(
         ('GatherElements', 0, 11),
         ('GatherElements', 1, 13),
         ('GatherElements', 1, 11),
-
-    )
+    ),
 )
 def test_gather(op_type: str, axis: int, opset_version: int) -> None:
 
@@ -58,7 +57,7 @@ def test_gather(op_type: str, axis: int, opset_version: int) -> None:
             [2.3, 3.4, 3.9],
             [4.5, 5.7, 5.9],
         ],
-        dtype=np.float32
+        dtype=np.float32,
     )
     indices = np.asarray(
         [

@@ -18,8 +18,7 @@ class OnnxNode:
         self._inputs = None
 
         self._proto_attributes = {
-            attribute.name: OnnxNode._parse_attribute_value(attribute)
-            for attribute in self._proto.attribute
+            attribute.name: OnnxNode._parse_attribute_value(attribute) for attribute in self._proto.attribute
         }
 
     @staticmethod

@@ -21,10 +21,7 @@ from tests.utils.common import make_model_from_nodes
     ),
 )
 def test_einsum(equation: str, input_shapes: List[Tuple[int, ...]], output_shape: Tuple[int, ...]) -> None:
-    test_inputs = {
-        f'input_{index}': np.random.randn(*shape)
-        for index, shape in enumerate(input_shapes)
-    }
+    test_inputs = {f'input_{index}': np.random.randn(*shape) for index, shape in enumerate(input_shapes)}
 
     node = onnx.helper.make_node(
         op_type='Einsum',

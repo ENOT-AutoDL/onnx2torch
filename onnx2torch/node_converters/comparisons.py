@@ -22,7 +22,6 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 
 
 class OnnxCompare(nn.Module, OnnxToTorchModule):
-
     def __init__(self, operation_type: str):
         super().__init__()
         self.compare_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]

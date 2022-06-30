@@ -11,8 +11,8 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_expand(
-        data: np.ndarray,
-        shape: List[int],
+    data: np.ndarray,
+    shape: List[int],
 ) -> None:
     test_inputs = {
         'x': data,

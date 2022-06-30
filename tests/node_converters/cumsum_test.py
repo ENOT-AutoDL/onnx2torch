@@ -11,10 +11,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_cumsum(
-        input_tensor: np.ndarray,
-        axis: int,
-        exclusive: int,
-        reverse: int,
+    input_tensor: np.ndarray,
+    axis: int,
+    exclusive: int,
+    reverse: int,
 ) -> None:
     test_inputs = {'x': input_tensor, 'axis': np.array(axis)}
     node = onnx.helper.make_node(
@@ -44,24 +44,24 @@ def _test_cumsum(
 @pytest.mark.parametrize(
     'tensor_size',
     (
-            (10,),
-            (10, 10),
-            (10, 10, 5),
-            (10, 10, 5, 6),
+        (10,),
+        (10, 10),
+        (10, 10, 5),
+        (10, 10, 5, 6),
     ),
 )
 @pytest.mark.parametrize(
     'exclusive,reverse',
     (
-            (0, 0),
-            (0, 1),
-            (1, 0),
-            (1, 1),
+        (0, 0),
+        (0, 1),
+        (1, 0),
+        (1, 1),
     ),
 )
 def test_cumsum(tensor_size, exclusive, reverse) -> None:
     input_tensor = np.random.randint(low=-10, high=10, size=tensor_size)
-    for axis in range(-len(tensor_size), len(tensor_size)-1):
+    for axis in range(-len(tensor_size), len(tensor_size) - 1):
         _test_cumsum(
             input_tensor=input_tensor,
             axis=axis,

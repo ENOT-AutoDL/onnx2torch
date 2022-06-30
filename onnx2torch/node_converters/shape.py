@@ -18,7 +18,6 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     def __init__(self, start: Optional[int] = None, end: Optional[int] = None):
         super().__init__()
         self.start = start
@@ -26,7 +25,7 @@ class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         output = torch.tensor(
-            input_tensor.shape[self.start:self.end],
+            input_tensor.shape[self.start : self.end],
             device=input_tensor.device,
         )
         if torch.onnx.is_in_onnx_export():
@@ -46,7 +45,6 @@ class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _ShapeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         if len(args) == 2:

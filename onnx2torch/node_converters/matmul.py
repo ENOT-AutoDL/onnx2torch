@@ -14,7 +14,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxMatMul(nn.Module, OnnxToTorchModule):
-
     def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return torch.matmul(x, y)
 

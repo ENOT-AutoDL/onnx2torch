@@ -20,7 +20,6 @@ _TORCH_ROUND_FROM_ONNX_TYPE = {
 
 
 class OnnxRound(nn.Module, OnnxToTorchModule):
-
     def __init__(self, round_type: str):
         super().__init__()
         self.round_function = _TORCH_ROUND_FROM_ONNX_TYPE[round_type]

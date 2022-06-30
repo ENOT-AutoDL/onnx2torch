@@ -9,10 +9,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_reshape(
-        input_shape: List[int],
-        output_shape: List[int],
-        opset_version: int,
-        **kwargs,
+    input_shape: List[int],
+    output_shape: List[int],
+    opset_version: int,
+    **kwargs,
 ) -> None:
     test_inputs = {'x': np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)}
     initializers = {'output_shape': np.asarray(output_shape, dtype=np.int64)}
@@ -36,10 +36,10 @@ def _test_reshape(
 @pytest.mark.parametrize(
     'input_shape,output_shape,opset_version',
     (
-            ([2, 3, 16, 16], [2, -1, 3], 9),
-            ([2, 3, 16, 16], [2, 0, -1], 9),
-            ([2, 3, 16, 16], [2, 0, 1, 1, 1, 1, 1, 1, -1], 9),
-            ([2, 3, 16, 16], [-1, 1, 1, 2, 1, 1, 1, 2, 1, 1], 14),
+        ([2, 3, 16, 16], [2, -1, 3], 9),
+        ([2, 3, 16, 16], [2, 0, -1], 9),
+        ([2, 3, 16, 16], [2, 0, 1, 1, 1, 1, 1, 1, -1], 9),
+        ([2, 3, 16, 16], [-1, 1, 1, 2, 1, 1, 1, 2, 1, 1], 14),
     ),
 )
 def test_reshape(input_shape: List[int], output_shape: List[int], opset_version: int) -> None:

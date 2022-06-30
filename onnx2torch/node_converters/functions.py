@@ -29,7 +29,6 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 
 
 class OnnxFunction(nn.Module, OnnxToTorchModule):
-
     def __init__(self, function_type: str):
         super().__init__()
         self.function = _TORCH_FUNCTION_FROM_ONNX_TYPE[function_type]

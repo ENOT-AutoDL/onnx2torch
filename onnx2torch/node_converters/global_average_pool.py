@@ -18,14 +18,12 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxGlobalAveragePool(nn.Module, OnnxToTorchModule):
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=no-self-use
         x_dims = list(range(2, len(input_tensor.shape)))
         return torch.mean(input_tensor, dim=x_dims, keepdim=True)
 
 
 class OnnxGlobalAveragePoolWithKnownInputShape(nn.Module, OnnxToTorchModule):
-
     def __init__(self, input_shape: List[int]):
         super().__init__()
         self.x_dims = list(range(2, len(input_shape)))
@@ -35,7 +33,7 @@ class OnnxGlobalAveragePoolWithKnownInputShape(nn.Module, OnnxToTorchModule):
 
 
 @add_converter(operation_type='GlobalAveragePool', version=1)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     input_value_info = graph.value_info[node.input_values[0]]
     input_shape = get_shape_from_value_info(input_value_info)
 

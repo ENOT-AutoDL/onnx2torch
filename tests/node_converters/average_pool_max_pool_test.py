@@ -10,10 +10,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_pool_op(
-        op_type,
-        input_shape: List[int],
-        atol_onnx_torch: float = 0.0,
-        **kwargs,
+    op_type,
+    input_shape: List[int],
+    atol_onnx_torch: float = 0.0,
+    **kwargs,
 ) -> None:
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
     test_inputs = {'x': x}
@@ -37,7 +37,7 @@ def _test_pool_op(
     (
         'MaxPool',
         'AveragePool',
-    )
+    ),
 )
 @pytest.mark.parametrize(
     'input_shape,kernel_shape,optional_attrs',

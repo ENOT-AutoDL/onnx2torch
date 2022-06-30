@@ -16,6 +16,7 @@ class OnnxToTorchModule:
     """
     Marker class for onnx2torch modules.
     """
+
     pass
 
 
@@ -41,10 +42,7 @@ def get_onnx_version():
 
 
 def get_shape_from_value_info(value_info: ValueInfoProto) -> List[int]:
-    return [
-        dim.dim_value
-        for dim in value_info.type.tensor_type.shape.dim
-    ]
+    return [dim.dim_value for dim in value_info.type.tensor_type.shape.dim]
 
 
 def get_const_value(name: str, graph: OnnxGraph) -> Union[torch.Tensor, float, int, str, List]:
@@ -70,8 +68,8 @@ def old_style_broadcast(first: torch.Tensor, second: torch.Tensor, axis: int) ->
     rank = len(first.shape)
     axis = axis + rank if axis < 0 else axis
 
-    second_shape = [1]*axis + list(second.shape)
-    second_shape = second_shape + [1]*(rank - len(second_shape))
+    second_shape = [1] * axis + list(second.shape)
+    second_shape = second_shape + [1] * (rank - len(second_shape))
 
     return second.view(second_shape)
 

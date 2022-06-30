@@ -19,14 +19,13 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     def __init__(
-            self,
-            mode: str = 'avg',
-            output_height: int = 1,
-            output_width: int = 1,
-            sampling_ratio: int = 0,
-            spatial_scale: float = 1.0,
+        self,
+        mode: str = 'avg',
+        output_height: int = 1,
+        output_width: int = 1,
+        sampling_ratio: int = 0,
+        spatial_scale: float = 1.0,
     ):
         super().__init__()
         if mode != 'avg':
@@ -39,12 +38,12 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     @staticmethod
     def _do_forward(
-            input_tensor: torch.Tensor,
-            rois: torch.Tensor,
-            batch_indices: torch.Tensor,
-            output_size: Tuple[int, int],
-            sampling_ratio: int,
-            spatial_scale: float,
+        input_tensor: torch.Tensor,
+        rois: torch.Tensor,
+        batch_indices: torch.Tensor,
+        output_size: Tuple[int, int],
+        sampling_ratio: int,
+        spatial_scale: float,
     ) -> torch.Tensor:
 
         batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
@@ -60,11 +59,10 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
         )
 
     def forward(
-            self,
-            input_tensor: torch.Tensor,
-            rois: torch.Tensor,
-            batch_indices: torch.Tensor,
-
+        self,
+        input_tensor: torch.Tensor,
+        rois: torch.Tensor,
+        batch_indices: torch.Tensor,
     ) -> torch.Tensor:
 
         output = self._do_forward(
@@ -83,7 +81,7 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
                 self._output_height,
                 self._output_width,
                 self._sampling_ratio,
-                self._spatial_scale
+                self._spatial_scale,
             ]
             return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
 
@@ -91,7 +89,6 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         input_args = args[:3]

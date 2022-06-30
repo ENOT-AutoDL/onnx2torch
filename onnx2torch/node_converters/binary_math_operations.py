@@ -24,7 +24,7 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 
 
 class OnnxBinaryMathOperation(nn.Module, OnnxToTorchModule):
-    def __init__(self, operation_type: str, broadcast: Optional[int] = None,  axis: Optional[int] = None):
+    def __init__(self, operation_type: str, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
 
         self.broadcast = broadcast

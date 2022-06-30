@@ -23,7 +23,6 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):
-
     def __init__(self, axes: List[int]):
         super().__init__()
         self.axes = sorted(axes)
@@ -37,7 +36,6 @@ class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):
 
 
 class OnnxUnsqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     @staticmethod
     def _do_forward(input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
         result = input_tensor
@@ -55,7 +53,6 @@ class OnnxUnsqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _UnsqueezeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('Unsqueeze', *args, outputs=1)

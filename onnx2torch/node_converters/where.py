@@ -14,7 +14,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxWhere(nn.Module, OnnxToTorchModule):
-
     def forward(self, condition: torch.Tensor, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return torch.where(condition, x, y)
 

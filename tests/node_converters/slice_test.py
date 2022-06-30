@@ -11,12 +11,12 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_slice(
-        input_tensor: np.ndarray,
-        starts: np.ndarray,
-        ends: np.ndarray,
-        output_shape: np.ndarray,
-        axes: Optional[np.ndarray] = None,
-        steps: Optional[np.ndarray] = None,
+    input_tensor: np.ndarray,
+    starts: np.ndarray,
+    ends: np.ndarray,
+    output_shape: np.ndarray,
+    axes: Optional[np.ndarray] = None,
+    steps: Optional[np.ndarray] = None,
 ) -> None:
     test_inputs = {'input_tensor': input_tensor}
 

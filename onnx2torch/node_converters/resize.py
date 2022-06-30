@@ -42,13 +42,12 @@ def _onnx_mode_to_torch_mode(onnx_mode: str, dim_size: int) -> str:
 
 
 class OnnxResize(nn.Module, OnnxToTorchModule):
-
     def __init__(
-            self,
-            mode: str = 'nearest',
-            align_corners: Optional[bool] = None,
-            ignore_roi: bool = False,
-            ignore_bs_ch_size: bool = False,
+        self,
+        mode: str = 'nearest',
+        align_corners: Optional[bool] = None,
+        ignore_roi: bool = False,
+        ignore_bs_ch_size: bool = False,
     ):
         super().__init__()
         self.onnx_mode = mode
@@ -57,11 +56,11 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
         self.ignore_bs_ch_size = ignore_bs_ch_size
 
     def forward(
-            self,
-            input_tensor: torch.Tensor,
-            roi: Optional[torch.Tensor] = None,
-            scales: Optional[torch.Tensor] = None,
-            sizes: Optional[torch.Tensor] = None,
+        self,
+        input_tensor: torch.Tensor,
+        roi: Optional[torch.Tensor] = None,
+        scales: Optional[torch.Tensor] = None,
+        sizes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         torch_mode = _onnx_mode_to_torch_mode(self.onnx_mode, input_tensor.dim() - 2)
         if not self.ignore_roi and roi is not None and roi.nelement() != 0:
@@ -98,7 +97,6 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
 
 
 class OnnxResizeV10(nn.Module, OnnxToTorchModule):
-
     def __init__(self, mode: str = 'nearest'):
         super().__init__()
         self._resize = OnnxResize(mode=mode)

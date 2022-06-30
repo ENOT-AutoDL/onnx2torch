@@ -8,9 +8,9 @@ from tests.utils.common import make_model_from_nodes
 
 
 def where_test(
-        condition: np.ndarray,
-        x: np.ndarray,
-        y: np.ndarray,
+    condition: np.ndarray,
+    x: np.ndarray,
+    y: np.ndarray,
 ) -> None:
     test_inputs = {'condition': condition, 'x': x, 'y': y}
     node = onnx.helper.make_node(
@@ -44,6 +44,16 @@ def test_where() -> None:
 
     where_test(
         condition=np.array([[1, 0], [1, 1]], dtype=bool),
-        x=np.array([[1, ], [3, ]], dtype=np.float32),
+        x=np.array(
+            [
+                [
+                    1,
+                ],
+                [
+                    3,
+                ],
+            ],
+            dtype=np.float32,
+        ),
         y=np.array([[9, 8], [7, 6]], dtype=np.float32),
     )

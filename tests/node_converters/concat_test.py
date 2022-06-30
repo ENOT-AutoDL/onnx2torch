@@ -11,9 +11,9 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_concat(
-        input_arrays_shapes: List[List[int]],
-        opset_version: int,
-        **kwargs,
+    input_arrays_shapes: List[List[int]],
+    opset_version: int,
+    **kwargs,
 ) -> None:
     test_inputs = {}
     for i, input_array_shape in enumerate(input_arrays_shapes):

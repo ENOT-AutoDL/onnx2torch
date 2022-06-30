@@ -14,7 +14,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxReciprocal(nn.Module, OnnxToTorchModule):
-
     def forward(self, x):
         return torch.reciprocal(x)
 

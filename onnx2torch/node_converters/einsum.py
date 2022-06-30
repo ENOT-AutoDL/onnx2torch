@@ -14,7 +14,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxEinsum(nn.Module, OnnxToTorchModule):
-
     def __init__(self, equation: str):
         super().__init__()
         self.equation = equation

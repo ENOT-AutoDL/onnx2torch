@@ -30,12 +30,15 @@ def _test_topk(data: np.ndarray, k: np.ndarray, **kwargs) -> None:
 
 
 def test_topk() -> None:
-    x = np.array([
-        [0, 1, 2, 3],
-        [4, 5, 6, 7],
-        [8, 9, 10, 11],
-    ], dtype=np.float32)
+    x = np.array(
+        [
+            [0, 1, 2, 3],
+            [4, 5, 6, 7],
+            [8, 9, 10, 11],
+        ],
+        dtype=np.float32,
+    )
 
     _test_topk(data=x, k=np.array([3], dtype=np.int64), axis=1, largest=1)
     _test_topk(data=x, k=np.array([3], dtype=np.int64), axis=-1, largest=1)
-    _test_topk( data=x, k=np.array([3], dtype=np.int64), axis=1, largest=1, sorted=1)
+    _test_topk(data=x, k=np.array([3], dtype=np.int64), axis=1, largest=1, sorted=1)

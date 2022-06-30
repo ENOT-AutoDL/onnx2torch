@@ -9,10 +9,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_clip(
-        input_shape: Tuple[int, int, int, int],
-        min_value: Optional[float] = None,
-        max_value: Optional[float] = None,
-        **kwargs,
+    input_shape: Tuple[int, int, int, int],
+    min_value: Optional[float] = None,
+    max_value: Optional[float] = None,
+    **kwargs,
 ) -> None:
     x_range = 2 * max_value if max_value is not None else 5
     x = np.random.uniform(low=-x_range, high=x_range, size=input_shape).astype(np.float32)
@@ -36,8 +36,8 @@ def _test_clip(
 
 
 def _test_clip_opset9(
-        input_shape: Tuple[int, int, int, int],
-        **kwargs,
+    input_shape: Tuple[int, int, int, int],
+    **kwargs,
 ) -> None:
     x = np.random.uniform(low=-10.0, high=10.0, size=input_shape).astype(np.float32)
     test_inputs = {'x': x}

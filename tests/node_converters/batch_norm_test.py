@@ -6,9 +6,9 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_batch_norm(
-        input_shape,
-        num_features,
-        **kwargs,
+    input_shape,
+    num_features,
+    **kwargs,
 ) -> None:
 
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)

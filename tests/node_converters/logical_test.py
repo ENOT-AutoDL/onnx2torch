@@ -11,7 +11,7 @@ from tests.utils.common import make_model_from_nodes
     ('Or', 'And', 'Xor'),
 )
 def test_logical_operation(op_type: str) -> None:
-    x = (np.random.randn(10, 1, 64, 128) > 0)
+    x = np.random.randn(10, 1, 64, 128) > 0
     y_variants = (
         (np.random.randn(128) > 0),
         (np.random.randn(64, 128) > 0),

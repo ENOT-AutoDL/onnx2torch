@@ -14,7 +14,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxNeg(nn.Module, OnnxToTorchModule):
-
     def forward(self, input_tensor: torch.Tensor):
         return -input_tensor
 

@@ -9,9 +9,9 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_range(
-        start: np.ndarray,
-        limit: np.ndarray,
-        delta: np.ndarray,
+    start: np.ndarray,
+    limit: np.ndarray,
+    delta: np.ndarray,
 ) -> None:
     test_inputs = dict(start=start, limit=limit, delta=delta)
     node = onnx.helper.make_node(op_type='Range', inputs=list(test_inputs), outputs=['y'])

@@ -12,8 +12,8 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 def _arbitrary_dim_shift_and_insert_zero(
-        input_tensor: torch.Tensor,
-        insert_dim: int,
+    input_tensor: torch.Tensor,
+    insert_dim: int,
 ) -> torch.Tensor:
 
     # single item shift
@@ -47,9 +47,9 @@ def _arbitrary_dim_shift_and_insert_zero(
 
 class OnnxCumSum(nn.Module, OnnxToTorchModule):
     def __init__(
-            self,
-            exclusive: bool = False,
-            reverse: bool = False,
+        self,
+        exclusive: bool = False,
+        reverse: bool = False,
     ):
         super().__init__()
         self.exclusive = exclusive

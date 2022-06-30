@@ -27,7 +27,6 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 
 
 class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         output = torch.logical_not(input_tensor)
         if torch.onnx.is_in_onnx_export():
@@ -37,14 +36,13 @@ class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _NotExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('Not', *args, outputs=1)
 
 
 class OnnxLogical(nn.Module, OnnxToTorchModule):
-    def __init__(self, operation_type: str, broadcast: Optional[int] = None,  axis: Optional[int] = None):
+    def __init__(self, operation_type: str, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
         self.broadcast = broadcast
         self.axis = axis

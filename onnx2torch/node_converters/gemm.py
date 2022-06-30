@@ -21,11 +21,11 @@ class OnnxGeneralLinear(nn.Linear, OnnxToTorchModule):
     """
 
     def __init__(
-            self,
-            in_features: int,
-            out_features: int,
-            bias: bool,
-            trans_a: int,
+        self,
+        in_features: int,
+        out_features: int,
+        bias: bool,
+        trans_a: int,
     ):
 
         super().__init__(
@@ -42,11 +42,11 @@ class OnnxGeneralLinear(nn.Linear, OnnxToTorchModule):
 
     @classmethod
     def maybe_create_simple_linear(
-            cls,
-            in_features: int,
-            out_features: int,
-            bias: bool,
-            trans_a: int,
+        cls,
+        in_features: int,
+        out_features: int,
+        bias: bool,
+        trans_a: int,
     ):
         if trans_a == 0:
             return nn.Linear(in_features=in_features, out_features=out_features, bias=bias)

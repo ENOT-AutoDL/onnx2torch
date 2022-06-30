@@ -29,12 +29,12 @@ from onnx2torch.converter import convert
 
 
 def make_model_from_nodes(
-        nodes: Union[NodeProto, Sequence[NodeProto]],
-        initializers: Dict[str, np.ndarray],
-        inputs_example: Optional[Dict[str, np.ndarray]] = None,
-        inputs_info: Optional[Sequence[ValueInfoProto]] = None,
-        outputs_info: Optional[Sequence[ValueInfoProto]] = None,
-        opset_version: Optional[int] = 11,
+    nodes: Union[NodeProto, Sequence[NodeProto]],
+    initializers: Dict[str, np.ndarray],
+    inputs_example: Optional[Dict[str, np.ndarray]] = None,
+    inputs_info: Optional[Sequence[ValueInfoProto]] = None,
+    outputs_info: Optional[Sequence[ValueInfoProto]] = None,
+    opset_version: Optional[int] = 11,
 ) -> ModelProto:
     if inputs_info is None and inputs_example is None:
         raise ValueError('inputs_example or inputs_info must be set')
@@ -57,10 +57,7 @@ def make_model_from_nodes(
         name='test_graph',
         inputs=inputs_info,
         outputs=outputs_info,
-        initializer=[
-            numpy_helper.from_array(data, name=name)
-            for name, data in initializers.items()
-        ],
+        initializer=[numpy_helper.from_array(data, name=name) for name, data in initializers.items()],
     )
 
     opset_imports = None
@@ -81,16 +78,10 @@ def make_model_from_nodes(
 
 def _convert_data(data: Any, from_type: Type, convert_function: Callable) -> Any:
     if isinstance(data, Dict):
-        return {
-            k: _convert_data(v, from_type, convert_function)
-            for k, v in data.items()
-        }
+        return {k: _convert_data(v, from_type, convert_function) for k, v in data.items()}
 
     if isinstance(data, (Tuple, List)):
-        return type(data)(
-            _convert_data(v, from_type, convert_function)
-            for v in data
-        )
+        return type(data)(_convert_data(v, from_type, convert_function) for v in data)
 
     if isinstance(data, from_type):
         return convert_function(data)
@@ -113,9 +104,9 @@ def convert_data_torch2onnx(data: Any) -> Any:
 
 
 def convert_onnx_inputs_to_torch_inputs(
-        onnx_model: ModelProto,
-        onnx_inputs: Dict[str, Any],
-        device: str = 'cpu',
+    onnx_model: ModelProto,
+    onnx_inputs: Dict[str, Any],
+    device: str = 'cpu',
 ) -> List[Any]:
     return [
         convert_data_onnx2torch(onnx_inputs[graph_input.name], device=device)
@@ -132,10 +123,7 @@ def calc_ort_outputs(model: ModelProto, inputs: Dict[str, Any], skip_unused_inpu
 
     if skip_unused_inputs:
         graph_inputs = [i.name for i in model.graph.input]
-        inputs = {
-            k: v for k, v in inputs.items()
-            if k in graph_inputs
-        }
+        inputs = {k: v for k, v in inputs.items() if k in graph_inputs}
 
     outputs = ort_session.run(
         output_names=None,
@@ -154,8 +142,8 @@ def calc_torch_outputs(model: ModelProto, inputs: Dict[str, Any], device: str = 
 
 
 def calc_torch_and_ort_outputs(
-        model: ModelProto,
-        test_inputs: Dict[str, np.ndarray],
+    model: ModelProto,
+    test_inputs: Dict[str, np.ndarray],
 ):
     torch_outputs = calc_torch_outputs(model=model, inputs=test_inputs)
     ort_outputs = calc_ort_outputs(model=model, inputs=test_inputs)
@@ -164,10 +152,10 @@ def calc_torch_and_ort_outputs(
 
 
 def convert_onnx2torch2onnx(
-        model: ModelProto,
-        inputs: Dict[str, np.ndarray],
-        opset_version: int = 13,
-        **export_kwargs,
+    model: ModelProto,
+    inputs: Dict[str, np.ndarray],
+    opset_version: int = 13,
+    **export_kwargs,
 ) -> ModelProto:
     torch_model = convert(model)
     input_names = list(inputs.keys())
@@ -188,12 +176,12 @@ def convert_onnx2torch2onnx(
 
 
 def _check_onnx_model(
-        onnx_model: ModelProto,
-        onnx_inputs: Dict[str, Any],
-        onnx_torch_check_function: Callable,
-        torch_cpu_cuda_check_function: Optional[Callable] = None,
-        onnx_torch2onnx_check_function: Optional[Callable] = None,
-        opset_version: int = 13,
+    onnx_model: ModelProto,
+    onnx_inputs: Dict[str, Any],
+    onnx_torch_check_function: Callable,
+    torch_cpu_cuda_check_function: Optional[Callable] = None,
+    onnx_torch2onnx_check_function: Optional[Callable] = None,
+    opset_version: int = 13,
 ) -> None:
     ort_outputs = calc_ort_outputs(onnx_model, onnx_inputs)
     torch_outputs = calc_torch_outputs(onnx_model, onnx_inputs, device='cpu')
@@ -211,12 +199,12 @@ def _check_onnx_model(
 
 
 def check_onnx_model(
-        onnx_model: ModelProto,
-        onnx_inputs: Dict[str, Any],
-        atol_onnx_torch: float = 0.0,
-        atol_torch_cpu_cuda: float = 0.0,
-        atol_onnx_torch2onnx: float = 0.0,
-        opset_version: int = 13,
+    onnx_model: ModelProto,
+    onnx_inputs: Dict[str, Any],
+    atol_onnx_torch: float = 0.0,
+    atol_torch_cpu_cuda: float = 0.0,
+    atol_onnx_torch2onnx: float = 0.0,
+    opset_version: int = 13,
 ) -> None:
     def onnx_torch_check_function(onnx_output, torch_output):
         if len(onnx_output) == 1:
@@ -231,15 +219,17 @@ def check_onnx_model(
             torch_cuda_output = [torch_cuda_output]
 
         for a, b in zip(torch_cpu_output, torch_cuda_output):
-            assert np.all(np.isclose(a, b, atol=atol_torch_cpu_cuda)), \
-                'torch cpu and torch cuda outputs have significant difference'
+            assert np.all(
+                np.isclose(a, b, atol=atol_torch_cpu_cuda)
+            ), 'torch cpu and torch cuda outputs have significant difference'
 
         return True
 
     def onnx_torch2onnx_check_function(onnx_output, torch2onnx_output):
         for a, b in zip(onnx_output, torch2onnx_output):
-            assert np.all(np.isclose(a, b, atol=atol_onnx_torch2onnx)), \
-                'ort and ort+torch2onnx outputs have significant difference'
+            assert np.all(
+                np.isclose(a, b, atol=atol_onnx_torch2onnx)
+            ), 'ort and ort+torch2onnx outputs have significant difference'
 
         return True
 
@@ -254,12 +244,12 @@ def check_onnx_model(
 
 
 def check_torch_model(
-        torch_model: torch.nn.Module,
-        onnx_inputs: Dict[str, Any],
-        atol_onnx_torch: float = 0.0,
-        atol_torch_cpu_cuda: float = 0.0,
-        atol_onnx_torch2onnx: float = 0.0,
-        opset_version: int = 13,
+    torch_model: torch.nn.Module,
+    onnx_inputs: Dict[str, Any],
+    atol_onnx_torch: float = 0.0,
+    atol_torch_cpu_cuda: float = 0.0,
+    atol_onnx_torch2onnx: float = 0.0,
+    opset_version: int = 13,
 ) -> None:
     arguments = locals()
     input_names = list(onnx_inputs.keys())

@@ -11,9 +11,9 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_shape(
-        input_shape: List[int],
-        opset_version: int,
-        **kwargs,
+    input_shape: List[int],
+    opset_version: int,
+    **kwargs,
 ) -> None:
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
     test_inputs = {'x': x}

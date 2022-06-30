@@ -21,7 +21,6 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 
 class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
         if axes is not None:
@@ -45,11 +44,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
         if torch.onnx.is_in_onnx_export() and get_onnx_version() >= 13:
             args = [input_tensor]
             if self.axes:
-                axes = torch.tensor(
-                    self.axes,
-                    device=input_tensor.device,
-                    dtype=torch.int64
-                )
+                axes = torch.tensor(self.axes, device=input_tensor.device, dtype=torch.int64)
                 args.append(axes)
             return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
 
@@ -57,7 +52,6 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
-
     @staticmethod
     def is_empty_axes(axes: torch.Tensor) -> bool:
         return axes is None or axes.nelement() == 0
@@ -86,7 +80,6 @@ class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _SqueezeDynamicAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('Squeeze', *args, outputs=1)

@@ -8,8 +8,8 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_global_avg_pool(
-        input_shape: List[int],
-        **kwargs,
+    input_shape: List[int],
+    **kwargs,
 ) -> None:
 
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)

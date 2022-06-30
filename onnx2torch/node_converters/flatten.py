@@ -10,7 +10,6 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxFlatten(nn.Module, OnnxToTorchModule):
-
     def __init__(self, axis: int = 1):
         super().__init__()
         self.axis = axis
@@ -30,7 +29,7 @@ class OnnxFlatten(nn.Module, OnnxToTorchModule):
 @add_converter(operation_type='Flatten', version=13)
 @add_converter(operation_type='Flatten', version=11)
 @add_converter(operation_type='Flatten', version=9)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 1)
     torch_module = OnnxFlatten.maybe_create_simple_flatten(axis=axis)
 
