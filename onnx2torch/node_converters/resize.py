@@ -45,10 +45,12 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
             self,
             mode: str = 'nearest',
             align_corners: Optional[bool] = None,
+            coordinate_transformation_mode: Optional[str] = None,
     ):
         super().__init__()
         self.onnx_mode = mode
         self.align_corners = align_corners
+        self._check_roi = coordinate_transformation_mode == 'tf_crop_and_resize'
 
     def forward(
             self,
@@ -58,7 +60,7 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
             sizes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         torch_mode = _onnx_mode_to_torch_mode(self.onnx_mode, input_tensor.dim() - 2)
-        if roi is not None and roi.nelement() != 0 and roi.nelement() != (roi==1).sum():
+        if self._check_roi and roi is not None and roi.nelement() != 0:
             raise NotImplementedError('roi logic is not implemented.')
 
         # Format of onnx scales and sizes is [n, c, d, h, w]
@@ -156,6 +158,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
         torch_module=OnnxResize(
             mode=mode,
             align_corners=_get_torch_align_corners(mode, coordinate_transformation_mode),
+            coordinate_transformation_mode = coordinate_transformation_mode,
         ),
         onnx_mapping=onnx_mapping_from_node(node),
     )
