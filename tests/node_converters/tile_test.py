@@ -32,7 +32,7 @@ def _test_tile(
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_tile() -> None:
+def test_tile() -> None:  # pylint: disable=missing-function-docstring
     data = np.random.rand(2, 3, 4, 5).astype(np.float32)
     repeats = np.random.randint(low=1, high=10, size=(np.ndim(data),)).astype(np.int64)
     _test_tile(

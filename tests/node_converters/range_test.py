@@ -34,7 +34,7 @@ def _test_range(
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_range() -> None:
+def test_range() -> None:  # pylint: disable=missing-function-docstring
     _test_range(
         start=np.array(1, dtype=np.int32),
         limit=np.array(5, dtype=np.int32),

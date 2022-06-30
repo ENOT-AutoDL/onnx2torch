@@ -16,28 +16,28 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxErf(nn.Module, OnnxToTorchModule):
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+class OnnxErf(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.erf(input_tensor)
 
 
-class OnnxHardSigmoid(nn.Module, OnnxToTorchModule):
+class OnnxHardSigmoid(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, alpha: float = 0.2, beta: float = 0.5):
         super().__init__()
         self.alpha = alpha
         self.beta = beta
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.clip(input_tensor * self.alpha + self.beta, min=0.0, max=1.0)
 
 
-class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):
+class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int = 1, is_log: bool = False):
         super().__init__()
         self.axis = axis
         self.is_log = is_log
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         shape = input_tensor.shape
         result = torch.flatten(input_tensor, start_dim=self.axis)
         result = torch.log_softmax(result, -1) if self.is_log else torch.softmax(result, -1)

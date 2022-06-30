@@ -15,15 +15,15 @@ _COCO_MEAN = np.array([0.406, 0.485, 0.456], dtype=np.float32)
 _COCO_STD = np.array([0.225, 0.224, 0.229], dtype=np.float32)
 
 
-def create_test_batch(
-    bs: int = 32,
+def create_test_batch(  # pylint: disable=missing-function-docstring
+    batch_size: int = 32,
     target_size: Tuple[int, int] = (224, 224),
 ) -> np.ndarray:
     minimal_dataset_path = get_minimal_dataset_path()
 
     batch = []
-    for i, image_path in enumerate(minimal_dataset_path.glob('*.jpg')):
-        if i >= bs:
+    for index, image_path in enumerate(minimal_dataset_path.glob('*.jpg')):
+        if index >= batch_size:
             break
 
         image = Image.open(image_path).convert('RGB')
@@ -39,7 +39,7 @@ def create_test_batch(
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_resnet50():
+def test_resnet50():  # pylint: disable=missing-function-docstring
     model = get_model('resnet50')
     model = version_converter.convert_version(model, 11)
 
@@ -69,11 +69,13 @@ def test_resnet50():
         ('unet', (320, 320)),
     ),
 )
-def test_onnx_models(model_name: str, resolution: Tuple[int, int]) -> None:
+def test_onnx_models(  # pylint: disable=missing-function-docstring
+    model_name: str, resolution: Tuple[int, int]
+) -> None:
     model = get_model(model_name)
     input_name = model.graph.input[0].name
     test_inputs = {
-        input_name: create_test_batch(bs=1, target_size=resolution),
+        input_name: create_test_batch(batch_size=1, target_size=resolution),
     }
 
     check_onnx_model(
@@ -106,10 +108,10 @@ def test_onnx_models(model_name: str, resolution: Tuple[int, int]) -> None:
         'regnet_y_16gf',
     ),
 )
-def test_torchvision_classification(model_name: str) -> None:
+def test_torchvision_classification(model_name: str) -> None:  # pylint: disable=missing-function-docstring
     torch_model = getattr(torchvision.models, model_name)(pretrained=True)
     test_inputs = {
-        'inputs': create_test_batch(bs=32),
+        'inputs': create_test_batch(batch_size=32),
     }
 
     check_torch_model(
@@ -130,10 +132,10 @@ def test_torchvision_classification(model_name: str) -> None:
         'lraspp_mobilenet_v3_large',
     ),
 )
-def test_torchvision_segmentation(model_name: str) -> None:
+def test_torchvision_segmentation(model_name: str) -> None:  # pylint: disable=missing-function-docstring
     torch_model = getattr(torchvision.models.segmentation, model_name)(pretrained=True)
     test_inputs = {
-        'inputs': create_test_batch(bs=8),
+        'inputs': create_test_batch(batch_size=8),
     }
 
     check_torch_model(
@@ -153,11 +155,11 @@ def test_torchvision_segmentation(model_name: str) -> None:
         'swin',
     ),
 )
-def test_transformer_models(model_name: str) -> None:
+def test_transformer_models(model_name: str) -> None:  # pylint: disable=missing-function-docstring
     model = get_model(model_name)
     input_name = model.graph.input[0].name
     test_inputs = {
-        input_name: create_test_batch(bs=8, target_size=(224, 224)),
+        input_name: create_test_batch(batch_size=8, target_size=(224, 224)),
     }
 
     check_onnx_model(
@@ -169,7 +171,7 @@ def test_transformer_models(model_name: str) -> None:
     )
 
 
-def test_3d_gan() -> None:
+def test_3d_gan() -> None:  # pylint: disable=missing-function-docstring
     model = get_model('3d_gan')
     input_name = model.graph.input[0].name
     test_inputs = {input_name: np.random.randn(32, 200).astype(dtype=np.float32)}
@@ -182,7 +184,7 @@ def test_3d_gan() -> None:
     )
 
 
-def test_shelfnet() -> None:
+def test_shelfnet() -> None:  # pylint: disable=missing-function-docstring
     model = get_model('shelfnet')
     input_name = model.graph.input[0].name
     test_inputs = {input_name: np.random.randn(8, 3, 384, 288).astype(dtype=np.float32)}
@@ -195,7 +197,7 @@ def test_shelfnet() -> None:
     )
 
 
-def test_model_with_pad_node() -> None:
+def test_model_with_pad_node() -> None:  # pylint: disable=missing-function-docstring
     model = get_model('point_arch')
     input_name = model.graph.input[0].name
     test_inputs = {input_name: np.random.randn(1, 49, 40, 1).astype(dtype=np.float32)}
@@ -208,7 +210,7 @@ def test_model_with_pad_node() -> None:
     )
 
 
-def test_gptj() -> None:
+def test_gptj() -> None:  # pylint: disable=missing-function-docstring
     model = get_model('gptj_2_random_blocks')
     input_name = model.graph.input[0].name
     test_inputs = {

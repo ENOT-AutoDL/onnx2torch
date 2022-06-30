@@ -18,7 +18,7 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     def __init__(self, center_point_box: bool = False):
         super().__init__()
         self.center_point_box = center_point_box
@@ -69,7 +69,7 @@ class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):
 
         return torch.tensor(out, dtype=torch.int64, device=boxes.device)
 
-    def forward(
+    def forward(  # pylint: disable=missing-function-docstring
         self,
         boxes: torch.Tensor,
         scores: torch.Tensor,

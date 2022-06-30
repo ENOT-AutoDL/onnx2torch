@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 import onnx
 import pytest
@@ -10,7 +8,7 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def get_roi_align_input_values():  # type: ignore
+def get_roi_align_input_values():  # type: ignore pylint: disable=missing-function-docstring
     x = np.array(
         [
             [
@@ -181,7 +179,12 @@ def _test_roi(
     ),
 )
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_roi(spatial_scale: float, sampling_ratio: int, output_height: int, output_width: int) -> None:
+def test_roi(  # pylint: disable=missing-function-docstring
+    spatial_scale: float,
+    sampling_ratio: int,
+    output_height: int,
+    output_width: int,
+) -> None:
     x, batch_indices, rois = get_roi_align_input_values()
     kwargs = {}
     if spatial_scale is not None:

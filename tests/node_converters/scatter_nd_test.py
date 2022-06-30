@@ -24,7 +24,7 @@ def _test_scatter_nd(
     check_onnx_model(model, test_inputs)
 
 
-def test_scatter_nd() -> None:
+def test_scatter_nd() -> None:  # pylint: disable=missing-function-docstring
     data = np.array(
         [
             [[1, 2, 3, 4], [5, 6, 7, 8], [8, 7, 6, 5], [4, 3, 2, 1]],

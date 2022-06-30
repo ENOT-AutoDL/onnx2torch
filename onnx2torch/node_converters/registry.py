@@ -12,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 _CONVERTER_REGISTRY = {}
 
 
-class OperationDescription(NamedTuple):
+class OperationDescription(NamedTuple):  # pylint: disable=missing-class-docstring
     domain: str
     operation_type: str
     version: int
@@ -21,7 +21,11 @@ class OperationDescription(NamedTuple):
 TConverter = Callable[[OnnxNode, OnnxGraph], OperationConverterResult]
 
 
-def add_converter(operation_type: str, version: int, domain: str = defs.ONNX_DOMAIN):
+def add_converter(  # pylint: disable=missing-function-docstring
+    operation_type: str,
+    version: int,
+    domain: str = defs.ONNX_DOMAIN,
+):
     description = OperationDescription(
         domain=domain,
         operation_type=operation_type,
@@ -40,7 +44,11 @@ def add_converter(operation_type: str, version: int, domain: str = defs.ONNX_DOM
     return deco
 
 
-def get_converter(operation_type: str, version: int, domain: str = defs.ONNX_DOMAIN) -> TConverter:
+def get_converter(  # pylint: disable=missing-function-docstring
+    operation_type: str,
+    version: int,
+    domain: str = defs.ONNX_DOMAIN,
+) -> TConverter:
     try:
         version = defs.get_schema(
             operation_type,

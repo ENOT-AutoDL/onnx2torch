@@ -81,6 +81,10 @@ def _test_squeeze(
         ([3, 3, 3], None, 13),
     ),
 )
-def test_squeeze(shape: List[int], axes: List[int], opset_version: int) -> None:
+def test_squeeze(  # pylint: disable=missing-function-docstring
+    shape: List[int],
+    axes: List[int],
+    opset_version: int,
+) -> None:
     x = np.random.randn(*shape).astype(np.float32)
     _test_squeeze(input_tensor=x, axes=axes, opset_version=opset_version)

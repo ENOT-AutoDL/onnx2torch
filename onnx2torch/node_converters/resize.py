@@ -41,7 +41,7 @@ def _onnx_mode_to_torch_mode(onnx_mode: str, dim_size: int) -> str:
     return torch_mode
 
 
-class OnnxResize(nn.Module, OnnxToTorchModule):
+class OnnxResize(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(
         self,
         mode: str = 'nearest',
@@ -55,7 +55,7 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
         self.ignore_roi = ignore_roi
         self.ignore_bs_ch_size = ignore_bs_ch_size
 
-    def forward(
+    def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         roi: Optional[torch.Tensor] = None,
@@ -96,12 +96,16 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
         )
 
 
-class OnnxResizeV10(nn.Module, OnnxToTorchModule):
+class OnnxResizeV10(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, mode: str = 'nearest'):
         super().__init__()
         self._resize = OnnxResize(mode=mode)
 
-    def forward(self, input_tensor: torch.Tensor, scales: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        scales: torch.Tensor,
+    ) -> torch.Tensor:
         return self._resize(input_tensor, scales=scales)
 
 

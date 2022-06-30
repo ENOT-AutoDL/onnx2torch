@@ -13,8 +13,8 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxReciprocal(nn.Module, OnnxToTorchModule):
-    def forward(self, x):
+class OnnxReciprocal(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+    def forward(self, x):  # pylint: disable=missing-function-docstring
         return torch.reciprocal(x)
 
 

@@ -8,20 +8,20 @@ _DIR_PATH = Path(__file__).parent.resolve()
 
 
 def _get_installation_requirements():
-    with _DIR_PATH.joinpath('requirements.txt').open('r') as file:
+    with _DIR_PATH.joinpath('requirements.txt').open('r', encoding='utf-8') as file:
         return list(line.strip() for line in file.readlines() if line and not line.startswith('#'))
 
 
 def _get_version() -> str:
-    with _DIR_PATH.joinpath(_PACKAGE_NAME, 'VERSION').open('r') as version_file:
+    with _DIR_PATH.joinpath(_PACKAGE_NAME, 'VERSION').open('r', encoding='utf-8') as version_file:
         version = version_file.read().strip()
 
     return version
 
 
 def _get_long_description() -> str:
-    with open('README.md') as f:
-        long_description = f.read()
+    with open('README.md', encoding='utf-8') as file:
+        long_description = file.read()
     return long_description
 
 

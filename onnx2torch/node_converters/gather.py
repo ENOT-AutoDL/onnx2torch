@@ -21,12 +21,16 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxGatherElements(nn.Module, OnnxToTorchModule):
+class OnnxGatherElements(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int = 0):
         super().__init__()
         self.axis = axis
 
-    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        indices: torch.Tensor,
+    ) -> torch.Tensor:
         return torch.gather(input_tensor, dim=self.axis, index=indices)
 
 
@@ -38,7 +42,7 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
         self.axis = axis
 
     @staticmethod
-    def slice_from_axis(
+    def slice_from_axis(  # pylint: disable=missing-docstring
         input_tensor: torch.Tensor,
         axis: int,
         indices: torch.Tensor,
@@ -48,7 +52,9 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
         skip_axis.append(indices)
         return tuple(skip_axis)
 
-    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self, input_tensor: torch.Tensor, indices: torch.Tensor
+    ) -> torch.Tensor:
         # pytorch Gather differs from onnx Gather, onnx gather work like numpy.take
         # But torch.take does not support different axis. So we make it by yourself
         # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time

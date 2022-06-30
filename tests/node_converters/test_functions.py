@@ -30,7 +30,7 @@ def _test_functions(function: str, data: np.ndarray, opset_version, **kwargs) ->
         ('Round', [8, 3, 32, 32]),
     ),
 )
-def test_roundings(function: str, input_shape: List[int]) -> None:
+def test_roundings(function: str, input_shape: List[int]) -> None:  # pylint: disable=missing-function-docstring
     data = np.random.randn(*input_shape).astype(np.float32)
     _test_functions(function, data=data, opset_version=11)
 
@@ -47,7 +47,7 @@ def test_roundings(function: str, input_shape: List[int]) -> None:
         ('Tan', [8, 3, 32, 32]),
     ),
 )
-def test_common_functions(function: str, input_shape: List[int]) -> None:
+def test_common_functions(function: str, input_shape: List[int]) -> None:  # pylint: disable=missing-function-docstring
     data = np.random.randn(*input_shape).astype(np.float32)
     if function == 'Log':
         data[data <= 0] = 10**-4
@@ -62,7 +62,7 @@ def test_common_functions(function: str, input_shape: List[int]) -> None:
         ('Atan', [8, 3, 32, 32]),
     ),
 )
-def test_arc_functions(function: str, input_shape: List[int]) -> None:
+def test_arc_functions(function: str, input_shape: List[int]) -> None:  # pylint: disable=missing-function-docstring
     if function in ['Acos', 'Asin']:
         data = np.random.uniform(-1, 1, input_shape).astype(np.float32)
     else:
@@ -75,6 +75,9 @@ def test_arc_functions(function: str, input_shape: List[int]) -> None:
     'function,input_shape',
     (('Tanh', [8, 3, 32, 32]),),
 )
-def test_hyperbolic_functions(function: str, input_shape: List[int]) -> None:
+def test_hyperbolic_functions(  # pylint: disable=missing-function-docstring
+    function: str,
+    input_shape: List[int],
+) -> None:
     data = np.random.randn(*input_shape).astype(np.float32)
     _test_functions(function, data=data, opset_version=11)

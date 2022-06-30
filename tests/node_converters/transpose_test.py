@@ -23,7 +23,7 @@ def _test_transpose(data: np.ndarray, **kwargs) -> None:
     check_onnx_model(model, test_inputs)
 
 
-def test_transpose() -> None:
+def test_transpose() -> None:  # pylint: disable=missing-function-docstring
     shape = (2, 3, 4)
     data = np.random.random_sample(shape).astype(np.float32)
     permutations = list(itertools.permutations(np.arange(len(shape))))

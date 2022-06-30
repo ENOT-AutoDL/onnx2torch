@@ -42,7 +42,11 @@ def _test_reshape(
         ([2, 3, 16, 16], [-1, 1, 1, 2, 1, 1, 1, 2, 1, 1], 14),
     ),
 )
-def test_reshape(input_shape: List[int], output_shape: List[int], opset_version: int) -> None:
+def test_reshape(  # pylint: disable=missing-function-docstring
+    input_shape: List[int],
+    output_shape: List[int],
+    opset_version: int,
+) -> None:
     _test_reshape(
         input_shape=input_shape,
         output_shape=output_shape,

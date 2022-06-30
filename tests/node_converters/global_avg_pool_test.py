@@ -31,7 +31,7 @@ def _test_global_avg_pool(
     )
 
 
-def test_global_avg_pool() -> None:
+def test_global_avg_pool() -> None:  # pylint: disable=missing-function-docstring
     _test_global_avg_pool(input_shape=[2, 3, 16, 16, 16])
     _test_global_avg_pool(input_shape=[2, 3, 16, 16])
     _test_global_avg_pool(input_shape=[2, 3, 16])

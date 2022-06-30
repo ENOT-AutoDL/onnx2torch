@@ -39,7 +39,7 @@ _ONNX_MODELS_IDS = {
 _MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'
 
 
-def get_model_path(name: str) -> Path:
+def get_model_path(name: str) -> Path:  # pylint: disable=missing-function-docstring
     model_path = MODELS_DIR / f'{name}.onnx'
     if not model_path.exists():
         if name in _ONNX_MODELS_IDS:
@@ -51,12 +51,12 @@ def get_model_path(name: str) -> Path:
     return model_path
 
 
-def get_model(name: str) -> ModelProto:
+def get_model(name: str) -> ModelProto:  # pylint: disable=missing-function-docstring
     model_path = get_model_path(name)
     return onnx.load_model(str(model_path))
 
 
-def get_minimal_dataset_path():
+def get_minimal_dataset_path():  # pylint: disable=missing-function-docstring
     dataset_path = DATASETS_DIR / 'minimal_dataset'
     if not dataset_path.exists():
         arch_path = dataset_path.with_suffix('.tar.gz')

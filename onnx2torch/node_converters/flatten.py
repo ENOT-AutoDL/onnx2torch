@@ -9,17 +9,17 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxFlatten(nn.Module, OnnxToTorchModule):
+class OnnxFlatten(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int = 1):
         super().__init__()
         self.axis = axis
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         x = torch.flatten(x, end_dim=self.axis - 1)
         return torch.flatten(x, start_dim=1)
 
     @classmethod
-    def maybe_create_simple_flatten(cls, axis: int = 1) -> nn.Module:
+    def maybe_create_simple_flatten(cls, axis: int = 1) -> nn.Module:  # pylint: disable=missing-docstring
         if axis == 1:
             return nn.Flatten(start_dim=axis)
 

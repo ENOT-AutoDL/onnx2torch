@@ -5,7 +5,7 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def test_neg() -> None:
+def test_neg() -> None:  # pylint: disable=missing-function-docstring
     x_variants = (
         np.random.randn(128),
         np.random.randn(64, 128),

@@ -73,6 +73,10 @@ def _test_unsqueeze(
         ([2, 3, 16, 16], [-2, 1], 13),
     ),
 )
-def test_unsqueeze(shape: List[int], axes: List[int], opset_version: int) -> None:
+def test_unsqueeze(  # pylint: disable=missing-function-docstring
+    shape: List[int],
+    axes: List[int],
+    opset_version: int,
+) -> None:
     x = np.random.randn(*shape).astype(np.float32)
     _test_unsqueeze(input_tensor=x, axes=axes, opset_version=opset_version)

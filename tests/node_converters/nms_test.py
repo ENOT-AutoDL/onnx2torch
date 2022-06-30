@@ -160,7 +160,7 @@ _SCORES_NONE_TEST = _SCORES
         (_BOXES_NONE_TEST, _SCORES_NONE_TEST, 3, None, None, None),  # test None params
     ),
 )
-def test_nms(
+def test_nms(  # pylint: disable=missing-function-docstring
     boxes: np.ndarray,
     scores: np.ndarray,
     max_output_boxes_per_class: Optional[int],

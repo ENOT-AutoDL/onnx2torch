@@ -20,7 +20,7 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     def __init__(self, axes: Optional[List[int]] = None):
         super().__init__()
         if axes is not None:
@@ -39,7 +39,7 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
         return result
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         output = self._do_forward(input_tensor, self.axes)
         if torch.onnx.is_in_onnx_export() and get_onnx_version() >= 13:
             args = [input_tensor]
@@ -51,9 +51,12 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
         return output
 
 
-class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxSqueezeDynamicAxes(  # pylint: disable=missing-class-docstring
+    nn.Module,
+    OnnxToTorchModuleWithCustomExport,
+):
     @staticmethod
-    def is_empty_axes(axes: torch.Tensor) -> bool:
+    def is_empty_axes(axes: torch.Tensor) -> bool:  # pylint: disable=missing-function-docstring
         return axes is None or axes.nelement() == 0
 
     @staticmethod
@@ -67,7 +70,11 @@ class OnnxSqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
         return result
 
-    def forward(self, input_tensor: torch.Tensor, axes: Optional[torch.Tensor] = None) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        axes: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
         output = self._do_forward(input_tensor, axes)
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor]

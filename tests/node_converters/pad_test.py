@@ -55,7 +55,7 @@ def _test_pad(
     ),
 )
 @pytest.mark.parametrize('opset_version', (2, 11, 13))
-def test_pad(pads: np.array, mode: str, opset_version: int) -> None:
+def test_pad(pads: np.array, mode: str, opset_version: int) -> None:  # pylint: disable=missing-function-docstring
 
     input_tensor = np.asarray(
         [

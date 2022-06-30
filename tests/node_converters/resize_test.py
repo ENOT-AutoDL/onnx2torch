@@ -118,7 +118,7 @@ _DATA = np.random.normal(scale=3.0, size=[1, 1, 250, 250]).astype(np.float32)
         (None, _DOWNSAMPLE_SCALES, 'cubic', 'half_pixel'),
     ),
 )
-def test_resize(
+def test_resize(  # pylint: disable=missing-function-docstring
     sizes: np.ndarray,
     scales: np.ndarray,
     mode: str,
@@ -136,6 +136,6 @@ def test_resize(
 
 
 @pytest.mark.parametrize('mode', ('nearest',))
-def test_resizeV10(mode: str) -> None:
+def test_resize_v10(mode: str) -> None:  # pylint: disable=missing-function-docstring
     _test_resize_v10(x=_DATA, scales=_UPSAMPLE_SCALES, mode=mode)
     _test_resize_v10(x=_DATA, scales=_DOWNSAMPLE_SCALES, mode=mode)

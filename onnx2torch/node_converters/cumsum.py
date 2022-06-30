@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import torch
 from torch import nn
 
@@ -45,7 +43,7 @@ def _arbitrary_dim_shift_and_insert_zero(
     return input_tensor
 
 
-class OnnxCumSum(nn.Module, OnnxToTorchModule):
+class OnnxCumSum(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(
         self,
         exclusive: bool = False,
@@ -55,7 +53,11 @@ class OnnxCumSum(nn.Module, OnnxToTorchModule):
         self.exclusive = exclusive
         self.reverse = reverse
 
-    def forward(self, input_tensor: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        axis: torch.Tensor,
+    ) -> torch.Tensor:
         axis = axis.item()
         if self.reverse:
             input_tensor = torch.flip(input_tensor, dims=(axis,))

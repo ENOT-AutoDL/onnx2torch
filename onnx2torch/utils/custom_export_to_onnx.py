@@ -16,25 +16,32 @@ class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
     Marker class for onnx2torch modules with custom export to onnx.
     """
 
-    pass
+    pass  # pylint: disable=unnecessary-pass
 
 
-class CustomExportToOnnx(torch.autograd.Function):
+class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-class-docstring
     _NEXT_OUTPUT = None
 
     @classmethod
-    def set_output_and_apply(cls, output: Any, *args) -> Any:
+    def set_output_and_apply(cls, output: Any, *args) -> Any:  # pylint: disable=missing-function-docstring
         CustomExportToOnnx._NEXT_OUTPUT = output
         return cls.apply(*args)
 
     @staticmethod
-    def forward(ctx: Any, *args: Any, **kwargs: Any) -> Any:
+    def forward(  # pylint: disable=unused-argument, missing-function-docstring
+        ctx: Any,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
         return CustomExportToOnnx._NEXT_OUTPUT
 
     @staticmethod
-    def backward(ctx: Any, *grad_outputs: Any) -> Any:
+    def backward(ctx: Any, *grad_outputs: Any) -> Any:  # pylint: disable=unused-argument, missing-function-docstring
         raise RuntimeError('backward called while converting to onnx')
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *values) -> torch_C.Value:
+    def symbolic(  # pylint: disable=unused-argument, missing-function-docstring
+        graph: torch_C.Graph,
+        *values,
+    ) -> torch_C.Value:
         raise NotImplementedError

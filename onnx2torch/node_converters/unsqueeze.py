@@ -4,7 +4,6 @@ __all__ = [
 ]
 
 from typing import List
-from typing import Optional
 
 import torch
 import torch._C as torch_C
@@ -22,12 +21,12 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):
+class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, axes: List[int]):
         super().__init__()
         self.axes = sorted(axes)
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         result = input_tensor
         for axes_id in self.axes:
             result = torch.unsqueeze(result, dim=axes_id)
@@ -35,7 +34,10 @@ class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):
         return result
 
 
-class OnnxUnsqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxUnsqueezeDynamicAxes(  # pylint: disable=missing-class-docstring
+    nn.Module,
+    OnnxToTorchModuleWithCustomExport,
+):
     @staticmethod
     def _do_forward(input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
         result = input_tensor
@@ -44,7 +46,11 @@ class OnnxUnsqueezeDynamicAxes(nn.Module, OnnxToTorchModuleWithCustomExport):
 
         return result
 
-    def forward(self, input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        axes: torch.Tensor,
+    ) -> torch.Tensor:
         output = self._do_forward(input_tensor, axes)
         if torch.onnx.is_in_onnx_export():
             return _UnsqueezeExportToOnnx.set_output_and_apply(output, input_tensor, axes)

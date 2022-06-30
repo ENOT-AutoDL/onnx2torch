@@ -40,7 +40,7 @@ def _test_batch_norm(
     )
 
 
-def test_batch_norm():
+def test_batch_norm():  # pylint: disable=missing-function-docstring
     _test_batch_norm([2, 3, 4, 5], 3)
     _test_batch_norm([2, 3, 4, 5, 6], 3)
     _test_batch_norm([2, 3], 3)

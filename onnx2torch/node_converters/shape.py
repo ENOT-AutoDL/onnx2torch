@@ -17,13 +17,13 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     def __init__(self, start: Optional[int] = None, end: Optional[int] = None):
         super().__init__()
         self.start = start
         self.end = end
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         output = torch.tensor(
             input_tensor.shape[self.start : self.end],
             device=input_tensor.device,

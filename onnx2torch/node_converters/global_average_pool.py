@@ -17,18 +17,18 @@ from onnx2torch.utils.common import get_shape_from_value_info
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxGlobalAveragePool(nn.Module, OnnxToTorchModule):
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=no-self-use
+class OnnxGlobalAveragePool(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         x_dims = list(range(2, len(input_tensor.shape)))
         return torch.mean(input_tensor, dim=x_dims, keepdim=True)
 
 
-class OnnxGlobalAveragePoolWithKnownInputShape(nn.Module, OnnxToTorchModule):
+class OnnxGlobalAveragePoolWithKnownInputShape(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, input_shape: List[int]):
         super().__init__()
         self.x_dims = list(range(2, len(input_shape)))
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.mean(input_tensor, dim=self.x_dims, keepdim=True)
 
 

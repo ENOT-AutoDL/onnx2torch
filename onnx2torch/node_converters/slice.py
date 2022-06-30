@@ -69,17 +69,17 @@ def _do_slice(x: torch.Tensor, flip_dims: List, pos_axes_slices: List, neg_axes_
     return x
 
 
-class OnnxSliceV9(nn.Module, OnnxToTorchModule):
+class OnnxSliceV9(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, starts: np.ndarray, ends: np.ndarray, axes: Optional[np.ndarray] = None):
         super().__init__()
         self._flip_dims, self._pos_axes_slices, self._neg_axes_slices = _get_slices(starts, ends, axes, None)
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return _do_slice(input_tensor, self.flip_dims, self.pos_axes_slices, self.neg_axes_slices)
 
 
-class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):
-    def forward(
+class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
+    def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         starts: torch.Tensor,

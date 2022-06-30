@@ -52,7 +52,7 @@ def _test_clip_opset9(
     check_onnx_model(model, test_inputs)
 
 
-def test_clip() -> None:
+def test_clip() -> None:  # pylint: disable=missing-function-docstring
     _test_clip(input_shape=(2, 3, 16, 16), min_value=0.0, max_value=6.0)
     _test_clip(input_shape=(2, 3, 16, 16), min_value=0.0)
     _test_clip(input_shape=(2, 3, 16, 16), min_value=-1.5, max_value=2.5)

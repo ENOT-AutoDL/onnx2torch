@@ -18,7 +18,7 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
+class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     def __init__(
         self,
         mode: str = 'avg',
@@ -58,7 +58,7 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):
             aligned=False,
         )
 
-    def forward(
+    def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         rois: torch.Tensor,
@@ -92,6 +92,7 @@ class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-met
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         input_args = args[:3]
+        # pylint: disable=unbalanced-tuple-unpacking
         output_height, output_width, sampling_ratio, spatial_scale = args[3:]
         return graph.op(
             'RoiAlign',

@@ -46,7 +46,7 @@ def _test_conv(
     )
 
 
-def test_conv2d_base_params() -> None:
+def test_conv2d_base_params() -> None:  # pylint: disable=missing-function-docstring
     op_type_variants = ('ConvTranspose', 'Conv')
     in_channels_variants = (1, 2, 3, 4, 16)
     out_channels_variants = (1, 2, 3, 4, 16)
@@ -83,7 +83,7 @@ def test_conv2d_base_params() -> None:
         )
 
 
-def test_conv_stride_dilations_pads() -> None:
+def test_conv_stride_dilations_pads() -> None:  # pylint: disable=missing-function-docstring
     op_type_variants = ('ConvTranspose', 'Conv')
     input_hw_variants = ((32, 32), (32, 27), (27, 32), (27, 27))
     kernel_shape_variants = tuple(
@@ -122,7 +122,7 @@ def test_conv_stride_dilations_pads() -> None:
         )
 
 
-def test_conv_transpose_output_pads() -> None:
+def test_conv_transpose_output_pads() -> None:  # pylint: disable=missing-function-docstring
     input_hw_variants = ((5, 5), (6, 6), (7, 7))
     stride_variants = (
         (4, 4),

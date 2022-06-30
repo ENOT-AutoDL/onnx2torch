@@ -36,12 +36,15 @@ class OnnxGeneralLinear(nn.Linear, OnnxToTorchModule):
         # If != 0 transpose input before matmul
         self.trans_a = trans_a
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=arguments-renamed
+    def forward(  # pylint: disable=arguments-renamed, missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+    ) -> torch.Tensor:
         input_tensor = torch.transpose(input_tensor, 0, 1) if self.trans_a != 0 else input_tensor
         return F.linear(input_tensor, self.weight, self.bias)
 
     @classmethod
-    def maybe_create_simple_linear(
+    def maybe_create_simple_linear(  # pylint: disable=missing-docstring
         cls,
         in_features: int,
         out_features: int,

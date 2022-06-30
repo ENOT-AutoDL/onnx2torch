@@ -16,9 +16,9 @@ def _test_concat(
     **kwargs,
 ) -> None:
     test_inputs = {}
-    for i, input_array_shape in enumerate(input_arrays_shapes):
+    for index, input_array_shape in enumerate(input_arrays_shapes):
         x = np.random.uniform(low=-1.0, high=1.0, size=input_array_shape).astype(np.float32)
-        node_name = f'x_{i}'
+        node_name = f'x_{index}'
         test_inputs[node_name] = x
 
     node = onnx.helper.make_node(
@@ -40,7 +40,7 @@ def _test_concat(
     check_onnx_model(model, test_inputs)
 
 
-def test_concat() -> None:
+def test_concat() -> None:  # pylint: disable=missing-function-docstring
     opset_variants = (9, 13)
     axis_variants = (0, 1)
     for opset_version, axis in product(opset_variants, axis_variants):

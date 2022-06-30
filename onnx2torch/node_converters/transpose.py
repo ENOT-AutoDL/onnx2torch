@@ -16,12 +16,12 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 
 
-class OnnxTranspose(nn.Module, OnnxToTorchModule):
+class OnnxTranspose(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, perm: Optional[List[int]] = None):
         super().__init__()
         self.perm = perm
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         if self.perm is None:
             self.perm = list(range(input_tensor.dim()))[::-1]
 

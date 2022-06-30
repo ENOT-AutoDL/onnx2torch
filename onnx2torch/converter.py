@@ -28,14 +28,14 @@ def _remove_initializers_from_input(model: ModelProto) -> ModelProto:
 class InitializersContainer(nn.Module):
     """Module for storing initializers in torch fx graph."""
 
-    def add_initializer(self, name: str, initializer: torch.Tensor) -> None:
+    def add_initializer(self, name: str, initializer: torch.Tensor) -> None:  # pylint: disable=missing-docstring
         self.register_buffer(name, initializer)
 
-    def forward(self, *args, **kwargs):  # pylint: disable=no-self-use
+    def forward(self, *args, **kwargs):  # pylint: disable=missing-function-docstring
         raise RuntimeError('Got unexpected "forward" on constant container')
 
 
-def convert(
+def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     onnx_model_or_path: Union[str, Path, ModelProto],
     save_input_names: bool = False,
     attach_onnx_mapping: bool = False,
@@ -85,14 +85,14 @@ def convert(
     torch_nodes = {}
 
     # create input nodes
-    for i, name in enumerate(onnx_graph.input_values, 1):
+    for input_value, name in enumerate(onnx_graph.input_values, 1):
         if save_input_names:
             if not name.isidentifier():
                 raise ValueError(f'Input name "{name}" cannot be used as name of placeholder in fx.GraphModule.')
 
             placeholder_name = name
         else:
-            placeholder_name = f'input_{i}'
+            placeholder_name = f'input_{input_value}'
 
         torch_nodes[name] = torch_graph.placeholder(name=placeholder_name)
 

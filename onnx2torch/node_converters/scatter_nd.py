@@ -15,8 +15,13 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
-    def forward(self, data: torch.Tensor, indices: torch.Tensor, updates: torch.Tensor) -> torch.Tensor:
+class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        data: torch.Tensor,
+        indices: torch.Tensor,
+        updates: torch.Tensor,
+    ) -> torch.Tensor:
         # There is no scatter nd for torch, use following formula:
         # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
         output = data.clone()

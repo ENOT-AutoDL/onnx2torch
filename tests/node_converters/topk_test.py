@@ -7,7 +7,7 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def _test_topk(data: np.ndarray, k: np.ndarray, **kwargs) -> None:
+def _test_topk(data: np.ndarray, k: np.ndarray, **kwargs) -> None:  # pylint: disable=invalid-name
     test_inputs = {'input_tensor': data, 'k': k}
 
     node = onnx.helper.make_node(
@@ -29,7 +29,7 @@ def _test_topk(data: np.ndarray, k: np.ndarray, **kwargs) -> None:
     check_onnx_model(model, test_inputs)
 
 
-def test_topk() -> None:
+def test_topk() -> None:  # pylint: disable=missing-function-docstring
     x = np.array(
         [
             [0, 1, 2, 3],

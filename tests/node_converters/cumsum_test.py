@@ -1,5 +1,3 @@
-from typing import Optional
-
 import numpy as np
 import onnx
 import pytest
@@ -59,7 +57,7 @@ def _test_cumsum(
         (1, 1),
     ),
 )
-def test_cumsum(tensor_size, exclusive, reverse) -> None:
+def test_cumsum(tensor_size, exclusive, reverse) -> None:  # pylint: disable=missing-function-docstring
     input_tensor = np.random.randint(low=-10, high=10, size=tensor_size)
     for axis in range(-len(tensor_size), len(tensor_size) - 1):
         _test_cumsum(

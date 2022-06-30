@@ -37,7 +37,7 @@ def _test_shape(
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_shape() -> None:
+def test_shape() -> None:  # pylint: disable=missing-function-docstring
     _test_shape(input_shape=[2, 3, 16, 16, 16], opset_version=9)
     _test_shape(input_shape=[2, 3, 16, 16], opset_version=9)
     _test_shape(input_shape=[2, 3, 16], opset_version=9)

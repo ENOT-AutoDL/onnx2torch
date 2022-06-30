@@ -73,7 +73,7 @@ EXPECTED_EMPTY_OUT = [np.array([]).astype(np.float32), np.array([]).astype(np.fl
     ),
 )
 @pytest.mark.parametrize('opset_version', (13, 11, 2))
-def test_split(
+def test_split(  # pylint: disable=missing-function-docstring
     input_array: np.ndarray,
     expected_out: List[np.ndarray],
     axis: Optional[int],

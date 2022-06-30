@@ -5,25 +5,25 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def test_matmul() -> None:
-    a_variants = [
+def test_matmul() -> None:  # pylint: disable=missing-function-docstring
+    x_variants = [
         np.random.randn(3, 4).astype(np.float32),
         np.random.randn(2, 3, 4).astype(np.float32),
         np.random.randn(1, 2, 3, 4).astype(np.float32),
     ]
 
-    b_variants = [
+    y_variants = [
         np.random.randn(4, 3).astype(np.float32),
         np.random.randn(2, 4, 3).astype(np.float32),
         np.random.randn(1, 2, 4, 3).astype(np.float32),
     ]
 
-    for a, b in zip(a_variants, b_variants):
-        test_inputs = {'a': a, 'b': b}
+    for x, y in zip(x_variants, y_variants):
+        test_inputs = {'x': x, 'y': y}
         initializers = {}
         node = onnx.helper.make_node(
             op_type='MatMul',
-            inputs=['a', 'b'],
+            inputs=['x', 'y'],
             outputs=['z'],
         )
 

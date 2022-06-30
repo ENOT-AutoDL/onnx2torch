@@ -120,7 +120,7 @@ def _test_reduce_sum(
         ((2, 3, 8, 8), [1, 3], 1),
     ),
 )
-def test_reduce(
+def test_reduce(  # pylint: disable=missing-function-docstring
     op_type: str,
     tol: float,
     shape: Tuple[int],
@@ -161,7 +161,7 @@ def test_reduce(
         ((2, 3, 8, 8), [1, 3], 1, 0),
     ),
 )
-def test_reduce_sum(
+def test_reduce_sum(  # pylint: disable=missing-function-docstring
     shape: Tuple[int],
     axes: Optional[List[int]],
     keepdims: Optional[int],

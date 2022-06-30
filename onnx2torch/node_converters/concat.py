@@ -13,12 +13,12 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxConcat(nn.Module, OnnxToTorchModule):
+class OnnxConcat(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int):
         super().__init__()
         self.axis = axis
 
-    def forward(self, *input_tensors) -> torch.Tensor:
+    def forward(self, *input_tensors) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.cat(input_tensors, self.axis)
 
 

@@ -15,8 +15,12 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):
-    def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
+class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        shape: torch.Tensor,
+    ) -> torch.Tensor:
         output = input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
         if torch.onnx.is_in_onnx_export():
             return _ExpandExportToOnnx.set_output_and_apply(output, input_tensor, shape)

@@ -9,8 +9,8 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxCopyIdentity(nn.Module, OnnxToTorchModule):
-    def forward(self, x: torch.Tensor):
+class OnnxCopyIdentity(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+    def forward(self, x: torch.Tensor):  # pylint: disable=missing-function-docstring
         return x.clone()
 
 

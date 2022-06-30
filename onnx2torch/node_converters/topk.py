@@ -16,14 +16,18 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxTopK(nn.Module, OnnxToTorchModule):
+class OnnxTopK(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, dim: int = -1, largest: int = 1, sorted_: int = 1):
         super().__init__()
         self.dim = dim
         self.largest = largest == 1
         self.sorted = sorted_ == 1
 
-    def forward(self, input_tensor: torch.Tensor, k: Union[torch.Tensor, int]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(  # pylint: disable=missing-function-docstring, invalid-name
+        self,
+        input_tensor: torch.Tensor,
+        k: Union[torch.Tensor, int],
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         k = k[0] if isinstance(k, torch.Tensor) else k
 
         top_k = torch.topk(
