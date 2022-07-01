@@ -13,9 +13,8 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxMatMul(nn.Module, OnnxToTorchModule):
-
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+class OnnxMatMul(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.matmul(x, y)
 
 

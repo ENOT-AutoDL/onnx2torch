@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import torch
 from torch import nn
 
@@ -12,8 +10,8 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 def _arbitrary_dim_shift_and_insert_zero(
-        input_tensor: torch.Tensor,
-        insert_dim: int,
+    input_tensor: torch.Tensor,
+    insert_dim: int,
 ) -> torch.Tensor:
 
     # single item shift
@@ -45,17 +43,21 @@ def _arbitrary_dim_shift_and_insert_zero(
     return input_tensor
 
 
-class OnnxCumSum(nn.Module, OnnxToTorchModule):
+class OnnxCumSum(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(
-            self,
-            exclusive: bool = False,
-            reverse: bool = False,
+        self,
+        exclusive: bool = False,
+        reverse: bool = False,
     ):
         super().__init__()
         self.exclusive = exclusive
         self.reverse = reverse
 
-    def forward(self, input_tensor: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        axis: torch.Tensor,
+    ) -> torch.Tensor:
         axis = axis.item()
         if self.reverse:
             input_tensor = torch.flip(input_tensor, dims=(axis,))

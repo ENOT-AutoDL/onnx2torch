@@ -11,12 +11,12 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_slice(
-        input_tensor: np.ndarray,
-        starts: np.ndarray,
-        ends: np.ndarray,
-        output_shape: np.ndarray,
-        axes: Optional[np.ndarray] = None,
-        steps: Optional[np.ndarray] = None,
+    input_tensor: np.ndarray,
+    starts: np.ndarray,
+    ends: np.ndarray,
+    output_shape: np.ndarray,
+    axes: Optional[np.ndarray] = None,
+    steps: Optional[np.ndarray] = None,
 ) -> None:
     test_inputs = {'input_tensor': input_tensor}
 
@@ -48,7 +48,7 @@ def _test_slice(
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_slice() -> None:
+def test_slice() -> None:  # pylint: disable=missing-function-docstring
     x = np.random.randn(20, 10, 5).astype(np.float32)
 
     _test_slice(

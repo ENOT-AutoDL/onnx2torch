@@ -8,16 +8,16 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_gemm(
-        input_shape: Tuple[int, int],
-        weights_shape: Tuple[int, int],
-        use_bias: bool,
-        **kwargs,
+    input_shape: Tuple[int, int],
+    weights_shape: Tuple[int, int],
+    use_bias: bool,
+    **kwargs,
 ) -> None:
 
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
     weights = np.random.uniform(low=-1.0, high=1.0, size=weights_shape).astype(np.float32)
     bias_shape = weights_shape[1] if kwargs.get("transB", 0) == 0 else weights_shape[0]
-    bias = np.random.uniform(low=-1.0, high=1.0, size=(bias_shape, )).astype(np.float32) if use_bias else None
+    bias = np.random.uniform(low=-1.0, high=1.0, size=(bias_shape,)).astype(np.float32) if use_bias else None
 
     test_inputs = {'x': x}
     initializers = {'weights': weights}
@@ -41,13 +41,13 @@ def _test_gemm(
     )
 
 
-def test_base_gemm() -> None:
+def test_base_gemm() -> None:  # pylint: disable=missing-function-docstring
     _test_gemm(input_shape=(2, 16), weights_shape=(16, 32), use_bias=False)
     _test_gemm(input_shape=(2, 16), weights_shape=(16, 32), use_bias=True)
     _test_gemm(input_shape=(2, 16), weights_shape=(32, 16), use_bias=True, transB=1)
 
 
-def test_advanced_gemm() -> None:
+def test_advanced_gemm() -> None:  # pylint: disable=missing-function-docstring
     _test_gemm(
         input_shape=(16, 2),
         weights_shape=(32, 16),

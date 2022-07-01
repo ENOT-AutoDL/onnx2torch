@@ -6,9 +6,9 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_batch_norm(
-        input_shape,
-        num_features,
-        **kwargs,
+    input_shape,
+    num_features,
+    **kwargs,
 ) -> None:
 
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
@@ -40,7 +40,7 @@ def _test_batch_norm(
     )
 
 
-def test_batch_norm():
+def test_batch_norm():  # pylint: disable=missing-function-docstring
     _test_batch_norm([2, 3, 4, 5], 3)
     _test_batch_norm([2, 3, 4, 5, 6], 3)
     _test_batch_norm([2, 3], 3)

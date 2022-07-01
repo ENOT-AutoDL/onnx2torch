@@ -20,7 +20,11 @@ def _shape_inference_by_model_path(model_path: Union[Path, str], output_path: [P
     return onnx.load(output_path)
 
 
-def safe_shape_inference(onnx_model_or_path: Union[ModelProto, Path, str], output_path=None, **kwargs) -> ModelProto:
+def safe_shape_inference(  # pylint: disable=missing-function-docstring
+    onnx_model_or_path: Union[ModelProto, Path, str],
+    output_path=None,
+    **kwargs,
+) -> ModelProto:
     if isinstance(onnx_model_or_path, ModelProto):
         if not _is_big_model(onnx_model_or_path):
             return infer_shapes(onnx_model_or_path, **kwargs)

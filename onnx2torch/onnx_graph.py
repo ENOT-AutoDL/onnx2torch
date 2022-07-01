@@ -11,7 +11,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.onnx_tensor import OnnxTensor
 
 
-class ValueType(Enum):
+class ValueType(Enum):  # pylint: disable=missing-class-docstring
     GRAPH_INPUT = 0
     NODE_OUTPUT = 1
     GRAPH_INITIALIZER = 2
@@ -19,7 +19,7 @@ class ValueType(Enum):
     EMPTY = 4
 
 
-class OnnxGraph:
+class OnnxGraph:  # pylint: disable=missing-class-docstring
     def __init__(self, onnx_graph_proto: GraphProto):
         self._proto = onnx_graph_proto
         self._input_values = tuple(value_info.name for value_info in self._proto.input)
@@ -34,56 +34,47 @@ class OnnxGraph:
             unique_names.append(f'{name}_{name_counter}')
 
         self._nodes = OrderedDict(
-            (name, OnnxNode(node, unique_name=name))
-            for name, node in zip(unique_names, onnx_graph_proto.node)
+            (name, OnnxNode(node, unique_name=name)) for name, node in zip(unique_names, onnx_graph_proto.node)
         )
-        self._initializers = {
-            initializer.name: OnnxTensor(initializer)
-            for initializer in onnx_graph_proto.initializer
-        }
+        self._initializers = {initializer.name: OnnxTensor(initializer) for initializer in onnx_graph_proto.initializer}
         self._node_output_values = {
-            output_name: (node, i)
-            for node in self._nodes.values()
-            for i, output_name in enumerate(node.output_values)
+            output_name: (node, i) for node in self._nodes.values() for i, output_name in enumerate(node.output_values)
         }
-        self._value_info = {
-            value_info.name: value_info
-            for value_info in onnx_graph_proto.value_info
-        }
+        self._value_info = {value_info.name: value_info for value_info in onnx_graph_proto.value_info}
         for input_value_info in onnx_graph_proto.input:
             self._value_info[input_value_info.name] = input_value_info
         for output_value_info in onnx_graph_proto.output:
             self._value_info[output_value_info.name] = output_value_info
 
     @property
-    def proto(self) -> GraphProto:
+    def proto(self) -> GraphProto:  # pylint: disable=missing-function-docstring
         return self._proto
 
     @property
-    def value_info(self) -> Mapping[str, ValueInfoProto]:
+    def value_info(self) -> Mapping[str, ValueInfoProto]:  # pylint: disable=missing-function-docstring
         return self._value_info
 
     @property
-    def name(self) -> str:
+    def name(self) -> str:  # pylint: disable=missing-function-docstring
         return self._proto.name
 
     @property
-    def input_values(self) -> Tuple[str, ...]:
+    def input_values(self) -> Tuple[str, ...]:  # pylint: disable=missing-function-docstring
         return self._input_values
 
     @property
-    def output_values(self) -> Tuple[str, ...]:
+    def output_values(self) -> Tuple[str, ...]:  # pylint: disable=missing-function-docstring
         return self._output_values
 
     @property
-    def nodes(self) -> Mapping[str, OnnxNode]:
+    def nodes(self) -> Mapping[str, OnnxNode]:  # pylint: disable=missing-function-docstring
         return self._nodes
 
     @property
-    def initializers(self) -> Mapping[str, OnnxTensor]:
+    def initializers(self) -> Mapping[str, OnnxTensor]:  # pylint: disable=missing-function-docstring
         return MappingProxyType(self._initializers)
 
-    def value_type(self, value_name: str) -> ValueType:
+    def value_type(self, value_name: str) -> ValueType:  # pylint: disable=missing-function-docstring
         if value_name in self._input_values:
             return ValueType.GRAPH_INPUT
 
@@ -98,5 +89,8 @@ class OnnxGraph:
 
         return ValueType.UNKNOWN
 
-    def value_as_node_output(self, value_name: str) -> Tuple[OnnxNode, int]:
+    def value_as_node_output(  # pylint: disable=missing-function-docstring
+        self,
+        value_name: str,
+    ) -> Tuple[OnnxNode, int]:
         return self._node_output_values[value_name]

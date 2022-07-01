@@ -19,13 +19,12 @@ _TORCH_ROUND_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxRound(nn.Module, OnnxToTorchModule):
-
+class OnnxRound(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, round_type: str):
         super().__init__()
         self.round_function = _TORCH_ROUND_FROM_ONNX_TYPE[round_type]
 
-    def forward(self, input_tensor: torch.Tensor):
+    def forward(self, input_tensor: torch.Tensor):  # pylint: disable=missing-function-docstring
         return self.round_function(input_tensor)
 
 
@@ -34,7 +33,7 @@ class OnnxRound(nn.Module, OnnxToTorchModule):
 @add_converter(operation_type='Floor', version=13)
 @add_converter(operation_type='Floor', version=6)
 @add_converter(operation_type='Round', version=11)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=OnnxRound(node.operation_type),
         onnx_mapping=onnx_mapping_from_node(node=node),

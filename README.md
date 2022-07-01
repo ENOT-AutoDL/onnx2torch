@@ -13,6 +13,9 @@
     <a href="https://pypi.org/project/onnx2torch">
         <img src="https://img.shields.io/pypi/format/onnx2torch" />
     </a>
+    <a href="https://github.com/psf/black">
+        <img src="https://img.shields.io/badge/code%20style-black-black" />
+    </a>
     <a href="https://github.com/ENOT-AutoDL/onnx2torch/stargazers">
         <img src="https://img.shields.io/github/stars/ENOT-AutoDL/onnx2torch.svg?style=social&label=Star&maxAge=2592000" />
     </a>

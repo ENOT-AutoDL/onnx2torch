@@ -1,5 +1,5 @@
 googledrivedownloader
 onnxruntime
-pytest
 Pillow
+pytest
 requests

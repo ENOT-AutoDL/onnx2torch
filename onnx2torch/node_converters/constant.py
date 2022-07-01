@@ -25,8 +25,7 @@ _CONSTANT_PARSING_MAPPING = {
 }
 
 
-class OnnxConstant(nn.Module, OnnxToTorchModule):
-
+class OnnxConstant(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, value: Any):
         super().__init__()
         # We need it for placing constant to cuda.
@@ -35,7 +34,7 @@ class OnnxConstant(nn.Module, OnnxToTorchModule):
         else:
             self.value = value
 
-    def forward(self) -> Any:
+    def forward(self) -> Any:  # pylint: disable=missing-function-docstring
         return self.value
 
 

@@ -9,7 +9,7 @@ from onnx.onnx_ml_pb2 import NodeProto
 from onnx2torch.onnx_tensor import OnnxTensor
 
 
-class OnnxNode:
+class OnnxNode:  # pylint: disable=missing-class-docstring
     def __init__(self, onnx_node_proto: NodeProto, unique_name: str):
         self._proto = onnx_node_proto
         self._unique_name = unique_name
@@ -18,8 +18,7 @@ class OnnxNode:
         self._inputs = None
 
         self._proto_attributes = {
-            attribute.name: OnnxNode._parse_attribute_value(attribute)
-            for attribute in self._proto.attribute
+            attribute.name: OnnxNode._parse_attribute_value(attribute) for attribute in self._proto.attribute
         }
 
     @staticmethod
@@ -46,33 +45,33 @@ class OnnxNode:
         return value
 
     @property
-    def proto(self) -> NodeProto:
+    def proto(self) -> NodeProto:  # pylint: disable=missing-function-docstring
         return self._proto
 
     @property
-    def name(self) -> str:
+    def name(self) -> str:  # pylint: disable=missing-function-docstring
         return self._proto.name
 
     @property
-    def unique_name(self) -> str:
+    def unique_name(self) -> str:  # pylint: disable=missing-function-docstring
         return self._unique_name
 
     @property
-    def domain(self) -> str:
+    def domain(self) -> str:  # pylint: disable=missing-function-docstring
         return self._proto.domain
 
     @property
-    def operation_type(self) -> str:
+    def operation_type(self) -> str:  # pylint: disable=missing-function-docstring
         return self._proto.op_type
 
     @property
-    def input_values(self) -> Tuple[str, ...]:
+    def input_values(self) -> Tuple[str, ...]:  # pylint: disable=missing-function-docstring
         return self._input_values
 
     @property
-    def output_values(self) -> Tuple[str, ...]:
+    def output_values(self) -> Tuple[str, ...]:  # pylint: disable=missing-function-docstring
         return self._output_values
 
     @property
-    def attributes(self) -> Mapping[str, Any]:
+    def attributes(self) -> Mapping[str, Any]:  # pylint: disable=missing-function-docstring
         return MappingProxyType(self._proto_attributes)

@@ -13,9 +13,13 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxWhere(nn.Module, OnnxToTorchModule):
-
-    def forward(self, condition: torch.Tensor, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+class OnnxWhere(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        condition: torch.Tensor,
+        x: torch.Tensor,
+        y: torch.Tensor,
+    ) -> torch.Tensor:
         return torch.where(condition, x, y)
 
 

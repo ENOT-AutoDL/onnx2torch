@@ -13,13 +13,12 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxEinsum(nn.Module, OnnxToTorchModule):
-
+class OnnxEinsum(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, equation: str):
         super().__init__()
         self.equation = equation
 
-    def forward(self, *args):
+    def forward(self, *args):  # pylint: disable=missing-function-docstring
         return torch.einsum(self.equation, *args)
 
 

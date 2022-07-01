@@ -15,8 +15,7 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxRange(nn.Module, OnnxToTorchModule):
-
+class OnnxRange(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self):
         super().__init__()
         self.register_buffer('dummy_buffer', torch.Tensor(), persistent=False)
@@ -28,11 +27,11 @@ class OnnxRange(nn.Module, OnnxToTorchModule):
 
         return value
 
-    def forward(
-            self,
-            start: Union[torch.Tensor, float, int],
-            limit: Union[torch.Tensor, float, int],
-            delta: Union[torch.Tensor, float, int],
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        start: Union[torch.Tensor, float, int],
+        limit: Union[torch.Tensor, float, int],
+        delta: Union[torch.Tensor, float, int],
     ) -> torch.Tensor:
         return torch.arange(
             start=self._get_scalar(start),

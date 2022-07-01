@@ -20,11 +20,12 @@ from tests.utils.common import make_model_from_nodes
         ('ij->ji', [(3, 4)], (4, 3)),
     ),
 )
-def test_einsum(equation: str, input_shapes: List[Tuple[int, ...]], output_shape: Tuple[int, ...]) -> None:
-    test_inputs = {
-        f'input_{index}': np.random.randn(*shape)
-        for index, shape in enumerate(input_shapes)
-    }
+def test_einsum(  # pylint: disable=missing-function-docstring
+    equation: str,
+    input_shapes: List[Tuple[int, ...]],
+    output_shape: Tuple[int, ...],
+) -> None:
+    test_inputs = {f'input_{index}': np.random.randn(*shape) for index, shape in enumerate(input_shapes)}
 
     node = onnx.helper.make_node(
         op_type='Einsum',

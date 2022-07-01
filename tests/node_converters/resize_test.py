@@ -11,11 +11,11 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_resize(
-        x: np.ndarray,
-        scales: Optional[np.ndarray] = None,
-        sizes: Optional[np.ndarray] = None,
-        align_corners: bool = False,
-        **kwargs,
+    x: np.ndarray,
+    scales: Optional[np.ndarray] = None,
+    sizes: Optional[np.ndarray] = None,
+    align_corners: bool = False,
+    **kwargs,
 ) -> None:
     if align_corners:
         kwargs['coordinate_transformation_mode'] = 'align_corners'
@@ -54,15 +54,15 @@ def _test_resize(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10 ** -6,
-        atol_torch_cpu_cuda=10 ** -6,
+        atol_onnx_torch=10**-6,
+        atol_torch_cpu_cuda=10**-6,
     )
 
 
 def _test_resize_v10(
-        x: np.ndarray,
-        scales: np.ndarray = None,
-        mode: str = 'nearest',
+    x: np.ndarray,
+    scales: np.ndarray = None,
+    mode: str = 'nearest',
 ) -> None:
     test_inputs = {'x': x, 'scales': scales}
 
@@ -86,8 +86,8 @@ def _test_resize_v10(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10 ** -7,
-        atol_torch_cpu_cuda=10 ** -7,
+        atol_onnx_torch=10**-7,
+        atol_torch_cpu_cuda=10**-7,
         atol_onnx_torch2onnx=0.0,
     )
 
@@ -104,25 +104,25 @@ _DATA = np.random.normal(scale=3.0, size=[1, 1, 250, 250]).astype(np.float32)
 @pytest.mark.parametrize(
     'sizes,scales,mode,coordinate_transformation_mode',
     (
-            (_UPSAMPLE_SIZES, None, 'linear', 'half_pixel'),
-            (None, _UPSAMPLE_SCALES, 'linear', 'half_pixel'),
-            (_DOWNSAMPLE_SIZES, None, 'linear', 'half_pixel'),
-            (None, _DOWNSAMPLE_SCALES, 'linear', 'half_pixel'),
-            (_UPSAMPLE_SIZES, None, 'nearest', 'asymmetric'),
-            (None, _UPSAMPLE_SCALES, 'nearest', 'asymmetric'),
-            (_DOWNSAMPLE_SIZES, None, 'nearest', 'asymmetric'),
-            (None, _DOWNSAMPLE_SCALES, 'nearest', 'asymmetric'),
-            (_UPSAMPLE_SIZES, None, 'cubic', 'half_pixel'),
-            (None, _UPSAMPLE_SCALES, 'cubic', 'half_pixel'),
-            (_DOWNSAMPLE_SIZES, None, 'cubic', 'half_pixel'),
-            (None, _DOWNSAMPLE_SCALES, 'cubic', 'half_pixel'),
-    )
+        (_UPSAMPLE_SIZES, None, 'linear', 'half_pixel'),
+        (None, _UPSAMPLE_SCALES, 'linear', 'half_pixel'),
+        (_DOWNSAMPLE_SIZES, None, 'linear', 'half_pixel'),
+        (None, _DOWNSAMPLE_SCALES, 'linear', 'half_pixel'),
+        (_UPSAMPLE_SIZES, None, 'nearest', 'asymmetric'),
+        (None, _UPSAMPLE_SCALES, 'nearest', 'asymmetric'),
+        (_DOWNSAMPLE_SIZES, None, 'nearest', 'asymmetric'),
+        (None, _DOWNSAMPLE_SCALES, 'nearest', 'asymmetric'),
+        (_UPSAMPLE_SIZES, None, 'cubic', 'half_pixel'),
+        (None, _UPSAMPLE_SCALES, 'cubic', 'half_pixel'),
+        (_DOWNSAMPLE_SIZES, None, 'cubic', 'half_pixel'),
+        (None, _DOWNSAMPLE_SCALES, 'cubic', 'half_pixel'),
+    ),
 )
-def test_resize(
-        sizes: np.ndarray,
-        scales: np.ndarray,
-        mode: str,
-        coordinate_transformation_mode: str,
+def test_resize(  # pylint: disable=missing-function-docstring
+    sizes: np.ndarray,
+    scales: np.ndarray,
+    mode: str,
+    coordinate_transformation_mode: str,
 ) -> None:
 
     _test_resize(
@@ -136,6 +136,6 @@ def test_resize(
 
 
 @pytest.mark.parametrize('mode', ('nearest',))
-def test_resizeV10(mode: str) -> None:
+def test_resize_v10(mode: str) -> None:  # pylint: disable=missing-function-docstring
     _test_resize_v10(x=_DATA, scales=_UPSAMPLE_SCALES, mode=mode)
     _test_resize_v10(x=_DATA, scales=_DOWNSAMPLE_SCALES, mode=mode)

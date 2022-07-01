@@ -30,8 +30,7 @@ TENSOR_TYPE_TO_TORCH_TYPE = {
 # pylint: enable=no-member
 
 
-class OnnxCast(nn.Module, OnnxToTorchModule):
-
+class OnnxCast(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, onnx_dtype: int):
         super().__init__()
         try:
@@ -39,7 +38,7 @@ class OnnxCast(nn.Module, OnnxToTorchModule):
         except KeyError as exc:
             raise NotImplementedError(f'Conversion to "{onnx_dtype}" is not implemented') from exc
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return input_tensor.to(self.torch_dtype)
 
 
