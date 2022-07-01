@@ -138,7 +138,7 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
                 args.append(torch_input_node)
 
             elif value_type == ValueType.GRAPH_INITIALIZER:
-                # The name of putorch buffer must not contain '.'(dot)
+                # The name of pytorch buffer must not contain '.'(dot)
                 len_torch_initializers = sum(1 for _ in torch_initializers.buffers())
                 torch_buffer_name = f'onnx_initializer_{len_torch_initializers}'
                 if value_name not in torch_nodes:
