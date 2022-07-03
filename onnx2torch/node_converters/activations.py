@@ -6,6 +6,7 @@ __all__ = [
 
 import numpy as np
 import torch
+import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -14,6 +15,8 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 class OnnxErf(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
@@ -112,6 +115,36 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=nn.ReLU(),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        weights: torch.Tensor,
+    ) -> torch.Tensor:
+        output = torch.nn.functional.prelu(input_tensor, weights)
+        if torch.onnx.is_in_onnx_export():
+            return _PReLUExportToOnnx.set_output_and_apply(output, input_tensor, weights)
+
+        return output
+
+
+class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('PRelu', *args)
+
+
+@add_converter(operation_type='PRelu', version=6)
+@add_converter(operation_type='PRelu', version=7)
+@add_converter(operation_type='PRelu', version=9)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+
+    return OperationConverterResult(
+        torch_module=OnnxPReLU(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 
