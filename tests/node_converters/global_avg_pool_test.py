@@ -25,9 +25,9 @@ def _test_global_avg_pool(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-7,
-        atol_torch_cpu_cuda=10**-7,
-        atol_onnx_torch2onnx=10**-7,
+        atol_onnx_torch=10 ** -7,
+        atol_torch_cpu_cuda=10 ** -7,
+        atol_onnx_torch2onnx=10 ** -7,
     )
 
 

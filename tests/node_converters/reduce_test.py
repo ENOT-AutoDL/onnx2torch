@@ -85,8 +85,8 @@ def _test_reduce_sum(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-5,
-        atol_torch_cpu_cuda=10**-5,
+        atol_onnx_torch=10 ** -5,
+        atol_torch_cpu_cuda=10 ** -5,
         atol_onnx_torch2onnx=0.0,
     )
 
@@ -94,16 +94,16 @@ def _test_reduce_sum(
 @pytest.mark.parametrize(
     'op_type,tol',
     (
-        ('ReduceL1', 10**-5),
-        ('ReduceL2', 10**-5),
-        ('ReduceLogSum', 10**-5),
-        ('ReduceLogSumExp', 10**-5),
+        ('ReduceL1', 10 ** -5),
+        ('ReduceL2', 10 ** -5),
+        ('ReduceLogSum', 10 ** -5),
+        ('ReduceLogSumExp', 10 ** -5),
         ('ReduceMax', 0),
         ('ReduceMin', 0),
-        ('ReduceMean', 10**-5),
-        ('ReduceSum', 10**-5),
-        ('ReduceProd', 10**-5),
-        ('ReduceSumSquare', 10**-5),
+        ('ReduceMean', 10 ** -5),
+        ('ReduceSum', 10 ** -5),
+        ('ReduceProd', 10 ** -5),
+        ('ReduceSumSquare', 10 ** -5),
     ),
 )
 @pytest.mark.parametrize(
@@ -128,7 +128,7 @@ def test_reduce(  # pylint: disable=missing-function-docstring
     keepdims: Optional[int],
 ) -> None:
     if op_type == 'ReduceLogSum':
-        left_boundary = 10**-5
+        left_boundary = 10 ** -5
     else:
         left_boundary = -10
 

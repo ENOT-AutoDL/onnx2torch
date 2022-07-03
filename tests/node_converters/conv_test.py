@@ -41,8 +41,8 @@ def _test_conv(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
     )
 
 

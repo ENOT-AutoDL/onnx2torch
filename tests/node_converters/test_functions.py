@@ -50,7 +50,7 @@ def test_roundings(function: str, input_shape: List[int]) -> None:  # pylint: di
 def test_common_functions(function: str, input_shape: List[int]) -> None:  # pylint: disable=missing-function-docstring
     data = np.random.randn(*input_shape).astype(np.float32)
     if function == 'Log':
-        data[data <= 0] = 10**-4
+        data[data <= 0] = 10 ** -4
     _test_functions(function, data=data, opset_version=11)
 
 

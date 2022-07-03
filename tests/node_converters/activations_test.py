@@ -25,8 +25,8 @@ def _test_activation(  # pylint: disable=missing-function-docstring
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-6,
-        atol_torch_cpu_cuda=10**-6,
+        atol_onnx_torch=10 ** -6,
+        atol_torch_cpu_cuda=10 ** -6,
     )
 
 

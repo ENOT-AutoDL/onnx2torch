@@ -69,6 +69,6 @@ def test_max_pool_average_pool(  # pylint: disable=missing-function-docstring
     optional_attrs: Dict,
 ) -> None:
     if op == 'AveragePool':
-        optional_attrs['atol_onnx_torch'] = 10**-7
+        optional_attrs['atol_onnx_torch'] = 10 ** -7
 
     _test_pool_op(op, input_shape=input_shape, kernel_shape=kernel_shape, **optional_attrs)

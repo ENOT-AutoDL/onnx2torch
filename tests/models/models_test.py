@@ -49,8 +49,8 @@ def test_resnet50():  # pylint: disable=missing-function-docstring
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-5,
-        atol_torch_cpu_cuda=10**-5,
+        atol_onnx_torch=10 ** -5,
+        atol_torch_cpu_cuda=10 ** -5,
     )
 
 
@@ -81,9 +81,9 @@ def test_onnx_models(  # pylint: disable=missing-function-docstring
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-3,
-        atol_torch_cpu_cuda=10**-3,
-        atol_onnx_torch2onnx=10**-3,
+        atol_onnx_torch=10 ** -3,
+        atol_torch_cpu_cuda=10 ** -3,
+        atol_onnx_torch2onnx=10 ** -3,
     )
 
 
@@ -117,9 +117,9 @@ def test_torchvision_classification(model_name: str) -> None:  # pylint: disable
     check_torch_model(
         torch_model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
-        atol_onnx_torch2onnx=10**-4,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
     )
 
 
@@ -141,9 +141,9 @@ def test_torchvision_segmentation(model_name: str) -> None:  # pylint: disable=m
     check_torch_model(
         torch_model,
         test_inputs,
-        atol_onnx_torch=10**-3,
-        atol_torch_cpu_cuda=10**-3,
-        atol_onnx_torch2onnx=10**-3,
+        atol_onnx_torch=10 ** -3,
+        atol_torch_cpu_cuda=10 ** -3,
+        atol_onnx_torch2onnx=10 ** -3,
     )
 
 
@@ -165,9 +165,9 @@ def test_transformer_models(model_name: str) -> None:  # pylint: disable=missing
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
-        atol_onnx_torch2onnx=10**-4,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
+        atol_onnx_torch2onnx=10 ** -4,
     )
 
 
@@ -179,8 +179,8 @@ def test_3d_gan() -> None:  # pylint: disable=missing-function-docstring
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
     )
 
 
@@ -192,8 +192,8 @@ def test_shelfnet() -> None:  # pylint: disable=missing-function-docstring
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
     )
 
 
@@ -205,8 +205,8 @@ def test_model_with_pad_node() -> None:  # pylint: disable=missing-function-docs
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-4,
-        atol_torch_cpu_cuda=10**-4,
+        atol_onnx_torch=10 ** -4,
+        atol_torch_cpu_cuda=10 ** -4,
     )
 
 
@@ -220,7 +220,7 @@ def test_gptj() -> None:  # pylint: disable=missing-function-docstring
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-5,
-        atol_torch_cpu_cuda=10**-5,
-        atol_onnx_torch2onnx=10**-7,
+        atol_onnx_torch=10 ** -5,
+        atol_torch_cpu_cuda=10 ** -5,
+        atol_onnx_torch2onnx=10 ** -7,
     )

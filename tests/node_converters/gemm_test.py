@@ -36,8 +36,8 @@ def _test_gemm(
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10**-5,
-        atol_torch_cpu_cuda=10**-5,
+        atol_onnx_torch=10 ** -5,
+        atol_torch_cpu_cuda=10 ** -5,
     )
 
 
