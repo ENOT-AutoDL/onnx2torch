@@ -138,7 +138,6 @@ class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
         return graph.op('PRelu', *args)
 
 
-@add_converter(operation_type='PRelu', version=6)
 @add_converter(operation_type='PRelu', version=7)
 @add_converter(operation_type='PRelu', version=9)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument

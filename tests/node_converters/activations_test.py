@@ -90,9 +90,9 @@ def test_softmax(  # pylint: disable=missing-function-docstring
 @pytest.mark.parametrize(
     'input_shape,opset_version',
     (
-        ([8, 3, 32, 32], 9),
+        ([8, 3, 32, 32], 7),
         ([2, 64, 16, 16], 11),
-        ([1, 16, 8, 8], 13),
+        ([1, 16, 8, 8], 7),
         ([4, 32, 8, 8], 9),
     ),
 )
