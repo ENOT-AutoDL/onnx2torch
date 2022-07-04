@@ -11,13 +11,14 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def _test_mean(
+def _test_min_max(
     data_list: List[np.ndarray],
     output_shape: List[int],
+    operation_type: str,
 ) -> None:
     test_inputs = {f'data_{i}': data for i, data in enumerate(data_list)}
 
-    node = onnx.helper.make_node(op_type='Mean', inputs=list(test_inputs), outputs=['y'])
+    node = onnx.helper.make_node(op_type=operation_type, inputs=list(test_inputs), outputs=['y'])
     outputs_info = [
         make_tensor_value_info(
             name='y',
@@ -44,12 +45,17 @@ def _test_mean(
         ([3, 1], [3, 4]),
     ),
 )
-def test_mean(input_shapes: List[List[int]]) -> None:  # pylint: disable=missing-function-docstring
+@pytest.mark.parametrize('operation_type', ['Min', 'Max'])
+def test_min_amx(  # pylint: disable=missing-function-docstring
+    input_shapes: List[List[int]],
+    operation_type: str,
+) -> None:
     input_tensors = [np.random.normal(size=i_shape).astype(np.float32) for i_shape in input_shapes]
 
     output_shape = numpy_broadcasting(*input_shapes)
 
-    _test_mean(
+    _test_min_max(
         data_list=input_tensors,
         output_shape=output_shape,
+        operation_type=operation_type,
     )

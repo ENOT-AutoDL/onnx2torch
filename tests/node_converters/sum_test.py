@@ -23,7 +23,6 @@ def _test_sum(
             name='y',
             elem_type=NP_TYPE_TO_TENSOR_TYPE[data_list[0].dtype],
             shape=output_shape,
-            # shape=[None] * len(output_shape),
         ),
     ]
 
