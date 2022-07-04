@@ -77,7 +77,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | MaxPool                   | Y         | Max pool operation with spatial rank > 3 is not implemented                                                                                                         |
 | MaxRoiPool                | N         |                                                                                                                                                                     |
 | MaxUnpool                 | N         |                                                                                                                                                                     |
-| Mean                      | N         |                                                                                                                                                                     |
+| Mean                      | Y         |                                                                                                                                                                     |
 | Min                       | N         |                                                                                                                                                                     |
 | Mod                       | N         |                                                                                                                                                                     |
 | Mul                       | Y         |                                                                                                                                                                     |
@@ -147,7 +147,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | Squeeze                   | Y         |                                                                                                                                                                     |
 | StringNormalizer          | N         |                                                                                                                                                                     |
 | Sub                       | Y         |                                                                                                                                                                     |
-| Sum                       | N         |                                                                                                                                                                     |
+| Sum                       | Y         |                                                                                                                                                                     |
 | Tan                       | Y         |                                                                                                                                                                     |
 | Tanh                      | Y         |                                                                                                                                                                     |
 | TfIdfVectorizer           | N         |                                                                                                                                                                     |

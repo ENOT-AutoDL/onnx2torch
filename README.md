@@ -43,6 +43,7 @@ pip install onnx2torch
 Below you can find some examples of use.
 
 ### Convert
+
 ```python
 import torch
 from onnx2torch import convert
@@ -119,7 +120,9 @@ Transformers:
 
 Here we show how to add the module:
 1. Supported by both PyTorch and ONNX and has the same behaviour.
+
 An example of such a module is [Relu](./onnx2torch/node_converters/activations.py)
+
 ```python
 @add_converter(operation_type='Relu', version=6)
 @add_converter(operation_type='Relu', version=13)
@@ -130,11 +133,13 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 ```
+
 Here we have registered an operation named ``Relu`` for opset versions 6, 13, 14.
 Note that the ``torch_module`` argument in ``OperationConverterResult`` must be a torch.nn.Module, not just a callable object!
 If Operation's behaviour differs from one opset version to another, you should implement it separately.
 
 2. Operations supported by PyTorch and ONNX BUT have different behaviour
+
 ```python
 class OnnxExpand(nn.Module):
 
