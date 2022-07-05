@@ -60,13 +60,13 @@ def _test_slice(
         ((20, 10, 15), [0, 0, 3], [20, 10, 4], [0, -2, -1], None),
     ),
 )
-def test_slice(
-        input_shape: Tuple[int, ...],
-        starts: List[int],
-        ends: List[int],
-        axes: Optional[List[int]],
-        steps: Optional[List[int]],
-) -> None:  # pylint: disable=missing-function-docstring
+def test_slice(  # pylint: disable=missing-function-docstring
+    input_shape: Tuple[int, ...],
+    starts: List[int],
+    ends: List[int],
+    axes: Optional[List[int]],
+    steps: Optional[List[int]],
+) -> None:
     x = np.random.randn(*input_shape).astype(np.float32)
     _test_slice(
         input_tensor=x,
