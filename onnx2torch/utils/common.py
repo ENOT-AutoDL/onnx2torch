@@ -38,6 +38,9 @@ def onnx_mapping_from_node(node: OnnxNode) -> OnnxMapping:  # pylint: disable=mi
 
 
 def get_onnx_version():  # pylint: disable=missing-function-docstring
+    if hasattr(symbolic_helper, 'GLOBALS'):
+        return symbolic_helper.GLOBALS.export_onnx_opset_version
+
     return symbolic_helper._export_onnx_opset_version  # pylint: disable=no-member, protected-access
 
 
