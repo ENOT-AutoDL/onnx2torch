@@ -76,10 +76,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     min_val = node_attributes.get('min', None)
     max_val = node_attributes.get('max', None)
 
-    torch_module = _create_torch_module(
-        min_val=min_val if min_val is not None else None,
-        max_val=max_val if max_val is not None else None,
-    )
+    torch_module = _create_torch_module(min_val=min_val, max_val=max_val)
 
     return OperationConverterResult(
         torch_module=torch_module,
