@@ -141,7 +141,7 @@ If Operation's behaviour differs from one opset version to another, you should i
 2. Operations supported by PyTorch and ONNX BUT have different behaviour
 
 ```python
-class OnnxExpand(nn.Module):
+class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
         output = input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)

@@ -4,9 +4,9 @@ __all__ = [
 
 import torch
 import torch._C as torch_C
-from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
+from onnx2torch.node_converters.sum import OnnxSum
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
@@ -14,25 +14,10 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 
 
-class OnnxMean(nn.Module):  # pylint: disable=missing-docstring
-    def forward(self, *input_tensors: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        if len(input_tensors) == 1:
-            # If there is a single element, return it (no op).
-            # Also, no need for manually building the ONNX node.
-            return input_tensors[0]
-
-        shapes = [t.shape for t in input_tensors]
-        broadcast_shape = torch.broadcast_shapes(*shapes)
-        output = torch.zeros(broadcast_shape, dtype=input_tensors[0].dtype, device=input_tensors[0].device)
-
-        for y in input_tensors:
-            output.add_(y)
-
-        output.div_(len(input_tensors))  # Divide by the number of tensors
-
-        if torch.onnx.is_in_onnx_export():
-            return _MeanExportToOnnx.set_output_and_apply(output, *input_tensors)
-
+class OnnxMean(OnnxSum):  # pylint: disable=missing-docstring
+    def apply_reduction(self, *tensors: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
+        output = super().apply_reduction(*tensors)
+        output.div_(len(tensors))  # Divide by the number of tensors
         return output
 
 
@@ -46,6 +31,6 @@ class _MeanExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
 @add_converter(operation_type='Mean', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
-        torch_module=OnnxMean(),
+        torch_module=OnnxMean(_MeanExportToOnnx),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )

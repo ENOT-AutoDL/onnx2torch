@@ -4,8 +4,8 @@ __all__ = [
 
 import torch
 import torch._C as torch_C
-from torch import nn
 
+from onnx2torch.node_converters.base_element_wise import OnnxBaseElementWise
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
@@ -14,8 +14,8 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 
 _OPERATORS = {
-    'Min': torch.min,
-    'Max': torch.max,
+    'Min': torch.amin,
+    'Max': torch.amax,
 }
 
 
@@ -37,29 +37,16 @@ _CUSTOM_ONNX_EXPORT_CLASS = {
 }
 
 
-class OnnxMinMax(nn.Module):  # pylint: disable=missing-docstring
+class OnnxMinMax(OnnxBaseElementWise):  # pylint: disable=missing-docstring
     def __init__(self, operation_type: str):
-        super().__init__()
+        super().__init__(_CUSTOM_ONNX_EXPORT_CLASS[operation_type])
         self._operator = _OPERATORS[operation_type]
-        self._onnx_export_class = _CUSTOM_ONNX_EXPORT_CLASS[operation_type]
 
-    def forward(self, *input_tensors: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        if len(input_tensors) == 1:
-            # If there is a single element, return it (no op).
-            # Also, no need for manually building the ONNX node.
-            return input_tensors[0]
-
-        shapes = [t.shape for t in input_tensors]
-        broadcast_shape = torch.broadcast_shapes(*shapes)
-
-        broadcast_tensors = [t.broadcast_to(broadcast_shape) for t in input_tensors]
+    def apply_reduction(self, *tensors: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
+        broadcast_shape = self._broadcast_shape(*tensors)
+        broadcast_tensors = [t.broadcast_to(broadcast_shape) for t in tensors]
         stacked_tensors = torch.stack(broadcast_tensors)
-
-        output = self._operator(stacked_tensors, dim=0)[0]
-
-        if torch.onnx.is_in_onnx_export():
-            return self._onnx_export_class.set_output_and_apply(output, *input_tensors)
-
+        output = self._operator(stacked_tensors, dim=0)
         return output
 
 
