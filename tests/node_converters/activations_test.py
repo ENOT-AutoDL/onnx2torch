@@ -85,3 +85,36 @@ def test_softmax(  # pylint: disable=missing-function-docstring
         _test_activation(activation, data=data, opset_version=opset_version)
     else:
         _test_activation(activation, data=data, opset_version=opset_version, axis=axis)
+
+
+@pytest.mark.parametrize(
+    'input_shape,opset_version',
+    (
+        ([8, 3, 32, 32], 7),
+        ([2, 64, 16, 16], 11),
+        ([1, 16, 8, 8], 7),
+        ([4, 32, 8, 8], 9),
+    ),
+)
+def test_prelu(  # pylint: disable=missing-function-docstring
+    input_shape: List[int],
+    opset_version: int,
+) -> None:
+    data = np.random.randn(*input_shape).astype(np.float32)
+    slope = np.random.randn(input_shape[1], 1, 1).astype(np.float32)
+    test_inputs = {'input_tensor': data, 'slope': slope}
+
+    node = onnx.helper.make_node(op_type='PRelu', inputs=['input_tensor', 'slope'], outputs=['y'])
+    model = make_model_from_nodes(
+        nodes=node,
+        initializers={},
+        inputs_example=test_inputs,
+        opset_version=opset_version,
+    )
+
+    check_onnx_model(
+        model,
+        test_inputs,
+        atol_onnx_torch=10**-6,
+        atol_torch_cpu_cuda=10**-6,
+    )
