@@ -45,7 +45,9 @@ def _test_slice(
         inputs_example=test_inputs,
         outputs_info=outputs_info,
     )
-    check_onnx_model(model, test_inputs)
+    # onnx checker in torch 1.12 has problems with negative steps in Slice, so we disable it
+    ignore_export_checker = steps is not None and np.any(steps < 0)
+    check_onnx_model(model, test_inputs, ignore_export_checker=ignore_export_checker)
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')

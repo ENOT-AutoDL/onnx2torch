@@ -27,6 +27,13 @@ from onnx.shape_inference import infer_shapes
 
 from onnx2torch.converter import convert
 
+try:
+    from torch.onnx import CheckerError
+except ImportError:
+    # Fake CheckerError for torch < 1.12
+    class CheckerError(Exception):
+        pass
+
 
 def make_model_from_nodes(  # pylint: disable=missing-function-docstring
     nodes: Union[NodeProto, Sequence[NodeProto]],
@@ -163,6 +170,7 @@ def convert_onnx2torch2onnx(  # pylint: disable=missing-function-docstring
     model: ModelProto,
     inputs: Dict[str, np.ndarray],
     opset_version: int = 13,
+    ignore_export_checker: bool = False,
     **export_kwargs,
 ) -> ModelProto:
     torch_model = convert(model)
@@ -180,8 +188,9 @@ def convert_onnx2torch2onnx(  # pylint: disable=missing-function-docstring
                 opset_version=opset_version,
                 **export_kwargs,
             )
-        except torch.onnx.CheckerError:
-            pass
+        except CheckerError:
+            if not ignore_export_checker:
+                raise
 
         return onnx.load_from_string(tmp_file.getvalue())
 
@@ -192,6 +201,7 @@ def _check_onnx_model(
     onnx_torch_check_function: Callable,
     torch_cpu_cuda_check_function: Optional[Callable] = None,
     onnx_torch2onnx_check_function: Optional[Callable] = None,
+    ignore_export_checker: bool = False,
     opset_version: int = 13,
 ) -> None:
     ort_outputs = calc_ort_outputs(onnx_model, onnx_inputs)
@@ -204,7 +214,12 @@ def _check_onnx_model(
         torch_cpu_cuda_check_function(torch_outputs, torch_cuda_outputs)
 
     if onnx_torch2onnx_check_function is not None:
-        torch2onnx_model = convert_onnx2torch2onnx(onnx_model, inputs=onnx_inputs, opset_version=opset_version)
+        torch2onnx_model = convert_onnx2torch2onnx(
+            onnx_model,
+            inputs=onnx_inputs,
+            ignore_export_checker=ignore_export_checker,
+            opset_version=opset_version
+        )
         ort_torch2onnx_outputs = calc_ort_outputs(torch2onnx_model, onnx_inputs, skip_unused_inputs=True)
         onnx_torch2onnx_check_function(ort_outputs, ort_torch2onnx_outputs)
 
@@ -215,6 +230,7 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
     atol_onnx_torch: float = 0.0,
     atol_torch_cpu_cuda: float = 0.0,
     atol_onnx_torch2onnx: float = 0.0,
+    ignore_export_checker: bool = False,
     opset_version: int = 13,
 ) -> None:
     def onnx_torch_check_function(onnx_output, torch_output):  # pylint: disable=missing-function-docstring
@@ -253,6 +269,7 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
         onnx_torch_check_function=onnx_torch_check_function,
         torch_cpu_cuda_check_function=torch_cpu_cuda_check_function,
         onnx_torch2onnx_check_function=onnx_torch2onnx_check_function,
+        ignore_export_checker=ignore_export_checker,
         opset_version=opset_version,
     )
 
