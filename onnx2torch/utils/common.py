@@ -1,4 +1,3 @@
-from itertools import zip_longest
 from typing import List
 from typing import NamedTuple
 from typing import Tuple
@@ -98,16 +97,3 @@ def onnx_padding_to_torch_padding(  # pylint: disable=missing-function-docstring
         raise ValueError(f'Got unexpected auto_pad value "{auto_pad}"')
 
     return padding
-
-
-def numpy_broadcasting(  # pylint: disable=missing-function-docstring
-    *shapes: Union[List[int], Tuple[int, ...]],
-) -> List[int]:
-    reversed_shapes = [s[::-1] for s in shapes]
-    for dims in zip_longest(*reversed_shapes, fillvalue=1):
-        unique_dims = set(dims) - {1}
-        if len(unique_dims) > 1:
-            raise ValueError(f'Cannot broadcast shapes: {shapes} {unique_dims}')
-
-    reversed_res_shape = [max(dims) for dims in zip_longest(*reversed_shapes, fillvalue=1)]
-    return reversed_res_shape[::-1]

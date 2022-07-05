@@ -6,14 +6,12 @@ import pytest
 from onnx.helper import make_tensor_value_info
 from onnx.mapping import NP_TYPE_TO_TENSOR_TYPE
 
-from onnx2torch.utils.common import numpy_broadcasting
 from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
 def _test_mean(
     data_list: List[np.ndarray],
-    output_shape: List[int],
 ) -> None:
     test_inputs = {f'data_{i}': data for i, data in enumerate(data_list)}
 
@@ -22,7 +20,7 @@ def _test_mean(
         make_tensor_value_info(
             name='y',
             elem_type=NP_TYPE_TO_TENSOR_TYPE[data_list[0].dtype],
-            shape=output_shape,
+            shape=None,
         ),
     ]
 
@@ -46,10 +44,4 @@ def _test_mean(
 )
 def test_mean(input_shapes: List[List[int]]) -> None:  # pylint: disable=missing-function-docstring
     input_tensors = [np.random.normal(size=i_shape).astype(np.float32) for i_shape in input_shapes]
-
-    output_shape = numpy_broadcasting(*input_shapes)
-
-    _test_mean(
-        data_list=input_tensors,
-        output_shape=output_shape,
-    )
+    _test_mean(data_list=input_tensors)
