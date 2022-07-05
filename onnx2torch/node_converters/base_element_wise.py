@@ -16,13 +16,6 @@ class OnnxBaseElementWise(nn.Module, OnnxToTorchModuleWithCustomExport):  # pyli
         broadcast_shape = torch.broadcast_shapes(*shapes)
         return broadcast_shape
 
-    @staticmethod
-    def _broadcast_tensors(*tensors: torch.Tensor):
-        shapes = [t.shape for t in tensors]
-        broadcast_shape = torch.broadcast_shapes(*shapes)
-        broadcast_tensors = [t.broadcast_to(broadcast_shape) for t in tensors]
-        return broadcast_tensors
-
     def apply_reduction(self, *tensors: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         raise NotImplementedError
 
