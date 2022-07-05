@@ -30,9 +30,9 @@ from onnx2torch.converter import convert
 try:
     from torch.onnx import CheckerError
 except ImportError:
-    # Fake CheckerError for torch < 1.12
+
     class CheckerError(Exception):
-        pass
+        """Fake CheckerError for torch < 1.12."""
 
 
 def make_model_from_nodes(  # pylint: disable=missing-function-docstring
@@ -218,7 +218,7 @@ def _check_onnx_model(
             onnx_model,
             inputs=onnx_inputs,
             ignore_export_checker=ignore_export_checker,
-            opset_version=opset_version
+            opset_version=opset_version,
         )
         ort_torch2onnx_outputs = calc_ort_outputs(torch2onnx_model, onnx_inputs, skip_unused_inputs=True)
         onnx_torch2onnx_check_function(ort_outputs, ort_torch2onnx_outputs)
