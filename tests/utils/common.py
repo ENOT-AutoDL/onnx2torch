@@ -171,14 +171,17 @@ def convert_onnx2torch2onnx(  # pylint: disable=missing-function-docstring
     args = tuple(torch.tensor(arg) for arg in args)
 
     with io.BytesIO() as tmp_file:
-        torch.onnx.export(
-            model=torch_model,
-            args=args,
-            f=tmp_file,
-            input_names=input_names,
-            opset_version=opset_version,
-            **export_kwargs,
-        )
+        try:
+            torch.onnx.export(
+                model=torch_model,
+                args=args,
+                f=tmp_file,
+                input_names=input_names,
+                opset_version=opset_version,
+                **export_kwargs,
+            )
+        except torch.onnx.CheckerError:
+            pass
 
         return onnx.load_from_string(tmp_file.getvalue())
 
