@@ -1,3 +1,6 @@
+__all__ = [
+    'OnnxCumSum',
+]
 import torch
 from torch import nn
 
