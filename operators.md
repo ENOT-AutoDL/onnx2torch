@@ -31,7 +31,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | ConvTranspose             | Y         | Convolution operation with spatial rank > 3 is not implemented                                                                                                      |
 | Cos                       | Y         |                                                                                                                                                                     |
 | Cosh                      | N         |                                                                                                                                                                     |
-| CumSum                    | N         |                                                                                                                                                                     |
+| CumSum                    | Y         |                                                                                                                                                                     |
 | DepthToSpace              | N         |                                                                                                                                                                     |
 | DequantizeLinear          | N         |                                                                                                                                                                     |
 | Det                       | N         |                                                                                                                                                                     |
