@@ -57,7 +57,7 @@ class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
     ) -> torch.Tensor:
         output = input_tensor.clone()
         output = output * slope
-        mask = input_tensor > 0
+        mask = input_tensor >= 0
         output[mask] = input_tensor[mask]
         if torch.onnx.is_in_onnx_export():
             return _PReLUExportToOnnx.set_output_and_apply(output, input_tensor, slope)
