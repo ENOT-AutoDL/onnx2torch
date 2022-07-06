@@ -47,7 +47,7 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: dis
     ) -> torch.Tensor:
 
         batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
-        batched_rois = torch.concat([batch_indices, rois], dim=1)
+        batched_rois = torch.cat([batch_indices, rois], dim=1)
 
         return roi_align(
             input=input_tensor,
