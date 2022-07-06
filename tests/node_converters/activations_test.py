@@ -97,6 +97,7 @@ def test_softmax(  # pylint: disable=missing-function-docstring
         ([8, 3, 32, 32], [1, 1, 32]),
         ([8, 3, 32, 32], [1, 32, 32]),
         ([8, 3, 32, 32], [3, 1, 1]),
+        ([8, 3, 32, 32], [1]),
     ),
 )
 def test_prelu(  # pylint: disable=missing-function-docstring
