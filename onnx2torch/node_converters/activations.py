@@ -2,6 +2,7 @@ __all__ = [
     'OnnxErf',
     'OnnxHardSigmoid',
     'OnnxSoftmaxV1V11',
+    'OnnxPReLU',
 ]
 
 import numpy as np
@@ -46,6 +47,28 @@ class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):  # pylint: disable=missing
         result = torch.log_softmax(result, -1) if self.is_log else torch.softmax(result, -1)
 
         return torch.reshape(result, shape)
+
+
+class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        slope: torch.Tensor,
+    ) -> torch.Tensor:
+        output = input_tensor.clone()
+        output = output * slope
+        mask = input_tensor > 0
+        output[mask] = input_tensor[mask]
+        if torch.onnx.is_in_onnx_export():
+            return _PReLUExportToOnnx.set_output_and_apply(output, input_tensor, slope)
+
+        return output
+
+
+class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('PRelu', *args)
 
 
 @add_converter(operation_type='Erf', version=9)
@@ -119,27 +142,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     )
 
 
-class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
-    def forward(  # pylint: disable=missing-function-docstring
-        self,
-        input_tensor: torch.Tensor,
-        weights: torch.Tensor,
-    ) -> torch.Tensor:
-        output = torch.nn.functional.prelu(input_tensor, weights)
-        if torch.onnx.is_in_onnx_export():
-            return _PReLUExportToOnnx.set_output_and_apply(output, input_tensor, weights)
-
-        return output
-
-
-class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('PRelu', *args)
-
-
 @add_converter(operation_type='PRelu', version=7)
 @add_converter(operation_type='PRelu', version=9)
+@add_converter(operation_type='PRelu', version=16)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
 
     return OperationConverterResult(
