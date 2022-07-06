@@ -10,8 +10,8 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def _test_comparison(op_type: str, a: np.ndarray, b: np.ndarray, opset_version: int = 13) -> None:
-    test_inputs = {'a': a, 'b': b}
+def _test_comparison(op_type: str, x: np.ndarray, y: np.ndarray, opset_version: int = 13) -> None:
+    test_inputs = {'x': x, 'y': y}
 
     node = onnx.helper.make_node(
         op_type=op_type,
@@ -22,7 +22,7 @@ def _test_comparison(op_type: str, a: np.ndarray, b: np.ndarray, opset_version: 
         make_tensor_value_info(
             name='out',
             elem_type=NP_TYPE_TO_TENSOR_TYPE[np.dtype('bool')],
-            shape=a.shape,
+            shape=x.shape,
         ),
     ]
 
@@ -37,7 +37,7 @@ def _test_comparison(op_type: str, a: np.ndarray, b: np.ndarray, opset_version: 
 
 
 @pytest.mark.parametrize(
-    'op_type,a_shape,b_shape',
+    'op_type,x_shape,y_shape',
     (
         ('Equal', [3, 4, 5], [5]),
         ('Equal', [3, 4, 5], [3, 4, 5]),
@@ -51,9 +51,13 @@ def _test_comparison(op_type: str, a: np.ndarray, b: np.ndarray, opset_version: 
         ('GreaterOrEqual', [3, 4, 5], [3, 4, 5]),
     ),
 )
-def test_comparison(op_type: str, a_shape: List[int], b_shape: List[int]) -> None:
+def test_comparison(  # pylint: disable=missing-function-docstring
+    op_type: str,
+    x_shape: List[int],
+    y_shape: List[int],
+) -> None:
     _test_comparison(
         op_type=op_type,
-        a=np.random.randn(*a_shape),
-        b=np.random.randn(*b_shape),
+        x=np.random.randn(*x_shape),
+        y=np.random.randn(*y_shape),
     )

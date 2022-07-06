@@ -34,7 +34,7 @@ def _test_constant_of_shape(shape: np.ndarray, value: np.ndarray) -> None:
 
 
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
-def test_constant_of_shape() -> None:
+def test_constant_of_shape() -> None:  # pylint: disable=missing-function-docstring
     for _ in range(10):
         size = random.randint(1, 6)
         shape = np.random.randint(low=1, high=2, size=(size,))

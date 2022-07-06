@@ -1,4 +1,6 @@
-__all__ = ['OnnxConstantOfShape']
+__all__ = [
+    'OnnxConstantOfShape',
+]
 
 from typing import Optional
 
@@ -13,8 +15,7 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):
-
+class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, value: Optional[torch.Tensor] = None):
         super().__init__()
 
@@ -27,7 +28,7 @@ class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):
         self.value: torch.Tensor
         self.register_buffer('value', value)
 
-    def forward(self, shape: torch.Tensor) -> torch.Tensor:
+    def forward(self, shape: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.full(
             size=torch.Size(shape),
             fill_value=self.value.item(),

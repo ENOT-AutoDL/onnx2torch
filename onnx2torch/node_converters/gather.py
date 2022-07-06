@@ -21,13 +21,16 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxGatherElements(nn.Module, OnnxToTorchModule):
-
+class OnnxGatherElements(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int = 0):
         super().__init__()
         self.axis = axis
 
-    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        indices: torch.Tensor,
+    ) -> torch.Tensor:
         return torch.gather(input_tensor, dim=self.axis, index=indices)
 
 
@@ -39,17 +42,19 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
         self.axis = axis
 
     @staticmethod
-    def slice_from_axis(
-            input_tensor: torch.Tensor,
-            axis: int,
-            indices: torch.Tensor,
+    def slice_from_axis(  # pylint: disable=missing-docstring
+        input_tensor: torch.Tensor,
+        axis: int,
+        indices: torch.Tensor,
     ) -> Tuple[Union[slice, torch.Tensor], ...]:
         axis = input_tensor.dim() + axis if axis < 0 else axis
         skip_axis: List[Union[slice, torch.Tensor]] = [slice(None)] * axis
         skip_axis.append(indices)
         return tuple(skip_axis)
 
-    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self, input_tensor: torch.Tensor, indices: torch.Tensor
+    ) -> torch.Tensor:
         # pytorch Gather differs from onnx Gather, onnx gather work like numpy.take
         # But torch.take does not support different axis. So we make it by yourself
         # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time
@@ -71,7 +76,7 @@ class _GatherExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-metho
 @add_converter(operation_type='Gather', version=1)
 @add_converter(operation_type='Gather', version=11)
 @add_converter(operation_type='Gather', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     torch_module = OnnxGather(
         axis=axis,
@@ -85,7 +90,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 
 @add_converter(operation_type='GatherElements', version=11)
 @add_converter(operation_type='GatherElements', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     axis = node.attributes.get('axis', 0)
     torch_module = OnnxGatherElements(
         axis=axis,

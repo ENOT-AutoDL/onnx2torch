@@ -9,10 +9,10 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_clip(
-        input_shape: Tuple[int, int, int, int],
-        min_value: Optional[float] = None,
-        max_value: Optional[float] = None,
-        **kwargs,
+    input_shape: Tuple[int, int, int, int],
+    min_value: Optional[float] = None,
+    max_value: Optional[float] = None,
+    **kwargs,
 ) -> None:
     x_range = 2 * max_value if max_value is not None else 5
     x = np.random.uniform(low=-x_range, high=x_range, size=input_shape).astype(np.float32)
@@ -36,8 +36,8 @@ def _test_clip(
 
 
 def _test_clip_opset9(
-        input_shape: Tuple[int, int, int, int],
-        **kwargs,
+    input_shape: Tuple[int, int, int, int],
+    **kwargs,
 ) -> None:
     x = np.random.uniform(low=-10.0, high=10.0, size=input_shape).astype(np.float32)
     test_inputs = {'x': x}
@@ -52,7 +52,7 @@ def _test_clip_opset9(
     check_onnx_model(model, test_inputs)
 
 
-def test_clip() -> None:
+def test_clip() -> None:  # pylint: disable=missing-function-docstring
     _test_clip(input_shape=(2, 3, 16, 16), min_value=0.0, max_value=6.0)
     _test_clip(input_shape=(2, 3, 16, 16), min_value=0.0)
     _test_clip(input_shape=(2, 3, 16, 16), min_value=-1.5, max_value=2.5)

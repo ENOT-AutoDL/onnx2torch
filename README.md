@@ -13,12 +13,15 @@
     <a href="https://pypi.org/project/onnx2torch">
         <img src="https://img.shields.io/pypi/format/onnx2torch" />
     </a>
+    <a href="https://github.com/psf/black">
+        <img src="https://img.shields.io/badge/code%20style-black-black" />
+    </a>
     <a href="https://github.com/ENOT-AutoDL/onnx2torch/stargazers">
         <img src="https://img.shields.io/github/stars/ENOT-AutoDL/onnx2torch.svg?style=social&label=Star&maxAge=2592000" />
     </a>
 </p>
 
-onnx2torch is an ONNX to PyTorch converter. 
+onnx2torch is an ONNX to PyTorch converter.
 Our converter:
 * Is easy to use – Convert the ONNX model with the function call ``convert``;
 * Is easy to extend – Write your own custom layer in PyTorch and register it with ``@add_converter``;
@@ -26,7 +29,7 @@ Our converter:
 
 If you find an issue, please [let us know](https://github.com/ENOT-AutoDL/onnx2torch/issues)! And feel free to create merge requests.
 
-Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.  
+Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.
 Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
 
 ## Installation
@@ -40,6 +43,7 @@ pip install onnx2torch
 Below you can find some examples of use.
 
 ### Convert
+
 ```python
 import torch
 from onnx2torch import convert
@@ -105,13 +109,20 @@ Classification from __torchvision__:
 - [x] MnasNet
 - [x] RegNet
 
+Transformers:
+- [x] Vit
+- [x] Swin
+- [x] GPT-J
+
 #### :page_facing_up: List of currently supported operations can be founded [here](operators.md).
 
 ## How to add new operations to converter
 
 Here we show how to add the module:
-1. Supported by both PyTorch and ONNX and has the same behaviour.  
+1. Supported by both PyTorch and ONNX and has the same behaviour.
+
 An example of such a module is [Relu](./onnx2torch/node_converters/activations.py)
+
 ```python
 @add_converter(operation_type='Relu', version=6)
 @add_converter(operation_type='Relu', version=13)
@@ -122,13 +133,15 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 ```
-Here we have registered an operation named ``Relu`` for opset versions 6, 13, 14.  
-Note that the ``torch_module`` argument in ``OperationConverterResult`` must be a torch.nn.Module, not just a callable object!  
+
+Here we have registered an operation named ``Relu`` for opset versions 6, 13, 14.
+Note that the ``torch_module`` argument in ``OperationConverterResult`` must be a torch.nn.Module, not just a callable object!
 If Operation's behaviour differs from one opset version to another, you should implement it separately.
 
 2. Operations supported by PyTorch and ONNX BUT have different behaviour
+
 ```python
-class OnnxExpand(nn.Module):
+class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
         output = input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)

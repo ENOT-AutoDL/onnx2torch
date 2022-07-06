@@ -1,4 +1,6 @@
-__all__ = ['OnnxScatterND']
+__all__ = [
+    'OnnxScatterND',
+]
 
 import torch
 import torch._C as torch_C
@@ -13,9 +15,13 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
-
-    def forward(self, data: torch.Tensor, indices: torch.Tensor, updates: torch.Tensor) -> torch.Tensor:
+class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        data: torch.Tensor,
+        indices: torch.Tensor,
+        updates: torch.Tensor,
+    ) -> torch.Tensor:
         # There is no scatter nd for torch, use following formula:
         # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
         output = data.clone()
@@ -27,7 +33,7 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
         # last dimension is a partial-index into data
         indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
         # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
-        updates = updates.reshape((-1, *updates.shape[ind_dim - 1:]))
+        updates = updates.reshape((-1, *updates.shape[ind_dim - 1 :]))
         output[indices] = updates
 
         return output

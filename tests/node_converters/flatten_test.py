@@ -8,8 +8,8 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_flatten(
-        input_shape: List[int],
-        **kwargs,
+    input_shape: List[int],
+    **kwargs,
 ) -> None:
 
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
@@ -25,7 +25,7 @@ def _test_flatten(
     check_onnx_model(model, test_inputs)
 
 
-def test_flatten() -> None:
+def test_flatten() -> None:  # pylint: disable=missing-function-docstring
     _test_flatten(input_shape=[2, 3, 16, 16, 16])
     _test_flatten(input_shape=[2, 3, 16, 16], axis=2)
     _test_flatten(input_shape=[2, 3, 16], axis=-1)

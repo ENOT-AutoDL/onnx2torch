@@ -8,8 +8,8 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_global_avg_pool(
-        input_shape: List[int],
-        **kwargs,
+    input_shape: List[int],
+    **kwargs,
 ) -> None:
 
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
@@ -31,7 +31,7 @@ def _test_global_avg_pool(
     )
 
 
-def test_global_avg_pool() -> None:
+def test_global_avg_pool() -> None:  # pylint: disable=missing-function-docstring
     _test_global_avg_pool(input_shape=[2, 3, 16, 16, 16])
     _test_global_avg_pool(input_shape=[2, 3, 16, 16])
     _test_global_avg_pool(input_shape=[2, 3, 16])

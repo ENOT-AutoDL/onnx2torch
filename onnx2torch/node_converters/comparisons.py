@@ -1,4 +1,6 @@
-__all__ = ['OnnxCompare']
+__all__ = [
+    'OnnxCompare',
+]
 
 import torch
 from torch import nn
@@ -19,13 +21,12 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxCompare(nn.Module, OnnxToTorchModule):
-
+class OnnxCompare(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, operation_type: str):
         super().__init__()
         self.compare_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return self.compare_function(x, y)
 
 

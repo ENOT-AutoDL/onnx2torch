@@ -1,8 +1,12 @@
-__all__ = ['OnnxErf', 'OnnxHardSigmoid', 'OnnxSoftmaxV1V11']
+__all__ = [
+    'OnnxErf',
+    'OnnxHardSigmoid',
+    'OnnxSoftmaxV1V11',
+]
 
 import numpy as np
-
 import torch
+import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -11,31 +15,32 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxErf(nn.Module, OnnxToTorchModule):
-
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+class OnnxErf(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.erf(input_tensor)
 
 
-class OnnxHardSigmoid(nn.Module, OnnxToTorchModule):
+class OnnxHardSigmoid(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, alpha: float = 0.2, beta: float = 0.5):
         super().__init__()
         self.alpha = alpha
         self.beta = beta
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
-        return torch.clip(self.alpha * input_tensor + self.beta, min=0.0, max=1.0)
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
+        return torch.clip(input_tensor * self.alpha + self.beta, min=0.0, max=1.0)
 
 
-class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):
+class OnnxSoftmaxV1V11(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int = 1, is_log: bool = False):
         super().__init__()
         self.axis = axis
         self.is_log = is_log
 
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         shape = input_tensor.shape
         result = torch.flatten(input_tensor, start_dim=self.axis)
         result = torch.log_softmax(result, -1) if self.is_log else torch.softmax(result, -1)
@@ -107,15 +112,44 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 @add_converter(operation_type='Relu', version=6)
 @add_converter(operation_type='Relu', version=13)
 @add_converter(operation_type='Relu', version=14)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=nn.ReLU(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 
 
+class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        weights: torch.Tensor,
+    ) -> torch.Tensor:
+        output = torch.nn.functional.prelu(input_tensor, weights)
+        if torch.onnx.is_in_onnx_export():
+            return _PReLUExportToOnnx.set_output_and_apply(output, input_tensor, weights)
+
+        return output
+
+
+class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        return graph.op('PRelu', *args)
+
+
+@add_converter(operation_type='PRelu', version=7)
+@add_converter(operation_type='PRelu', version=9)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+
+    return OperationConverterResult(
+        torch_module=OnnxPReLU(),
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
 @add_converter(operation_type='Elu', version=6)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     alpha = node.attributes.get('alpha', 1.0)
 
     return OperationConverterResult(
@@ -125,7 +159,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 
 
 @add_converter(operation_type='Celu', version=12)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     alpha = node.attributes.get('alpha', 1.0)
 
     return OperationConverterResult(
@@ -135,7 +169,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint:
 
 
 @add_converter(operation_type='Selu', version=6)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:   # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     default_alpha = 1.67326319217681884765625
     default_gamma = 1.05070102214813232421875
 
@@ -190,6 +224,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
         torch_module=torch.nn.Softsign(),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
+
 
 @add_converter(operation_type='Softplus', version=1)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument

@@ -1,4 +1,7 @@
-__all__ = ['OnnxPow', 'OnnxSqrt']
+__all__ = [
+    'OnnxPow',
+    'OnnxSqrt',
+]
 
 from typing import Optional
 
@@ -14,22 +17,25 @@ from onnx2torch.utils.common import old_style_broadcast
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxPow(nn.Module, OnnxToTorchModule):
+class OnnxPow(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
         self.axis = axis
         self.broadcast = broadcast
 
-    def forward(self, input_tensor: torch.Tensor, exponent: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        exponent: torch.Tensor,
+    ) -> torch.Tensor:
         if self.broadcast == 1 and self.axis is not None:
             exponent = old_style_broadcast(input_tensor, exponent, self.axis)
 
         return torch.pow(input_tensor, exponent)
 
 
-class OnnxSqrt(nn.Module, OnnxToTorchModule):
-
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+class OnnxSqrt(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         return torch.sqrt(input_tensor)
 
 

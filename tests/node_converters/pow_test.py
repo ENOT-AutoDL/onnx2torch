@@ -5,7 +5,7 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def test_pow() -> None:
+def test_pow() -> None:  # pylint: disable=missing-function-docstring
     input_shape = [10, 3, 128, 128]
     x_variants = [
         np.random.uniform(low=0.0, high=4.0, size=input_shape).astype(np.float32),
@@ -31,14 +31,14 @@ def test_pow() -> None:
         )
 
         model = make_model_from_nodes(
-            nodes=node, 
+            nodes=node,
             initializers=initializers,
             inputs_example=test_inputs,
         )
         check_onnx_model(model, test_inputs)
 
 
-def test_sqrt() -> None:
+def test_sqrt() -> None:  # pylint: disable=missing-function-docstring
     input_shape = [10, 3, 128, 128]
     x = np.random.uniform(low=0.0, high=10.0, size=input_shape).astype(np.float32)
 

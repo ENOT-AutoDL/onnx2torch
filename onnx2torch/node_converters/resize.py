@@ -1,4 +1,6 @@
-__all__ = ['OnnxResize']
+__all__ = [
+    'OnnxResize',
+]
 
 import warnings
 from typing import Optional
@@ -39,26 +41,29 @@ def _onnx_mode_to_torch_mode(onnx_mode: str, dim_size: int) -> str:
     return torch_mode
 
 
-class OnnxResize(nn.Module, OnnxToTorchModule):
-
+class OnnxResize(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(
-            self,
-            mode: str = 'nearest',
-            align_corners: Optional[bool] = None,
+        self,
+        mode: str = 'nearest',
+        align_corners: Optional[bool] = None,
+        ignore_roi: bool = False,
+        ignore_bs_ch_size: bool = False,
     ):
         super().__init__()
         self.onnx_mode = mode
         self.align_corners = align_corners
+        self.ignore_roi = ignore_roi
+        self.ignore_bs_ch_size = ignore_bs_ch_size
 
-    def forward(
-            self,
-            input_tensor: torch.Tensor,
-            roi: Optional[torch.Tensor] = None,
-            scales: Optional[torch.Tensor] = None,
-            sizes: Optional[torch.Tensor] = None,
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        roi: Optional[torch.Tensor] = None,
+        scales: Optional[torch.Tensor] = None,
+        sizes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         torch_mode = _onnx_mode_to_torch_mode(self.onnx_mode, input_tensor.dim() - 2)
-        if roi is not None and roi.nelement() != 0:
+        if not self.ignore_roi and roi is not None and roi.nelement() != 0:
             raise NotImplementedError('roi logic is not implemented.')
 
         # Format of onnx scales and sizes is [n, c, d, h, w]
@@ -67,7 +72,7 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
             if sizes.nelement() != 0:
                 sizes = sizes.tolist()
                 input_shape = list(input_tensor.shape)
-                if input_shape[:2] != sizes[:2]:
+                if not self.ignore_bs_ch_size and input_shape[:2] != sizes[:2]:
                     raise NotImplementedError('Pytorch\'s interpolate cannot resize channel or batch dimensions.')
                 sizes = sizes[2:]
             else:
@@ -91,13 +96,16 @@ class OnnxResize(nn.Module, OnnxToTorchModule):
         )
 
 
-class OnnxResizeV10(nn.Module, OnnxToTorchModule):
-
+class OnnxResizeV10(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, mode: str = 'nearest'):
         super().__init__()
         self._resize = OnnxResize(mode=mode)
 
-    def forward(self, input_tensor: torch.Tensor, scales: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        scales: torch.Tensor,
+    ) -> torch.Tensor:
         return self._resize(input_tensor, scales=scales)
 
 
@@ -152,10 +160,12 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     if extrapolation_value != 0.0:
         warnings.warn('With a extrapolation value other than 0.0, the results might differ significantly!')
 
+    ignore_roi = coordinate_transformation_mode != 'tf_crop_and_resize'
     return OperationConverterResult(
         torch_module=OnnxResize(
             mode=mode,
             align_corners=_get_torch_align_corners(mode, coordinate_transformation_mode),
+            ignore_roi=ignore_roi,
         ),
         onnx_mapping=onnx_mapping_from_node(node),
     )

@@ -51,13 +51,13 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
             node_attributes.get('pads', [0] * spatial_rank * 2),
             node_attributes.get('auto_pad', 'NOTSET'),
         ),
-        bias = bias is not None,
+        bias=bias is not None,
     )
 
     if op_type == 'Conv':
         special_kwargs = dict(
             out_channels=weights.shape[0],
-            in_channels=weights.shape[1]*common_kwargs['groups'],
+            in_channels=weights.shape[1] * common_kwargs['groups'],
         )
     elif op_type == 'ConvTranspose':
         output_padding = node_attributes.get('output_padding', [0] * spatial_rank * 2)
@@ -67,7 +67,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
                 node_attributes.get('auto_pad', 'NOTSET'),
             )
         special_kwargs = dict(
-            out_channels=weights.shape[1]*common_kwargs['groups'],
+            out_channels=weights.shape[1] * common_kwargs['groups'],
             in_channels=weights.shape[0],
             output_padding=output_padding,
         )

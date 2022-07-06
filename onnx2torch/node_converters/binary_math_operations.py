@@ -23,14 +23,15 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxBinaryMathOperation(nn.Module, OnnxToTorchModule):
-    def __init__(self, operation_type: str, broadcast: Optional[int] = None,  axis: Optional[int] = None):
+class OnnxBinaryMathOperation(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
+    def __init__(self, operation_type: str, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
 
         self.broadcast = broadcast
         self.axis = axis
         self.math_op_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
+    # pylint: disable=missing-function-docstring
     def forward(self, first: torch.Tensor, second: torch.Tensor) -> torch.Tensor:
         if self.broadcast == 1 and self.axis is not None:
             second = old_style_broadcast(first, second, self.axis)

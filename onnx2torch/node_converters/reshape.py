@@ -1,4 +1,6 @@
-__all__ = ['OnnxReshape']
+__all__ = [
+    'OnnxReshape',
+]
 
 import torch
 import torch._C as torch_C
@@ -13,19 +15,19 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxReshape(nn.Module, OnnxToTorchModuleWithCustomExport):
-
+class OnnxReshape(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     @staticmethod
     def _do_reshape(input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
         if torch.any(shape == 0):
-            shape = [
-                input_tensor.shape[i] if dim_size == 0 else dim_size
-                for i, dim_size in enumerate(shape)
-            ]
+            shape = [input_tensor.shape[i] if dim_size == 0 else dim_size for i, dim_size in enumerate(shape)]
 
         return torch.reshape(input_tensor, torch.Size(shape))
 
-    def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:  # pylint: disable=no-self-use
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_tensor: torch.Tensor,
+        shape: torch.Tensor,
+    ) -> torch.Tensor:
         output = self._do_reshape(input_tensor, shape)
 
         if torch.onnx.is_in_onnx_export():
@@ -35,7 +37,6 @@ class OnnxReshape(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _ReshapeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('Reshape', *args, outputs=1)

@@ -32,7 +32,7 @@ def _test_constant_as_tensor(shape: Tuple[int, ...], dtype: np.dtype) -> None:
 
 
 @pytest.mark.filterwarnings('ignore:No input args')
-def test_constant() -> None:
+def test_constant() -> None:  # pylint: disable=missing-function-docstring
     _test_constant_as_tensor((16, 16, 16), np.dtype('int32'))
     _test_constant_as_tensor((16, 16, 16), np.dtype('int32'))
     _test_constant_as_tensor((16, 16, 16), np.dtype('float32'))

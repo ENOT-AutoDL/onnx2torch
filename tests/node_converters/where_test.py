@@ -7,10 +7,10 @@ from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
 
-def where_test(
-        condition: np.ndarray,
-        x: np.ndarray,
-        y: np.ndarray,
+def where_test(  # pylint: disable=missing-function-docstring
+    condition: np.ndarray,
+    x: np.ndarray,
+    y: np.ndarray,
 ) -> None:
     test_inputs = {'condition': condition, 'x': x, 'y': y}
     node = onnx.helper.make_node(
@@ -29,7 +29,7 @@ def where_test(
     check_onnx_model(model, test_inputs)
 
 
-def test_where() -> None:
+def test_where() -> None:  # pylint: disable=missing-function-docstring
     where_test(
         condition=np.array([[1, 0], [1, 1]], dtype=bool),
         x=np.array([[1, 2], [3, 4]], dtype=np.int64),
@@ -44,6 +44,16 @@ def test_where() -> None:
 
     where_test(
         condition=np.array([[1, 0], [1, 1]], dtype=bool),
-        x=np.array([[1, ], [3, ]], dtype=np.float32),
+        x=np.array(
+            [
+                [
+                    1,
+                ],
+                [
+                    3,
+                ],
+            ],
+            dtype=np.float32,
+        ),
         y=np.array([[9, 8], [7, 6]], dtype=np.float32),
     )

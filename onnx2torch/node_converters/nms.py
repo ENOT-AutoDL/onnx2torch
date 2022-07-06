@@ -1,4 +1,6 @@
-__all__ = ['OnnxNonMaxSuppression']
+__all__ = [
+    'OnnxNonMaxSuppression',
+]
 
 from typing import Optional
 
@@ -16,19 +18,18 @@ from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):
-
+class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     def __init__(self, center_point_box: bool = False):
         super().__init__()
         self.center_point_box = center_point_box
 
     def _do_forward(
-            self,
-            boxes: torch.Tensor,
-            scores: torch.Tensor,
-            max_output_boxes_per_class: Optional[torch.Tensor],
-            iou_threshold: Optional[torch.Tensor],
-            score_threshold: Optional[torch.Tensor],
+        self,
+        boxes: torch.Tensor,
+        scores: torch.Tensor,
+        max_output_boxes_per_class: Optional[torch.Tensor],
+        iou_threshold: Optional[torch.Tensor],
+        score_threshold: Optional[torch.Tensor],
     ) -> torch.Tensor:
         if max_output_boxes_per_class is None:
             return torch.empty([0, 3], dtype=torch.int64, device=boxes.device)
@@ -62,22 +63,19 @@ class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):
                 nms_indexes = nms_indexes[:num_boxes]
                 indexes = confidence_indexes[nms_indexes]
 
-                out.extend(
-                    [batch_index, class_index, box_index]
-                    for box_index in indexes
-                )
+                out.extend([batch_index, class_index, box_index] for box_index in indexes)
         if len(out) == 0:
             return torch.empty([0, 3], dtype=torch.int64, device=boxes.device)
 
         return torch.tensor(out, dtype=torch.int64, device=boxes.device)
 
-    def forward(
-            self,
-            boxes: torch.Tensor,
-            scores: torch.Tensor,
-            max_output_boxes_per_class: Optional[torch.Tensor] = None,
-            iou_threshold: Optional[torch.Tensor] = None,
-            score_threshold: Optional[torch.Tensor] = None,
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        boxes: torch.Tensor,
+        scores: torch.Tensor,
+        max_output_boxes_per_class: Optional[torch.Tensor] = None,
+        iou_threshold: Optional[torch.Tensor] = None,
+        score_threshold: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         output = self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
         if torch.onnx.is_in_onnx_export():
@@ -102,7 +100,6 @@ class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _NmsExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold, center_point_box = args

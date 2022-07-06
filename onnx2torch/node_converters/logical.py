@@ -1,4 +1,7 @@
-__all__ = ['OnnxNot', 'OnnxLogical']
+__all__ = [
+    'OnnxNot',
+    'OnnxLogical',
+]
 
 from typing import Optional
 
@@ -23,9 +26,8 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):
-
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         output = torch.logical_not(input_tensor)
         if torch.onnx.is_in_onnx_export():
             return _NotExportToOnnx.set_output_and_apply(output, input_tensor)
@@ -34,21 +36,22 @@ class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):
 
 
 class _NotExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         return graph.op('Not', *args, outputs=1)
 
 
-class OnnxLogical(nn.Module, OnnxToTorchModule):
-    def __init__(self, operation_type: str, broadcast: Optional[int] = None,  axis: Optional[int] = None):
+class OnnxLogical(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+    def __init__(self, operation_type: str, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
         self.broadcast = broadcast
         self.axis = axis
 
         self.logic_op_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    def forward(self, first_tensor: torch.Tensor, second_tensor: torch.Tensor):
+    def forward(  # pylint: disable=missing-function-docstring
+        self, first_tensor: torch.Tensor, second_tensor: torch.Tensor
+    ):
         if self.broadcast == 1 and self.axis is not None:
             second_tensor = old_style_broadcast(first_tensor, second_tensor, self.axis)
         return self.logic_op_function(first_tensor, second_tensor)

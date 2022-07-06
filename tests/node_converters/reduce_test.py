@@ -35,10 +35,10 @@ def _test_reduce(input_tensor: np.ndarray, op_type: str, tol: float, **kwargs) -
 
 
 def _test_reduce_sum(
-        input_tensor: np.ndarray,
-        axes: Optional[List[int]],
-        keepdims: Optional[int] = 1,
-        noop_with_empty_axes: Optional[int] = 0,
+    input_tensor: np.ndarray,
+    axes: Optional[List[int]],
+    keepdims: Optional[int] = 1,
+    noop_with_empty_axes: Optional[int] = 0,
 ) -> None:
     test_inputs = {'input_tensor': input_tensor}
     kwargs = {}
@@ -74,17 +74,19 @@ def _test_reduce_sum(
         initializers={},
         inputs_example=test_inputs,
         opset_version=13,
-        outputs_info=(make_tensor_value_info(
-            name='y',
-            elem_type=NP_TYPE_TO_TENSOR_TYPE[input_tensor.dtype],
-            shape=output_shape,
-        ),),
+        outputs_info=(
+            make_tensor_value_info(
+                name='y',
+                elem_type=NP_TYPE_TO_TENSOR_TYPE[input_tensor.dtype],
+                shape=output_shape,
+            ),
+        ),
     )
     check_onnx_model(
         model,
         test_inputs,
-        atol_onnx_torch=10 ** -5,
-        atol_torch_cpu_cuda=10 ** -5,
+        atol_onnx_torch=10**-5,
+        atol_torch_cpu_cuda=10**-5,
         atol_onnx_torch2onnx=0.0,
     )
 
@@ -92,41 +94,41 @@ def _test_reduce_sum(
 @pytest.mark.parametrize(
     'op_type,tol',
     (
-        ('ReduceL1', 10 ** -5),
-        ('ReduceL2', 10 ** -5),
-        ('ReduceLogSum', 10 ** -5),
-        ('ReduceLogSumExp', 10 ** -5),
+        ('ReduceL1', 10**-5),
+        ('ReduceL2', 10**-5),
+        ('ReduceLogSum', 10**-5),
+        ('ReduceLogSumExp', 10**-5),
         ('ReduceMax', 0),
         ('ReduceMin', 0),
-        ('ReduceMean', 10 ** -5),
-        ('ReduceSum', 10 ** -5),
-        ('ReduceProd', 10 ** -5),
-        ('ReduceSumSquare', 10 ** -5),
-    )
+        ('ReduceMean', 10**-5),
+        ('ReduceSum', 10**-5),
+        ('ReduceProd', 10**-5),
+        ('ReduceSumSquare', 10**-5),
+    ),
 )
 @pytest.mark.parametrize(
     'shape,axes,keepdims',
     (
-            ((1, 3, 8, 8), None, None),
-            ((1, 3, 8, 8), None, 0),
-            ((1, 3, 8, 8), None, 1),
-            ((1, 3, 8, 8), [1], 0),
-            ((1, 3, 8, 8), [1], 1),
-            ((1, 3, 8, 8), [1], None),
-            ((1, 3, 8, 8), [-2], 1),
-            ((2, 3, 8, 8), [-2, -4], 1),
-            ((2, 3, 8, 8), [1, 3], 1),
+        ((1, 3, 8, 8), None, None),
+        ((1, 3, 8, 8), None, 0),
+        ((1, 3, 8, 8), None, 1),
+        ((1, 3, 8, 8), [1], 0),
+        ((1, 3, 8, 8), [1], 1),
+        ((1, 3, 8, 8), [1], None),
+        ((1, 3, 8, 8), [-2], 1),
+        ((2, 3, 8, 8), [-2, -4], 1),
+        ((2, 3, 8, 8), [1, 3], 1),
     ),
 )
-def test_reduce(
-        op_type: str,
-        tol: float,
-        shape: Tuple[int],
-        axes: Optional[int],
-        keepdims: Optional[int],
+def test_reduce(  # pylint: disable=missing-function-docstring
+    op_type: str,
+    tol: float,
+    shape: Tuple[int],
+    axes: Optional[int],
+    keepdims: Optional[int],
 ) -> None:
     if op_type == 'ReduceLogSum':
-        left_boundary = 10 ** -5
+        left_boundary = 10**-5
     else:
         left_boundary = -10
 
@@ -146,24 +148,24 @@ def test_reduce(
 @pytest.mark.parametrize(
     'shape,axes,keepdims,noop_with_empty_axes',
     (
-            ((1, 3, 8, 8), None, None, None),
-            ((1, 3, 8, 8), None, 0, 0),
-            ((1, 3, 8, 8), None, 1, 0),
-            ((1, 3, 8, 8), None, 1, 1),
-            ((1, 3, 8, 8), None, 1, 0),
-            ((1, 3, 8, 8), [1], 0, 0),
-            ((1, 3, 8, 8), [1], 1, 0),
-            ((1, 3, 8, 8), [1], None, 0),
-            ((1, 3, 8, 8), [-2], 1, 0),
-            ((2, 3, 8, 8), [-2, -4], 1, 0),
-            ((2, 3, 8, 8), [1, 3], 1, 0),
+        ((1, 3, 8, 8), None, None, None),
+        ((1, 3, 8, 8), None, 0, 0),
+        ((1, 3, 8, 8), None, 1, 0),
+        ((1, 3, 8, 8), None, 1, 1),
+        ((1, 3, 8, 8), None, 1, 0),
+        ((1, 3, 8, 8), [1], 0, 0),
+        ((1, 3, 8, 8), [1], 1, 0),
+        ((1, 3, 8, 8), [1], None, 0),
+        ((1, 3, 8, 8), [-2], 1, 0),
+        ((2, 3, 8, 8), [-2, -4], 1, 0),
+        ((2, 3, 8, 8), [1, 3], 1, 0),
     ),
 )
-def test_reduce_sum(
-        shape: Tuple[int],
-        axes: Optional[List[int]],
-        keepdims: Optional[int],
-        noop_with_empty_axes: Optional[int],
+def test_reduce_sum(  # pylint: disable=missing-function-docstring
+    shape: Tuple[int],
+    axes: Optional[List[int]],
+    keepdims: Optional[int],
+    noop_with_empty_axes: Optional[int],
 ) -> None:
     _test_reduce_sum(
         input_tensor=np.random.uniform(-10, 10, shape).astype(np.float32),

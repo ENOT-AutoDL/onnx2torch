@@ -11,8 +11,8 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_expand(
-        data: np.ndarray,
-        shape: List[int],
+    data: np.ndarray,
+    shape: List[int],
 ) -> None:
     test_inputs = {
         'x': data,
@@ -44,7 +44,7 @@ def _test_expand(
         ([3, 1], [3, 4]),
     ),
 )
-def test_expand(src_shape: List[int], dst_shape: List[int]) -> None:
+def test_expand(src_shape: List[int], dst_shape: List[int]) -> None:  # pylint: disable=missing-function-docstring
     data = np.reshape(np.arange(1, np.prod(src_shape) + 1, dtype=np.float32), src_shape)
     _test_expand(
         data=data,
