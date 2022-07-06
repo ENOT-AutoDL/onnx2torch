@@ -88,20 +88,25 @@ def test_softmax(  # pylint: disable=missing-function-docstring
 
 
 @pytest.mark.parametrize(
-    'input_shape,opset_version',
+    'opset_version',
+    (7, 9, 11),
+)
+@pytest.mark.parametrize(
+    'input_shape,slope_shape',
     (
-        ([8, 3, 32, 32], 7),
-        ([2, 64, 16, 16], 11),
-        ([1, 16, 8, 8], 7),
-        ([4, 32, 8, 8], 9),
+        ([8, 3, 32, 32], [1, 1, 32]),
+        ([8, 3, 32, 32], [1, 32, 32]),
+        ([8, 3, 32, 32], [3, 1, 1]),
+        ([8, 3, 32, 32], [1]),
     ),
 )
 def test_prelu(  # pylint: disable=missing-function-docstring
     input_shape: List[int],
+    slope_shape: List[int],
     opset_version: int,
 ) -> None:
     data = np.random.randn(*input_shape).astype(np.float32)
-    slope = np.random.randn(input_shape[1], 1, 1).astype(np.float32)
+    slope = np.random.randn(*slope_shape).astype(np.float32)
     test_inputs = {'input_tensor': data, 'slope': slope}
 
     node = onnx.helper.make_node(op_type='PRelu', inputs=['input_tensor', 'slope'], outputs=['y'])
@@ -112,9 +117,4 @@ def test_prelu(  # pylint: disable=missing-function-docstring
         opset_version=opset_version,
     )
 
-    check_onnx_model(
-        model,
-        test_inputs,
-        atol_onnx_torch=10**-6,
-        atol_torch_cpu_cuda=10**-6,
-    )
+    check_onnx_model(model, test_inputs)
