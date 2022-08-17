@@ -22,7 +22,6 @@ def _shape_inference_by_model_path(model_path: Union[Path, str], output_path: [P
 
 def safe_shape_inference(  # pylint: disable=missing-function-docstring
     onnx_model_or_path: Union[ModelProto, Path, str],
-    output_path=None,
     **kwargs,
 ) -> ModelProto:
     if isinstance(onnx_model_or_path, ModelProto):
@@ -37,13 +36,7 @@ def safe_shape_inference(  # pylint: disable=missing-function-docstring
                 save_as_external_data=True,
                 all_tensors_to_one_file=True,
             )
-            if output_path is None:
-                output_path = tmp_model_path
+            return _shape_inference_by_model_path(tmp_model_path, output_path=tmp_model_path, **kwargs)
 
-            return _shape_inference_by_model_path(tmp_model_path, output_path=output_path, **kwargs)
-
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        if output_path is None:
-            output_path = Path(tmp_dir) / 'model.onnx'
-
-        return _shape_inference_by_model_path(onnx_model_or_path, output_path=output_path, **kwargs)
+    with tempfile.NamedTemporaryFile(dir=Path(onnx_model_or_path).parent) as tmp_model_file:
+        return _shape_inference_by_model_path(onnx_model_or_path, output_path=tmp_model_file.name, **kwargs)
