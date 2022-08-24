@@ -150,7 +150,9 @@ def calc_torch_outputs(  # pylint: disable=missing-function-docstring
     device: str = 'cpu',
 ) -> Any:
     inputs = convert_onnx_inputs_to_torch_inputs(onnx_model=model, onnx_inputs=inputs, device=device)
-    model = convert(model).to(device=device)
+    model = convert(model)
+    model = model.eval()
+    model = model.to(device=device)
     outputs = model(*inputs)  # pylint: disable=not-callable
 
     return convert_data_torch2onnx(outputs)
