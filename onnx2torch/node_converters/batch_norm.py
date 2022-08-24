@@ -10,6 +10,7 @@ from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxMapping
+from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_shape_from_value_info
 from onnx2torch.utils.common import onnx_mapping_from_node
@@ -22,7 +23,7 @@ _BN_CLASS_FROM_SPATIAL_RANK = {
 }
 
 
-class OnnxBatchNorm(nn.Module):  # pylint: disable=missing-docstring
+class OnnxBatchNorm(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, momentum: float = 0.1, epsilon: float = 1e-5):
         super().__init__()
         self.momentum = momentum
