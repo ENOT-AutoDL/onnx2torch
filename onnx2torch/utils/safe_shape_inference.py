@@ -1,5 +1,5 @@
 import tempfile
-from pathlib import Path, PosixPath
+from pathlib import Path
 from typing import Union
 
 import onnx
@@ -13,8 +13,8 @@ def _is_big_model(model: ModelProto) -> bool:
 
 
 def _shape_inference_by_model_path(  # pylint: disable=missing-function-docstring
-    model_path: Union[PosixPath, str],
-    output_path: Union[PosixPath, str],
+    model_path: Union[Path, str],
+    output_path: Union[Path, str],
     **kwargs,
 ) -> ModelProto:
     model_path = str(Path(model_path).resolve())
@@ -25,7 +25,7 @@ def _shape_inference_by_model_path(  # pylint: disable=missing-function-docstrin
 
 
 def safe_shape_inference(  # pylint: disable=missing-function-docstring
-    onnx_model_or_path: Union[ModelProto, PosixPath, str],
+    onnx_model_or_path: Union[ModelProto, Path, str],
     **kwargs,
 ) -> ModelProto:
     if isinstance(onnx_model_or_path, ModelProto):
