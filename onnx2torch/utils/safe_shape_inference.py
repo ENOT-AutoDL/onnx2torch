@@ -12,7 +12,11 @@ def _is_big_model(model: ModelProto) -> bool:
     return model.ByteSize() / (1024 * 1024 * 1024) > 2.0
 
 
-def _shape_inference_by_model_path(model_path: Union[Path, str], output_path: [Path, str], **kwargs) -> ModelProto:
+def _shape_inference_by_model_path(
+    model_path: Union[Path, str],
+    output_path: Union[Path, str],
+    **kwargs,
+) -> ModelProto:
     model_path = str(Path(model_path).resolve())
     output_path = str(Path(output_path).resolve())
     infer_shapes_path(model_path, output_path=output_path, **kwargs)
