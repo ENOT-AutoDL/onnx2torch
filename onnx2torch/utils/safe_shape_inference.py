@@ -12,7 +12,7 @@ def _is_big_model(model: ModelProto) -> bool:
     return model.ByteSize() / (1024 * 1024 * 1024) > 2.0
 
 
-def _shape_inference_by_model_path(  # pylint: disable=missing-function-docstring
+def _shape_inference_by_model_path(
     model_path: Union[Path, str],
     output_path: Union[Path, str],
     **kwargs,
