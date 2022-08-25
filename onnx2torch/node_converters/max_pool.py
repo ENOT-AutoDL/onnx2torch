@@ -26,9 +26,10 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     input_shape = get_shape_from_value_info(input_value_info)
 
     spatial_rank = len(input_shape) - 2
-    maxpool_class = _MAXPOOL_CLASS_FROM_SPATIAL_RANK.get(spatial_rank, None)
-    if maxpool_class is None:
-        raise NotImplementedError(f'Max pool operation with spatial rank == {spatial_rank} is not implemented')
+    try:
+        maxpool_class = _MAXPOOL_CLASS_FROM_SPATIAL_RANK[spatial_rank]
+    except KeyError as exc:
+        raise NotImplementedError(f'Max pool operation with spatial rank == {spatial_rank} is not implemented') from exc
 
     node_attributes = node.attributes
     # required

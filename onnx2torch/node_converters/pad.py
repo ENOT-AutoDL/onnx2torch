@@ -17,14 +17,14 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
-ONNX_TO_TORCH_MODE = {
+_ONNX_TO_TORCH_MODE = {
     'constant': 'constant',
     'reflect': 'reflect',
     'edge': 'replicate',
 }
 
 
-def _torch_padding_to_mode_format(pads: List[int], mode: str) -> bool:
+def _torch_padding_to_mode_format(pads: List[int], mode: str) -> List[int]:
     if mode in ('replicate', 'reflect'):
         batch_channel_pads = pads[-4:]
         if set(batch_channel_pads) == {0}:
@@ -91,14 +91,18 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-c
         return torch.nn.functional.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)
 
 
+def _onnx_to_torch_mode(mode: str) -> str:
+    try:
+        return _ONNX_TO_TORCH_MODE[mode]
+    except KeyError as exc:
+        raise NotImplementedError(f'{mode} mode is not implemented') from exc
+
+
 @add_converter(operation_type='Pad', version=11)
 @add_converter(operation_type='Pad', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
-    mode = ONNX_TO_TORCH_MODE.get(mode, None)
-
-    if mode is None:
-        raise NotImplementedError(f'{mode} mode is not implemented')
+    mode = _onnx_to_torch_mode(mode)
 
     return OperationConverterResult(
         torch_module=OnnxPadDynamic(mode=mode),
@@ -112,10 +116,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 @add_converter(operation_type='Pad', version=2)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     mode = node.attributes.get('mode', 'constant')
-    mode = ONNX_TO_TORCH_MODE.get(mode, None)
-
-    if mode is None:
-        raise NotImplementedError(f'{mode} mode is not implemented')
+    mode = _onnx_to_torch_mode(mode)
 
     pads = node.attributes.get('pads')
     torch_pads = _onnx_padding_to_torch(pads)

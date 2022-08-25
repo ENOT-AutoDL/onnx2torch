@@ -37,9 +37,12 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 
     op_type = node.operation_type
     spatial_rank = len(weights.shape) - 2
-    conv_class = _CONV_CLASS_FROM_SPATIAL_RANK.get((op_type, spatial_rank), None)
-    if conv_class is None:
-        raise NotImplementedError(f'Convolution operation with spatial rank == {spatial_rank} is not implemented')
+    try:
+        conv_class = _CONV_CLASS_FROM_SPATIAL_RANK[op_type, spatial_rank]
+    except KeyError as exc:
+        raise NotImplementedError(
+            f'Convolution operation with spatial rank == {spatial_rank} is not implemented'
+        ) from exc
 
     node_attributes = node.attributes
     common_kwargs = dict(
