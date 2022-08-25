@@ -24,7 +24,7 @@ _BN_CLASS_FROM_SPATIAL_RANK = {
 
 
 class OnnxBatchNorm(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
-    def __init__(self, momentum: float = 0.1, epsilon: float = 1e-5):
+    def __init__(self, momentum: float, epsilon: float):
         super().__init__()
         self.momentum = momentum
         self.epsilon = epsilon
@@ -61,9 +61,12 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         input_value_info = graph.value_info[node.input_values[0]]
         input_shape = get_shape_from_value_info(input_value_info)
         spatial_rank = len(input_shape) - 2
-        bn_class = _BN_CLASS_FROM_SPATIAL_RANK.get(spatial_rank, None)
-        if bn_class is None:
-            raise NotImplementedError(f'BatchNorm operation with spatial rank == {spatial_rank} is not implemented')
+        try:
+            bn_class = _BN_CLASS_FROM_SPATIAL_RANK[spatial_rank]
+        except KeyError as exc:
+            raise NotImplementedError(
+                f'BatchNorm operation with spatial rank == {spatial_rank} is not implemented'
+            ) from exc
 
         scale_value_name = node.input_values[1]
         bias_value_name = node.input_values[2]
