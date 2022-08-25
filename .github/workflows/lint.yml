@@ -37,4 +37,11 @@ jobs:
           options: "--check --diff --color"
       - uses: isort/isort-action@master
         with:
-          configuration: "--force-single-line-imports --ensure-newline-before-comments --line-length=120 --profile=black"
+          configuration:
+            --check
+            --diff
+            --color
+            --force-single-line-imports
+            --ensure-newline-before-comments
+            --line-length=120
+            --profile=black
