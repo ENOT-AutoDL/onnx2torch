@@ -84,7 +84,6 @@ def test_conv2d_base_params() -> None:  # pylint: disable=missing-function-docst
 
 
 def test_conv_stride_dilations_pads() -> None:  # pylint: disable=missing-function-docstring
-    op_type_variants = ('ConvTranspose', 'Conv')
     input_hw_variants = ((32, 32), (32, 27), (27, 32), (27, 27))
     kernel_shape_variants = tuple(
         chain(
@@ -107,18 +106,55 @@ def test_conv_stride_dilations_pads() -> None:  # pylint: disable=missing-functi
         (1, 2),
         (2, 1),
     )
-    all_variants = product(
-        op_type_variants, input_hw_variants, kernel_shape_variants, stride_variants, dilations_variants
+    pads = (
+        [1, 1, 1, 1],
+        [1, 0, 0, 1],
+        [0, 2, 7, 0],
+        [3, 0, 1, 2],
     )
-    for op_type, input_hw, kernel_shape, strides, dilations in all_variants:
+
+    all_variants = product(
+        input_hw_variants,
+        kernel_shape_variants,
+        stride_variants,
+        dilations_variants,
+        pads,
+    )
+    for input_hw, kernel_shape, strides, dilations, pads in all_variants:
         _test_conv(
-            op_type=op_type,
+            op_type='Conv',
             in_channels=16,
             out_channels=16,
             input_hw=input_hw,
             kernel_shape=kernel_shape,
             strides=strides,
             dilations=dilations,
+            pads=pads,
+        )
+
+    pads = (
+        [1, 1, 1, 1],
+        [1, 2, 1, 2],
+        [2, 2, 2, 2],
+    )
+
+    all_variants = product(
+        input_hw_variants,
+        kernel_shape_variants,
+        stride_variants,
+        dilations_variants,
+        pads,
+    )
+    for input_hw, kernel_shape, strides, dilations, pads in all_variants:
+        _test_conv(
+            op_type='ConvTranspose',
+            in_channels=16,
+            out_channels=16,
+            input_hw=input_hw,
+            kernel_shape=kernel_shape,
+            strides=strides,
+            dilations=dilations,
+            pads=pads,
         )
 
 
@@ -138,6 +174,7 @@ def test_conv_transpose_output_pads() -> None:  # pylint: disable=missing-functi
     output_pads_variants = (
         (1, 1),
         (2, 2),
+        (1, 2),
     )
 
     all_variants = product(input_hw_variants, stride_variants, dilations_variants, output_pads_variants)

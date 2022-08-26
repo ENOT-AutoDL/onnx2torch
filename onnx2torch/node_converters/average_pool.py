@@ -8,7 +8,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_shape_from_value_info
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.common import onnx_padding_to_torch_padding
+from onnx2torch.utils.padding import onnx_auto_pad_to_torch_padding
 
 _AVGPOOL_CLASS_FROM_SPATIAL_RANK = {
     1: nn.AvgPool1d,
@@ -40,10 +40,12 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     strides = node_attributes.get('strides', 1)
     count_include_pad = node_attributes.get('count_include_pad', 0)
 
-    padding = onnx_padding_to_torch_padding(
-        node_attributes.get('pads', [0] * spatial_rank * 2),
-        node_attributes.get('auto_pad', 'NOTSET'),
+    padding, padding_module = onnx_auto_pad_to_torch_padding(
+        onnx_padding=node_attributes.get('pads', [0] * spatial_rank * 2),
+        auto_pad=node_attributes.get('auto_pad', 'NOTSET'),
     )
+    if padding_module is not None:
+        raise NotImplementedError('AvgPool with non symmetrical padding is not implemented.')
 
     torch_module = avgpool_class(
         kernel_size=kernel_shape,

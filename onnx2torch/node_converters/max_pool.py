@@ -8,7 +8,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_shape_from_value_info
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.common import onnx_padding_to_torch_padding
+from onnx2torch.utils.padding import onnx_auto_pad_to_torch_padding
 
 _MAXPOOL_CLASS_FROM_SPATIAL_RANK = {
     1: nn.MaxPool1d,
@@ -42,9 +42,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     if storage_order != 0:
         raise NotImplementedError('Only row major (0) order is supported.')
 
-    padding = onnx_padding_to_torch_padding(
-        node_attributes.get('pads', [0] * spatial_rank * 2),
-        node_attributes.get('auto_pad', 'NOTSET'),
+    padding, padding_module = onnx_auto_pad_to_torch_padding(
+        onnx_padding=node_attributes.get('pads', [0] * spatial_rank * 2),
+        auto_pad=node_attributes.get('auto_pad', 'NOTSET'),
     )
 
     torch_module = maxpool_class(
@@ -54,6 +54,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         dilation=dilation,
         ceil_mode=ceil_mode == 1,
     )
+    if padding_module is not None:
+        padding_module.constant_value = float('-inf')
+        torch_module = nn.Sequential(padding_module, torch_module)
 
     return OperationConverterResult(
         torch_module=torch_module,

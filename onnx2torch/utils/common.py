@@ -82,21 +82,3 @@ def old_style_broadcast(  # pylint: disable=missing-function-docstring
     second_shape = second_shape + [1] * (rank - len(second_shape))
 
     return second.view(second_shape)
-
-
-def onnx_padding_to_torch_padding(  # pylint: disable=missing-function-docstring
-    padding: Tuple[int, ...],
-    auto_pad: str,
-) -> Tuple[int, ...]:
-    if auto_pad == 'NOTSET':
-        half_len = len(padding) // 2
-        if padding[:half_len] != padding[half_len:]:
-            raise NotImplementedError(f'Only symmetric padding is implemented ({padding})')
-
-        padding = padding[:half_len]
-    elif auto_pad in ('SAME_UPPER', 'SAME_LOWER', 'VALID'):
-        raise NotImplementedError(f'"{auto_pad}" auto_pad is not implemented')
-    else:
-        raise ValueError(f'Got unexpected auto_pad value "{auto_pad}"')
-
-    return padding
