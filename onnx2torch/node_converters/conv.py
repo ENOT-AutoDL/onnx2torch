@@ -65,7 +65,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         )
     elif op_type == 'ConvTranspose':
         if input_padding_module is not None:
-            input_padding_module.pads = tuple(-v for v in input_padding_module.pads)
+            raise NotImplementedError('ConvTranspose with non symmetrical padding is not implemented.')
 
         output_padding = node_attributes.get('output_padding', [0] * spatial_rank)
         special_kwargs = dict(
