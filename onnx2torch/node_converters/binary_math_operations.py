@@ -31,8 +31,11 @@ class OnnxBinaryMathOperation(nn.Module, OnnxToTorchModule):  # pylint: disable=
         self.axis = axis
         self.math_op_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    # pylint: disable=missing-function-docstring
-    def forward(self, first: torch.Tensor, second: torch.Tensor) -> torch.Tensor:
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        first: torch.Tensor,
+        second: torch.Tensor,
+    ) -> torch.Tensor:
         if self.broadcast == 1 and self.axis is not None:
             second = old_style_broadcast(first, second, self.axis)
 

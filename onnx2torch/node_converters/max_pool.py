@@ -55,6 +55,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         ceil_mode=ceil_mode == 1,
     )
     if padding_module is not None:
+        # MaxPool must ignore padded value, so we should pad by -inf
         padding_module.constant_value = float('-inf')
         torch_module = nn.Sequential(padding_module, torch_module)
 
