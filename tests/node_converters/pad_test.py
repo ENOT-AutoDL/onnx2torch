@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import onnx
 import pytest
@@ -36,44 +38,35 @@ def _test_pad(
 
 
 @pytest.mark.parametrize(
-    'pads,mode',
+    'input_shape,pads,mode',
     (
-        ([0, 1, 1, 1, 1, 0, 0, 0, 1, 1], 'constant'),
-        ([0, 0, 5, 3, 7, 0, 0, 2, 3, 11], 'edge'),
-        ([0, 0, 1, 2, 1, 0, 0, 1, 2, 1], 'reflect'),
-        ([0, 0, 0, 0, 0, 0, 0, 0], 'constant'),
-        ([0, 1, 1, 1, 1, 0, 0, 0], 'constant'),
-        ([0, 2, 0, 2, 0, 2, 0, 2], 'constant'),
-        ([1, 2, 4, 2, 5, 4, 4, 2], 'constant'),
-        ([0, 0, 0, 0, 0, 0, 0, 0], 'edge'),
-        ([0, 0, 2, 3, 0, 0, 2, 3], 'edge'),
-        ([0, 0, 0, 0, 0, 0, 0, 0], 'reflect'),
-        ([0, 0, 2, 1, 0, 0, 2, 1], 'reflect'),
-        ([0, 4, 0, 1, 0, 1], 'constant'),
-        ([0, 0, 3, 0, 0, 3], 'edge'),
-        ([0, 0, 1, 0, 0, 1], 'reflect'),
+        ([1, 1, 1, 3, 3], [0, 1, 1, 1, 1, 0, 0, 0, 1, 1], 'constant'),
+        ([1, 1, 1, 3, 3], [0, 0, 5, 3, 7, 0, 0, 2, 3, 11], 'edge'),
+        ([1, 1, 3, 3, 3], [0, 0, 1, 2, 1, 0, 0, 1, 2, 1], 'reflect'),
+        ([1, 1, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0], 'constant'),
+        ([1, 1, 3, 3], [0, 1, 1, 1, 1, 0, 0, 0], 'constant'),
+        ([1, 1, 3, 3], [0, 2, 0, 2, 0, 2, 0, 2], 'constant'),
+        ([1, 1, 3, 3], [1, 2, 4, 2, 5, 4, 4, 2], 'constant'),
+        ([1, 1, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0], 'edge'),
+        ([1, 1, 3, 3], [0, 0, 2, 3, 0, 0, 2, 3], 'edge'),
+        ([1, 1, 3, 3], [0, 0, 0, 0, 0, 0, 0, 0], 'reflect'),
+        ([1, 1, 3, 3], [0, 0, 2, 1, 0, 0, 2, 1], 'reflect'),
+        ([1, 3, 3], [0, 4, 0, 1, 0, 1], 'constant'),
+        ([1, 3, 3], [0, 0, 3, 0, 0, 3], 'edge'),
+        ([1, 3, 3], [0, 0, 1, 0, 0, 1], 'reflect'),
+        # negative padding
+        ([3, 3, 3, 3, 3], [0, -1, 1, -1, 1, 0, 0, 0, 1, 1], 'constant'),
+        ([3, 3, 3, 3], [0, -1, -1, -1, -1, 0, 0, 0], 'constant'),
+        ([5, 7, 6], [0, -4, 0, -1, 0, 1], 'constant'),
     ),
 )
 @pytest.mark.parametrize('opset_version', (2, 11, 13))
-def test_pad(pads: np.array, mode: str, opset_version: int) -> None:  # pylint: disable=missing-function-docstring
-
-    input_tensor = np.asarray(
-        [
-            [
-                [1.0, 1.2],
-                [2.3, 3.4],
-                [4.5, 5.6],
-            ],
-            [
-                [0.1, 2.1],
-                [3.2, 4.3],
-                [3.4, 4.5],
-            ],
-        ],
-        dtype=np.float32,
-    )
-
-    dims = list(range(len(pads) // 2 - input_tensor.ndim))
-    input_tensor = np.expand_dims(input_tensor, dims)
-
-    _test_pad(input_array=input_tensor, mode=mode, opset_version=opset_version, pads=pads)
+def test_pad(  # pylint: disable=missing-function-docstring
+    input_shape: List[int],
+    pads: List[int],
+    mode: str,
+    opset_version: int,
+) -> None:
+    input_array = np.random.random(size=input_shape).astype(np.float32)
+    print(len(input_array.shape), len(pads))
+    _test_pad(input_array=input_array, mode=mode, opset_version=opset_version, pads=pads)
