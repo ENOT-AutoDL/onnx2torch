@@ -1,1 +1,3 @@
 include onnx2torch/VERSION
+include requirements.txt
+recursive-exclude tests *
