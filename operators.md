@@ -63,7 +63,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | InstanceNormalization     | N         |                                                                                                                                                                     |
 | IsInf                     | N         |                                                                                                                                                                     |
 | IsNaN                     | N         |                                                                                                                                                                     |
-| LRN                       | N         |                                                                                                                                                                     |
+| LRN                       | Y         |                                                                                                                                                                     |
 | LSTM                      | N         |                                                                                                                                                                     |
 | LeakyRelu                 | Y         |                                                                                                                                                                     |
 | Less                      | Y         |                                                                                                                                                                     |
