@@ -7,6 +7,9 @@
     <a href="https://pypi.org/project/onnx2torch">
         <img src="https://badgen.net/pypi/v/onnx2torch" />
     </a>
+    <a href="https://anaconda.org/conda-forge/onnx2torch">
+        <img src="https://img.shields.io/conda/vn/conda-forge/onnx2torch" />
+    </a>
     <a href="https://pypi.org/project/onnx2torch">
         <img src="https://badgen.net/pypi/license/onnx2torch" />
     </a>
@@ -36,6 +39,10 @@ Let us know which models you use or want to convert from onnx to torch [here](ht
 
 ```bash
 pip install onnx2torch
+```
+or
+```bash
+conda install -c conda-forge onnx2torch
 ```
 
 ## Usage
