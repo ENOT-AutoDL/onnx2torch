@@ -26,13 +26,7 @@ def _test_dropout(data: np.ndarray, opset_version: int, **kwargs) -> None:
         opset_version=opset_version,
     )
 
-    check_onnx_model(
-        model,
-        test_inputs,
-        atol_onnx_torch=10**-6,
-        atol_torch_cpu_cuda=10**-6,
-        atol_onnx_torch2onnx=10**-6,
-    )
+    check_onnx_model(model, test_inputs)
 
 
 @pytest.mark.parametrize(
