@@ -17,19 +17,15 @@ from onnx2torch.utils.common import onnx_mapping_from_node
 
 
 class OnnxDropoutDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
-    def forward(  # pylint: disable=missing-function-docstring
+    def forward(  # pylint: disable=missing-function-docstring, unused-argument
         self,
         input_tensor: torch.Tensor,
         ratio: float = 0.5,
         training_mode: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
 
-        if training_mode is not None:
-            training = training_mode.item()
-        else:
-            training = False
-
-        return F.dropout(input_tensor, p=ratio, training=training)
+        # Ignoring training_mode from ONNX and use the one from PyTorch
+        return F.dropout(input_tensor, p=ratio, training=self.training)
 
 
 @add_converter(operation_type='Dropout', version=10)
