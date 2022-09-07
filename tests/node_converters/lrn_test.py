@@ -1,8 +1,9 @@
+from random import randrange
 import numpy as np
 import onnx
 
-from tests.utils.common import check_onnx_model
-from tests.utils.common import make_model_from_nodes
+from tests.utils.common import check_onnx_model  # pylint: disable=wrong-import-position
+from tests.utils.common import make_model_from_nodes  # pylint: disable=wrong-import-position
 
 
 def _test_lrn(data: np.ndarray, alpha: float, beta: float, bias: float, size: int) -> None:
@@ -26,10 +27,10 @@ def _test_lrn(data: np.ndarray, alpha: float, beta: float, bias: float, size: in
 
 
 def test_lrn() -> None:  # pylint: disable=missing-function-docstring
-    shape = (227, 227, 3)
+    shape = (1, 3, 227, 227)
     data = np.random.random_sample(shape).astype(np.float32)
-    alpha = np.random.uniform(low=0.0, high=1.0).astype(np.float32)
-    beta = np.random.uniform(low=0.0, high=1.0).astype(np.float32)
-    bias = np.random.uniform(low=1.0, high=5.0).astype(np.float32)
-    size = np.random.randint(low=1, high=10)
+    alpha = np.random.uniform(low=0.0, high=1.0)
+    beta = np.random.uniform(low=0.0, high=1.0)
+    bias = np.random.uniform(low=1.0, high=5.0)
+    size = randrange(start=1, stop=10, step=2)  # diameter of channels, not radius, must be odd
     _test_lrn(data=data, alpha=alpha, beta=beta, bias=bias, size=size)
