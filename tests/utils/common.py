@@ -233,7 +233,6 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
     atol_torch_cpu_cuda: float = 0.0,
     atol_onnx_torch2onnx: float = 0.0,
     ignore_export_checker: bool = False,
-    cuda_available: bool = False,
     opset_version: int = 13,
 ) -> None:
     def onnx_torch_check_function(onnx_output, torch_output):  # pylint: disable=missing-function-docstring
@@ -266,25 +265,15 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
 
         return True
 
-    if cuda_available:
-        _check_onnx_model(
-            onnx_model=onnx_model,
-            onnx_inputs=onnx_inputs,
-            onnx_torch_check_function=onnx_torch_check_function,
-            torch_cpu_cuda_check_function=torch_cpu_cuda_check_function,
-            onnx_torch2onnx_check_function=onnx_torch2onnx_check_function,
-            ignore_export_checker=ignore_export_checker,
-            opset_version=opset_version,
-        )
-    else:
-        _check_onnx_model(
-            onnx_model=onnx_model,
-            onnx_inputs=onnx_inputs,
-            onnx_torch_check_function=onnx_torch_check_function,
-            onnx_torch2onnx_check_function=onnx_torch2onnx_check_function,
-            ignore_export_checker=ignore_export_checker,
-            opset_version=opset_version,
-        )
+    _check_onnx_model(
+        onnx_model=onnx_model,
+        onnx_inputs=onnx_inputs,
+        onnx_torch_check_function=onnx_torch_check_function,
+        torch_cpu_cuda_check_function=torch_cpu_cuda_check_function,
+        onnx_torch2onnx_check_function=onnx_torch2onnx_check_function,
+        ignore_export_checker=ignore_export_checker,
+        opset_version=opset_version,
+    )
 
 
 def check_torch_model(  # pylint: disable=missing-function-docstring,unused-argument
