@@ -20,6 +20,7 @@ from onnx2torch.node_converters.gemm import *
 from onnx2torch.node_converters.global_average_pool import *
 from onnx2torch.node_converters.identity import *
 from onnx2torch.node_converters.logical import *
+from onnx2torch.node_converters.lrn import *
 from onnx2torch.node_converters.matmul import *
 from onnx2torch.node_converters.max_pool import *
 from onnx2torch.node_converters.mean import *
