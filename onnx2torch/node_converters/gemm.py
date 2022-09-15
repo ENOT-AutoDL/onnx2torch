@@ -1,9 +1,10 @@
 __all__ = [
-    'OnnxGeneralLinear',
+    'OnnxGemm',
 ]
 
+from typing import Optional
+
 import torch
-import torch.nn.functional as F
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -12,100 +13,81 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxMapping
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
+from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxGeneralLinear(nn.Linear, OnnxToTorchModule):
-    """General Linear layer with functionality of ONNX GEMM node.
+class OnnxGemm(nn.Module, OnnxToTorchModule):
+    def __init__(self, alpha: float, beta: float, trans_a: bool, trans_b: bool):
+        super().__init__()
 
-    For additional info https://github.com/onnx/onnx/blob/master/docs/Operators.md#Gemm
-    """
-
-    def __init__(
-        self,
-        in_features: int,
-        out_features: int,
-        bias: bool,
-        trans_a: int,
-    ):
-
-        super().__init__(
-            in_features=in_features,
-            out_features=out_features,
-            bias=bias,
-        )
-        # If != 0 transpose input before matmul
+        self.alpha = alpha
+        self.beta = beta
         self.trans_a = trans_a
+        self.trans_b = trans_b
 
-    def forward(  # pylint: disable=arguments-renamed, missing-function-docstring
-        self,
-        input_tensor: torch.Tensor,
-    ) -> torch.Tensor:
-        input_tensor = torch.transpose(input_tensor, 0, 1) if self.trans_a != 0 else input_tensor
-        return F.linear(input_tensor, self.weight, self.bias)
+    def forward(self, input_a: torch.Tensor, input_b: torch.Tensor, input_c: Optional[torch.Tensor] = None):
+        if self.trans_a:
+            input_a = torch.transpose(input_a, dim0=0, dim1=1)
+        if self.trans_b:
+            input_b = torch.transpose(input_b, dim0=0, dim1=1)
 
-    @classmethod
-    def maybe_create_simple_linear(  # pylint: disable=missing-docstring
-        cls,
-        in_features: int,
-        out_features: int,
-        bias: bool,
-        trans_a: int,
-    ):
-        if trans_a == 0:
-            return nn.Linear(in_features=in_features, out_features=out_features, bias=bias)
+        output = input_a@input_b*self.alpha
+        if input_c is not None:
+            output += input_c*self.beta
 
-        return OnnxGeneralLinear(in_features, out_features, bias, trans_a)
+        return output
 
 
 @add_converter(operation_type='Gemm', version=9)
 @add_converter(operation_type='Gemm', version=11)
 @add_converter(operation_type='Gemm', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
-    weights_value_name = node.input_values[1]
-    weights = graph.initializers[weights_value_name]
-    weights = weights.to_torch()
-
-    # An empty string may be used in the place of an actual argument's name to indicate a missing argument.
-    # See ONNX documentation
-    if len(node.input_values) == 3 and node.input_values[2] != '':
-        bias_value_name = node.input_values[2]
-        bias = graph.initializers[bias_value_name]
-        bias = bias.to_torch()
-    else:
-        bias = None
+    a_name = node.input_values[0]
+    b_name = node.input_values[1]
+    c_name = node.input_values[2] if len(node.input_values) > 2 else None
 
     node_attributes = node.attributes
     alpha = node_attributes.get('alpha', 1.0)
     beta = node_attributes.get('beta', 1.0)
-    trans_a = node_attributes.get('transA', 0)
-    trans_b = node_attributes.get('transB', 0)
+    trans_a = node_attributes.get('transA', 0) != 0
+    trans_b = node_attributes.get('transB', 0) != 0
 
-    if trans_b == 0:
-        in_features, out_features = weights.shape[0], weights.shape[1]
-    else:
-        in_features, out_features = weights.shape[1], weights.shape[0]
+    if not trans_a and b_name in graph.initializers and (c_name is None or c_name in graph.initializers):
+        if c_name is None:
+            bias = None
+        else:
+            bias = graph.initializers[c_name]
+            bias = bias.to_torch()
 
-    torch_module = OnnxGeneralLinear.maybe_create_simple_linear(
-        in_features=in_features,
-        out_features=out_features,
-        bias=bias is not None,
-        trans_a=trans_a,
-    )
+        if bias is None or bias.dim == 1:
+            weights = graph.initializers[b_name]
+            weights = weights.to_torch()
+            if not trans_b:
+                weights = weights.T
 
-    with torch.no_grad():
-        # In pytorch weights are transposed by default (see documentation)
-        # So we transpose weights before matmul if trans_b == 0
-        weights = torch.transpose(weights, 0, 1) if trans_b == 0 else weights
-        weights = weights * alpha
-        torch_module.weight.data = weights
-        if bias is not None:
-            bias = bias * beta
-            torch_module.bias.data = bias
+            in_features, out_features = weights.shape[0], weights.shape[1]
+            torch_module = nn.Linear(
+                in_features=in_features,
+                out_features=out_features,
+                bias=bias is not None,
+            )
+
+            with torch.no_grad():
+                weights = weights * alpha
+                torch_module.weight.data = weights
+                if bias is not None:
+                    bias = bias * beta
+                    torch_module.bias.data = bias
+
+            return OperationConverterResult(
+                torch_module=torch_module,
+                onnx_mapping=OnnxMapping(
+                    inputs=(a_name,),
+                    outputs=node.output_values,
+                )
+            )
 
     return OperationConverterResult(
-        torch_module=torch_module,
-        onnx_mapping=OnnxMapping(
-            inputs=(node.input_values[0],),
-            outputs=node.output_values,
-        ),
+        torch_module=OnnxGemm(alpha=alpha, beta=beta, trans_a=trans_a, trans_b=trans_b),
+        onnx_mapping=onnx_mapping_from_node(node),
     )
