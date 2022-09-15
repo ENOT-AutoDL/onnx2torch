@@ -24,7 +24,7 @@ def _test_gemm(
     input_c_shape = input_b_shape[1] if kwargs.get('transB', 0) == 0 else input_b_shape[0]
     input_c = np.random.uniform(low=-1.0, high=1.0, size=(input_c_shape,)).astype(np.float32) if has_input_c else None
 
-    output_shape = [None]*2
+    output_shape = [None] * 2
     output_shape[0] = input_a_shape[0 if kwargs.get('transA', 0) == 0 else 1]
     output_shape[1] = input_b_shape[1 if kwargs.get('transB', 0) == 0 else 0]
 
@@ -104,7 +104,7 @@ def _test_gemm(
         ([3, 4], [4, 3], False, False, 3.1415926, 2.71828),
     ),
 )
-def test_gemm(
+def test_gemm(  # pylint: disable=missing-function-docstring
     input_a_shape: Tuple[int, int],
     input_b_shape: Tuple[int, int],
     has_input_c: bool,
@@ -128,4 +128,3 @@ def test_gemm(
         abc_as_initializers=abc_as_initializers,
         **kwargs,
     )
-

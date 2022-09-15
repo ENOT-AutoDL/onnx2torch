@@ -16,7 +16,7 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
 
-class OnnxGemm(nn.Module, OnnxToTorchModule):
+class OnnxGemm(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, alpha: float, beta: float, trans_a: bool, trans_b: bool):
         super().__init__()
 
@@ -25,15 +25,20 @@ class OnnxGemm(nn.Module, OnnxToTorchModule):
         self.trans_a = trans_a
         self.trans_b = trans_b
 
-    def forward(self, input_a: torch.Tensor, input_b: torch.Tensor, input_c: Optional[torch.Tensor] = None):
+    def forward(  # pylint: disable=missing-function-docstring
+        self,
+        input_a: torch.Tensor,
+        input_b: torch.Tensor,
+        input_c: Optional[torch.Tensor] = None,
+    ):
         if self.trans_a:
             input_a = torch.transpose(input_a, dim0=0, dim1=1)
         if self.trans_b:
             input_b = torch.transpose(input_b, dim0=0, dim1=1)
 
-        output = input_a@input_b*self.alpha
+        output = input_a @ input_b * self.alpha
         if input_c is not None:
-            output += input_c*self.beta
+            output += input_c * self.beta
 
         return output
 
@@ -84,7 +89,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
                 onnx_mapping=OnnxMapping(
                     inputs=(a_name,),
                     outputs=node.output_values,
-                )
+                ),
             )
 
     return OperationConverterResult(
