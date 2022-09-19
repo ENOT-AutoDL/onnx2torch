@@ -13,9 +13,6 @@
     <a href="https://pypi.org/project/onnx2torch">
         <img src="https://badgen.net/pypi/license/onnx2torch" />
     </a>
-    <a href="https://pypi.org/project/onnx2torch">
-        <img src="https://img.shields.io/pypi/format/onnx2torch" />
-    </a>
     <a href="https://github.com/psf/black">
         <img src="https://img.shields.io/badge/code%20style-black-black" />
     </a>
