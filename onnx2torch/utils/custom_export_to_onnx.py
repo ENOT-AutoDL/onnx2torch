@@ -5,6 +5,7 @@ __all__ = [
 
 from typing import Any
 from typing import Callable
+from typing import Optional
 
 import torch
 from torch import _C as torch_C
@@ -21,10 +22,12 @@ class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
 
 
 class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-class-docstring
-    _NEXT_FORWARD_FUNCTION = None
+    _NEXT_FORWARD_FUNCTION: Optional[Callable] = None
 
     @classmethod
-    def set_forward_and_apply(cls, forward_function: Callable, *args) -> Any:  # pylint: disable=missing-function-docstring
+    def set_forward_and_apply(  # pylint: disable=missing-function-docstring
+        cls, forward_function: Callable, *args
+    ) -> Any:
         CustomExportToOnnx._NEXT_FORWARD_FUNCTION = forward_function
         return cls.apply(*args)
 
@@ -38,7 +41,7 @@ class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-cl
             raise RuntimeError('forward function is not set')
 
         try:
-            return CustomExportToOnnx._NEXT_FORWARD_FUNCTION()
+            return CustomExportToOnnx._NEXT_FORWARD_FUNCTION()  # pylint: disable=not-callable
         finally:
             CustomExportToOnnx._NEXT_FORWARD_FUNCTION = None
 

@@ -77,7 +77,9 @@ class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):  # py
         iou_threshold: Optional[torch.Tensor] = None,
         score_threshold: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-        forward_lambda = lambda: self._do_forward(boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold)
+        forward_lambda = lambda: self._do_forward(
+            boxes, scores, max_output_boxes_per_class, iou_threshold, score_threshold
+        )
         if torch.onnx.is_in_onnx_export():
             if max_output_boxes_per_class is None:
                 max_output_boxes_per_class = torch.tensor([0], dtype=torch.int64)

@@ -2,8 +2,6 @@ __all__ = [
     'OnnxRoiAlign',
 ]
 
-from typing import Tuple
-
 import torch
 import torch._C as torch_C
 from torch import nn

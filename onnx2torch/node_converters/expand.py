@@ -21,7 +21,9 @@ class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disab
         input_tensor: torch.Tensor,
         shape: torch.Tensor,
     ) -> torch.Tensor:
-        forward_lambda = lambda: input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
+        forward_lambda = lambda: input_tensor * torch.ones(
+            torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device
+        )
         if torch.onnx.is_in_onnx_export():
             return _ExpandExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor, shape)
 
