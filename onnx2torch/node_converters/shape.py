@@ -24,10 +24,12 @@ class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
         self.end = end
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        output = torch.tensor(
-            input_tensor.shape[self.start : self.end],
-            device=input_tensor.device,
-        )
+        def _forward():
+            return torch.tensor(
+                input_tensor.shape[self.start : self.end],
+                device=input_tensor.device,
+            )
+
         if torch.onnx.is_in_onnx_export():
             args = [
                 input_tensor,
@@ -39,9 +41,9 @@ class OnnxShape(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
             elif self.end is not None:
                 args += [0, self.end]
 
-            return _ShapeExportToOnnx.set_output_and_apply(output, *args)
+            return _ShapeExportToOnnx.set_forward_and_apply(_forward, *args)
 
-        return output
+        return _forward()
 
 
 class _ShapeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

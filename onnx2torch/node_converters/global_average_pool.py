@@ -21,12 +21,14 @@ from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomEx
 
 class OnnxGlobalAveragePool(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        x_dims = list(range(2, len(input_tensor.shape)))
-        output = torch.mean(input_tensor, dim=x_dims, keepdim=True)
-        if torch.onnx.is_in_onnx_export():
-            return _GlobalAveragePoolExportToOnnx.set_output_and_apply(output, input_tensor)
+        def _forward():
+            x_dims = list(range(2, len(input_tensor.shape)))
+            return torch.mean(input_tensor, dim=x_dims, keepdim=True)
 
-        return output
+        if torch.onnx.is_in_onnx_export():
+            return _GlobalAveragePoolExportToOnnx.set_forward_and_apply(_forward, input_tensor)
+
+        return _forward()
 
 
 class OnnxGlobalAveragePoolWithKnownInputShape(
@@ -37,11 +39,11 @@ class OnnxGlobalAveragePoolWithKnownInputShape(
         self.x_dims = list(range(2, len(input_shape)))
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        output = torch.mean(input_tensor, dim=self.x_dims, keepdim=True)
+        forward_lambda = lambda: torch.mean(input_tensor, dim=self.x_dims, keepdim=True)
         if torch.onnx.is_in_onnx_export():
-            return _GlobalAveragePoolExportToOnnx.set_output_and_apply(output, input_tensor)
+            return _GlobalAveragePoolExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor)
 
-        return output
+        return forward_lambda()
 
 
 class _GlobalAveragePoolExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

@@ -25,9 +25,8 @@ class OnnxBaseElementWise(nn.Module, OnnxToTorchModuleWithCustomExport):  # pyli
             # Also, no need for manually building the ONNX node.
             return input_tensors[0]
 
-        output = self.apply_reduction(*input_tensors)
-
+        forward_lambda = lambda: self.apply_reduction(*input_tensors)
         if torch.onnx.is_in_onnx_export():
-            return self._onnx_export_class.set_output_and_apply(output, *input_tensors)
+            return self._onnx_export_class.set_forward_and_apply(forward_lambda, *input_tensors)
 
-        return output
+        return forward_lambda()

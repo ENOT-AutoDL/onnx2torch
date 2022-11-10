@@ -22,11 +22,11 @@ class OnnxTile(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable
         repeats: torch.Tensor,
     ) -> torch.Tensor:
         # torch.tile(input_tensor, repeats) is not supported for exporting
-        output = input_tensor.repeat(torch.Size(repeats))
+        forward_lambda = lambda: input_tensor.repeat(torch.Size(repeats))
         if torch.onnx.is_in_onnx_export():
-            return _TileExportToOnnx.set_output_and_apply(output, input_tensor, repeats)
+            return _TileExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor, repeats)
 
-        return output
+        return forward_lambda()
 
 
 class _TileExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

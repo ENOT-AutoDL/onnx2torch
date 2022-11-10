@@ -55,17 +55,20 @@ class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
         input_tensor: torch.Tensor,
         slope: torch.Tensor,
     ) -> torch.Tensor:
-        if slope.nelement() == 1 or (slope.shape[0] == input_tensor.shape[1] and all(s == 1 for s in slope.shape[1:])):
-            return nn.functional.prelu(input_tensor, weight=slope.view(-1))
+        def _forward():
+            if slope.nelement() == 1 or (slope.shape[0] == input_tensor.shape[1] and all(s == 1 for s in slope.shape[1:])):
+                return nn.functional.prelu(input_tensor, weight=slope.view(-1))
 
-        output = input_tensor.clone()
-        output = output * slope
-        mask = input_tensor >= 0
-        output[mask] = input_tensor[mask]
+            output = input_tensor.clone()
+            output = output * slope
+            mask = input_tensor >= 0
+            output[mask] = input_tensor[mask]
+            return output
+
         if torch.onnx.is_in_onnx_export():
-            return _PReLUExportToOnnx.set_output_and_apply(output, input_tensor, slope)
+            return _PReLUExportToOnnx.set_forward_and_apply(_forward, input_tensor, slope)
 
-        return output
+        return _forward()
 
 
 class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

@@ -28,27 +28,26 @@ class OnnxSqueezeStaticAxes(nn.Module, OnnxToTorchModuleWithCustomExport):  # py
 
         self.axes = axes
 
-    @staticmethod
-    def _do_forward(input_tensor: torch.Tensor, axes: Optional[List[int]]) -> torch.Tensor:
-        if not axes:
-            return torch.squeeze(input_tensor)
-
-        result = input_tensor
-        for axes_id in axes:
-            result = torch.squeeze(result, dim=axes_id)
-
-        return result
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        output = self._do_forward(input_tensor, self.axes)
+        def _forward():
+            if not self.axes:
+                return torch.squeeze(input_tensor)
+
+            result = input_tensor
+            for axes_id in self.axes:
+                result = torch.squeeze(result, dim=axes_id)
+
+            return result
+
         if torch.onnx.is_in_onnx_export() and get_onnx_version() >= 13:
             args = [input_tensor]
             if self.axes:
                 axes = torch.tensor(self.axes, device=input_tensor.device, dtype=torch.int64)
                 args.append(axes)
-            return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
 
-        return output
+            return _SqueezeDynamicAxesExportToOnnx.set_forward_and_apply(_forward, *args)
+
+        return _forward()
 
 
 class OnnxSqueezeDynamicAxes(  # pylint: disable=missing-class-docstring
@@ -59,31 +58,29 @@ class OnnxSqueezeDynamicAxes(  # pylint: disable=missing-class-docstring
     def is_empty_axes(axes: torch.Tensor) -> bool:  # pylint: disable=missing-function-docstring
         return axes is None or axes.nelement() == 0
 
-    @staticmethod
-    def _do_forward(input_tensor: torch.Tensor, axes: Optional[torch.Tensor]) -> torch.Tensor:
-        if OnnxSqueezeDynamicAxes.is_empty_axes(axes):
-            return torch.squeeze(input_tensor)
-
-        result = input_tensor
-        for axes_id in torch.sort(axes, descending=True).values:
-            result = torch.squeeze(result, dim=axes_id)
-
-        return result
-
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         axes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-        output = self._do_forward(input_tensor, axes)
+        def _forward():
+            if OnnxSqueezeDynamicAxes.is_empty_axes(axes):
+                return torch.squeeze(input_tensor)
+
+            result = input_tensor
+            for axes_id in torch.sort(axes, descending=True).values:
+                result = torch.squeeze(result, dim=axes_id)
+
+            return result
+
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor]
             if not self.is_empty_axes(axes):
                 args.append(axes)
 
-            return _SqueezeDynamicAxesExportToOnnx.set_output_and_apply(output, *args)
+            return _SqueezeDynamicAxesExportToOnnx.set_forward_and_apply(_forward, *args)
 
-        return output
+        return _forward()
 
 
 class _SqueezeDynamicAxesExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

@@ -36,43 +36,28 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: dis
         self._sampling_ratio = sampling_ratio
         self._spatial_scale = spatial_scale
 
-    @staticmethod
-    def _do_forward(
-        input_tensor: torch.Tensor,
-        rois: torch.Tensor,
-        batch_indices: torch.Tensor,
-        output_size: Tuple[int, int],
-        sampling_ratio: int,
-        spatial_scale: float,
-    ) -> torch.Tensor:
-
-        batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
-        batched_rois = torch.cat([batch_indices, rois], dim=1)
-
-        return roi_align(
-            input=input_tensor,
-            boxes=batched_rois,
-            output_size=output_size,
-            spatial_scale=spatial_scale,
-            sampling_ratio=sampling_ratio,
-            aligned=False,
-        )
-
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         rois: torch.Tensor,
         batch_indices: torch.Tensor,
     ) -> torch.Tensor:
+        def _forward():
+            fixed_batch_indices = batch_indices.unsqueeze(1).to(rois.dtype)
+            batched_rois = torch.cat([fixed_batch_indices, rois], dim=1)
+            output_size = self._output_height, self._output_width
+            sampling_ratio = self._sampling_ratio
+            spatial_scale = self._spatial_scale
 
-        output = self._do_forward(
-            input_tensor=input_tensor,
-            rois=rois,
-            batch_indices=batch_indices,
-            output_size=(self._output_height, self._output_width),
-            sampling_ratio=self._sampling_ratio,
-            spatial_scale=self._spatial_scale,
-        )
+            return roi_align(
+                input=input_tensor,
+                boxes=batched_rois,
+                output_size=output_size,
+                spatial_scale=spatial_scale,
+                sampling_ratio=sampling_ratio,
+                aligned=False,
+            )
+
         if torch.onnx.is_in_onnx_export():
             args = [
                 input_tensor,
@@ -83,9 +68,9 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: dis
                 self._sampling_ratio,
                 self._spatial_scale,
             ]
-            return _RoiAlignExportToOnnx.set_output_and_apply(output, *args)
+            return _RoiAlignExportToOnnx.set_forward_and_apply(_forward, *args)
 
-        return output
+        return _forward()
 
 
 class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

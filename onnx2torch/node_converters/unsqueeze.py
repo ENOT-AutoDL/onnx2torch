@@ -38,24 +38,22 @@ class OnnxUnsqueezeDynamicAxes(  # pylint: disable=missing-class-docstring
     nn.Module,
     OnnxToTorchModuleWithCustomExport,
 ):
-    @staticmethod
-    def _do_forward(input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
-        result = input_tensor
-        for axes_id in torch.sort(axes).values:
-            result = torch.unsqueeze(result, dim=axes_id)
-
-        return result
-
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         axes: torch.Tensor,
     ) -> torch.Tensor:
-        output = self._do_forward(input_tensor, axes)
-        if torch.onnx.is_in_onnx_export():
-            return _UnsqueezeExportToOnnx.set_output_and_apply(output, input_tensor, axes)
+        def _forward():
+            result = input_tensor
+            for axes_id in torch.sort(axes).values:
+                result = torch.unsqueeze(result, dim=axes_id)
 
-        return output
+            return result
+
+        if torch.onnx.is_in_onnx_export():
+            return _UnsqueezeExportToOnnx.set_forward_and_apply(_forward, input_tensor, axes)
+
+        return _forward()
 
 
 class _UnsqueezeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
