@@ -93,39 +93,38 @@ class OnnxReduceSumDynamicAxes(  # pylint: disable=missing-class-docstring
         self.keepdims = keepdims == 1
         self.noop_with_empty_axes = noop_with_empty_axes == 1
 
-    def _do_forward(self, input_tensor: torch.Tensor, axes: torch.Tensor) -> torch.Tensor:
-        if axes is None or axes.nelement() == 0:
-            if self.noop_with_empty_axes:
-                return input_tensor
-
-            if not self.keepdims:
-                return torch.sum(input_tensor)
-
-            axes = list(range(input_tensor.dim()))
-        else:
-            axes = torch.sort(axes).values.tolist()
-
-        return torch.sum(input_tensor, dim=axes, keepdim=self.keepdims)
-
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         axes: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-        output = self._do_forward(input_tensor, axes)
+        def _forward():
+            if axes is None or axes.nelement() == 0:
+                if self.noop_with_empty_axes:
+                    return input_tensor
+
+                if not self.keepdims:
+                    return torch.sum(input_tensor)
+
+                fixed_axes = list(range(input_tensor.dim()))
+            else:
+                fixed_axes = torch.sort(axes).values.tolist()
+
+            return torch.sum(input_tensor, dim=fixed_axes, keepdim=self.keepdims)
+
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor]
             if axes is not None:
                 args.append(axes)
 
-            return _ReduceSumExportToOnnx.set_output_and_apply(
-                output,
+            return _ReduceSumExportToOnnx.set_forward_and_apply(
+                _forward,
                 *args,
                 int(self.keepdims),
                 int(self.noop_with_empty_axes),
             )
 
-        return output
+        return _forward()
 
 
 class _ReduceSumExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

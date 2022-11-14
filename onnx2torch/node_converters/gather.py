@@ -55,15 +55,17 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
     def forward(  # pylint: disable=missing-function-docstring
         self, input_tensor: torch.Tensor, indices: torch.Tensor
     ) -> torch.Tensor:
-        # pytorch Gather differs from onnx Gather, onnx gather work like numpy.take
-        # But torch.take does not support different axis. So we make it by yourself
-        # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time
-        slice_for_take = self.slice_from_axis(input_tensor, self.axis, indices)
-        output = input_tensor[slice_for_take]
-        if torch.onnx.is_in_onnx_export():
-            return _GatherExportToOnnx.set_output_and_apply(output, input_tensor, indices, self.axis)
+        def _forward():
+            # pytorch Gather differs from onnx Gather, onnx gather work like numpy.take
+            # But torch.take does not support different axis. So we make it by yourself
+            # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time
+            slice_for_take = self.slice_from_axis(input_tensor, self.axis, indices)
+            return input_tensor[slice_for_take]
 
-        return output
+        if torch.onnx.is_in_onnx_export():
+            return _GatherExportToOnnx.set_forward_and_apply(_forward, input_tensor, indices, self.axis)
+
+        return _forward()
 
 
 class _GatherExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

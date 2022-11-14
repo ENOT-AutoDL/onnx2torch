@@ -26,7 +26,6 @@ class OnnxMean(OnnxBaseElementWise):  # pylint: disable=missing-docstring
             output.add_(y)
 
         output = output.div(len(tensors))  # Divide by the number of tensors
-
         return output
 
 

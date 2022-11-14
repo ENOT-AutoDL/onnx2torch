@@ -22,21 +22,24 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: di
         indices: torch.Tensor,
         updates: torch.Tensor,
     ) -> torch.Tensor:
-        # There is no scatter nd for torch, use following formula:
-        # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
-        output = data.clone()
+        def _forward():
+            # There is no scatter nd for torch, use following formula:
+            # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
+            output = data.clone()
+
+            ind_dim = indices.dim()
+            # last dimension is a partial-index into data
+            output_indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
+            # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
+            output_updates = updates.reshape((-1, *updates.shape[ind_dim - 1 :]))
+            output[output_indices] = output_updates
+
+            return output
 
         if torch.onnx.is_in_onnx_export():
-            return _ScatterNDExportToOnnx.set_output_and_apply(output, data, indices, updates)
+            return _ScatterNDExportToOnnx.set_forward_and_apply(_forward, data, indices, updates)
 
-        ind_dim = indices.dim()
-        # last dimension is a partial-index into data
-        indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
-        # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
-        updates = updates.reshape((-1, *updates.shape[ind_dim - 1 :]))
-        output[indices] = updates
-
-        return output
+        return _forward()
 
 
 class _ScatterNDExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

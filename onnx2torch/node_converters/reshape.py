@@ -28,12 +28,12 @@ class OnnxReshape(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disa
         input_tensor: torch.Tensor,
         shape: torch.Tensor,
     ) -> torch.Tensor:
-        output = self._do_reshape(input_tensor, shape)
+        forward_lambda = lambda: self._do_reshape(input_tensor, shape)
 
         if torch.onnx.is_in_onnx_export():
-            return _ReshapeExportToOnnx.set_output_and_apply(output, input_tensor, shape)
+            return _ReshapeExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor, shape)
 
-        return output
+        return forward_lambda()
 
 
 class _ReshapeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method

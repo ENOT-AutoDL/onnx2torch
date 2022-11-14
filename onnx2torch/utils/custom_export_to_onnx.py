@@ -4,6 +4,8 @@ __all__ = [
 ]
 
 from typing import Any
+from typing import Callable
+from typing import Optional
 
 import torch
 from torch import _C as torch_C
@@ -20,11 +22,13 @@ class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
 
 
 class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-class-docstring
-    _NEXT_OUTPUT = None
+    _NEXT_FORWARD_FUNCTION: Optional[Callable] = None
 
     @classmethod
-    def set_output_and_apply(cls, output: Any, *args) -> Any:  # pylint: disable=missing-function-docstring
-        CustomExportToOnnx._NEXT_OUTPUT = output
+    def set_forward_and_apply(  # pylint: disable=missing-function-docstring
+        cls, forward_function: Callable, *args
+    ) -> Any:
+        CustomExportToOnnx._NEXT_FORWARD_FUNCTION = forward_function
         return cls.apply(*args)
 
     @staticmethod
@@ -33,7 +37,13 @@ class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-cl
         *args: Any,
         **kwargs: Any,
     ) -> Any:
-        return CustomExportToOnnx._NEXT_OUTPUT
+        if CustomExportToOnnx._NEXT_FORWARD_FUNCTION is None:
+            raise RuntimeError('forward function is not set')
+
+        try:
+            return CustomExportToOnnx._NEXT_FORWARD_FUNCTION()  # pylint: disable=not-callable
+        finally:
+            CustomExportToOnnx._NEXT_FORWARD_FUNCTION = None
 
     @staticmethod
     def backward(ctx: Any, *grad_outputs: Any) -> Any:  # pylint: disable=unused-argument, missing-function-docstring

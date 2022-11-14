@@ -23,7 +23,7 @@ max-public-methods=20
 max-line-length=120
 
 [MESSAGES]
-disable=logging-fstring-interpolation, import-error, missing-module-docstring, missing-raises-doc, duplicate-code, fixme
+disable=logging-fstring-interpolation, import-error, missing-module-docstring, missing-raises-doc, duplicate-code, fixme, unnecessary-lambda-assignment
 
 [SIMILARITIES]
 # Minimum lines number of a similarity.

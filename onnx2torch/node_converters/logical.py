@@ -28,11 +28,11 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 
 class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        output = torch.logical_not(input_tensor)
+        forward_lambda = lambda: torch.logical_not(input_tensor)
         if torch.onnx.is_in_onnx_export():
-            return _NotExportToOnnx.set_output_and_apply(output, input_tensor)
+            return _NotExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor)
 
-        return output
+        return forward_lambda()
 
 
 class _NotExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
@@ -54,6 +54,7 @@ class OnnxLogical(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-clas
     ):
         if self.broadcast == 1 and self.axis is not None:
             second_tensor = old_style_broadcast(first_tensor, second_tensor, self.axis)
+
         return self.logic_op_function(first_tensor, second_tensor)
 
 

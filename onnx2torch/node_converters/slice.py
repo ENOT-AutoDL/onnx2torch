@@ -87,8 +87,10 @@ class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
         axes: Optional[torch.Tensor] = None,
         steps: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-        flip_dims, pos_axes_slices, neg_axes_slices = _get_slices(starts, ends, axes, steps)
-        output = _do_slice(input_tensor, flip_dims, pos_axes_slices, neg_axes_slices)
+        def _forward():
+            flip_dims, pos_axes_slices, neg_axes_slices = _get_slices(starts, ends, axes, steps)
+            return _do_slice(input_tensor, flip_dims, pos_axes_slices, neg_axes_slices)
+
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor, starts, ends]
             if axes is not None:
@@ -96,9 +98,9 @@ class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
             if steps is not None:
                 args.append(steps)
 
-            return _SliceExportToOnnx.set_output_and_apply(output, *args)
+            return _SliceExportToOnnx.set_forward_and_apply(_forward, *args)
 
-        return output
+        return _forward()
 
 
 class _SliceExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
