@@ -148,18 +148,24 @@ If Operation's behaviour differs from one opset version to another, you should i
 class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
-        output = input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
-        if torch.onnx.is_in_onnx_export():
-            return _ExpandExportToOnnx.set_output_and_apply(output, input_tensor, shape)
+        # wrap all forward function logic to local function without arguments
+        def _forward():
+            return input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
 
-        return output
+        if torch.onnx.is_in_onnx_export():
+            # we need to send forward function wrapper as the first argument, all other
+            # arguments will be send to symbolic method on the next step
+            return _ExpandExportToOnnx.set_forward_and_apply(_forward, input_tensor, shape)
+
+        # execute forward
+        return _forward()
 
 
 class _ExpandExportToOnnx(CustomExportToOnnx):
 
     @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Expand', *args, outputs=1)
+    def symbolic(graph: torch_C.Graph, input_tensor: torch_C.Value, shape: torch_C.Value, *args) -> torch_C.Value:
+        return graph.op('Expand', input_tensor, shape, outputs=1)
 
 
 @add_converter(operation_type='Expand', version=8)
