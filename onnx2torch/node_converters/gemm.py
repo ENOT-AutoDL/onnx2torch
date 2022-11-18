@@ -64,7 +64,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
             bias = graph.initializers[c_name]
             bias = bias.to_torch()
 
-        if bias is None or bias.dim() == 1:
+        if bias is None or bias.dim == 1:
             weights = graph.initializers[b_name]
             weights = weights.to_torch()
             if not trans_b:
