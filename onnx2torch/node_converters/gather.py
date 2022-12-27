@@ -19,6 +19,7 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+from onnx2torch.utils.indices import upcast_indices
 
 
 class OnnxGatherElements(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
@@ -31,7 +32,7 @@ class OnnxGatherElements(nn.Module, OnnxToTorchModule):  # pylint: disable=missi
         input_tensor: torch.Tensor,
         indices: torch.Tensor,
     ) -> torch.Tensor:
-        return torch.gather(input_tensor, dim=self.axis, index=indices)
+        return torch.gather(input_tensor, dim=self.axis, index=upcast_indices(indices))
 
 
 class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
@@ -49,7 +50,7 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
     ) -> Tuple[Union[slice, torch.Tensor], ...]:
         axis = input_tensor.dim() + axis if axis < 0 else axis
         skip_axis: List[Union[slice, torch.Tensor]] = [slice(None)] * axis
-        skip_axis.append(indices)
+        skip_axis.append(upcast_indices(indices))
         return tuple(skip_axis)
 
     def forward(  # pylint: disable=missing-function-docstring
