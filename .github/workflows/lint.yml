@@ -34,13 +34,12 @@ jobs:
           python-version: "3.9"
       - uses: psf/black@stable
         with:
-          options: "--check --diff --color"
+          options: "--check --diff"
       - uses: isort/isort-action@master
         with:
           configuration:
             --check
             --diff
-            --color
             --force-single-line-imports
             --ensure-newline-before-comments
             --line-length=120
