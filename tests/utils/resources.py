@@ -4,7 +4,7 @@ from pathlib import Path
 
 import onnx
 from google_drive_downloader import GoogleDriveDownloader
-from onnx import ModelProto
+from onnx import ModelProto  # pylint: disable=no-name-in-module
 
 from tests import DATASETS_DIR
 from tests import MODELS_DIR

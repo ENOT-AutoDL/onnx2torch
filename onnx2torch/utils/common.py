@@ -4,7 +4,7 @@ from typing import Tuple
 from typing import Union
 
 import torch
-from onnx import ValueInfoProto
+from onnx import ValueInfoProto  # pylint: disable=no-name-in-module
 from torch import nn
 from torch.onnx import symbolic_helper
 
