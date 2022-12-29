@@ -3,3 +3,9 @@ line-length = 120
 target-version = ['py36', 'py37', 'py38', 'py39']
 include = '\.pyi?$'
 skip-string-normalization = true
+
+[tool.isort]
+profile = 'black'
+line_length = 120
+ensure_newline_before_comments = true
+force_single_line = true

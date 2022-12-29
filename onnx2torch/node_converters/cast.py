@@ -3,7 +3,7 @@ __all__ = [
 ]
 
 import torch
-from onnx import TensorProto
+from onnx import TensorProto  # pylint: disable=no-name-in-module
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
