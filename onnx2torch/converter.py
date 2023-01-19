@@ -1,5 +1,6 @@
 import inspect
 from collections import OrderedDict
+from operator import getitem
 from pathlib import Path
 from typing import Union
 
@@ -125,15 +126,7 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
                 # Get only one needed output of torch_input_node by index
                 if len(onnx_input_node.output_values) > 1:
                     index = onnx_input_node.output_values.index(value_name)
-                    torch_input_node = torch_graph.call_function(
-                        lambda x, index: x[index],
-                        args=tuple(
-                            [
-                                torch_input_node,
-                            ]
-                        ),
-                        kwargs={'index': index},
-                    )
+                    torch_input_node = torch_graph.call_function(getitem, args=(torch_input_node, index))
                     torch_nodes[name + '_split_output'] = torch_input_node
                 args.append(torch_input_node)
 
