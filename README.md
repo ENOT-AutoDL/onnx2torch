@@ -33,7 +33,7 @@ Our converter:
 If you find an issue, please [let us know](https://github.com/ENOT-AutoDL/onnx2torch/issues)! And feel free to create merge requests.
 
 Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.
-Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
+Let us know which models you use or want to convert from ONNX to PyTorch [here](https://github.com/ENOT-AutoDL/onnx2torch/issues).
 
 ## Installation
 
