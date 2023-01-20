@@ -49,7 +49,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | GRU                       | N         |                                                                                                                                                                     |
 | Gather                    | Y         |                                                                                                                                                                     |
 | GatherElements            | Y         |                                                                                                                                                                     |
-| GatherND                  | N         |                                                                                                                                                                     |
+| GatherND                  | Y         | GatherND operation with parameter "batch_dims" > 0 is not implemented                                                                                               |
 | Gemm                      | Y         |                                                                                                                                                                     |
 | GlobalAveragePool         | Y         |                                                                                                                                                                     |
 | GlobalLpPool              | N         |                                                                                                                                                                     |

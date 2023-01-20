@@ -1,6 +1,8 @@
 __all__ = [
     'OnnxGather',
     'OnnxGatherElements',
+    'OnnxGatherND',
+    'OnnxGatherNDOpset11',
 ]
 
 from typing import List
@@ -76,6 +78,75 @@ class _GatherExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-metho
         return graph.op('Gather', input_tensor, indices, axis_i=axis, outputs=1)
 
 
+class OnnxGatherND(nn.Module, OnnxToTorchModuleWithCustomExport):
+    """ONNX GatherND implementation."""
+
+    def __init__(self, batch_dims: int = 0):
+        super().__init__()
+        self.batch_dims: int = batch_dims
+
+    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:  # pylint: disable=C0116
+        def _forward():
+            return self._gather_nd(data=input_tensor, indices=indices, batch_dims=self.batch_dims)
+
+        if torch.onnx.is_in_onnx_export():
+            return _GatherNDExportToOnnx.set_forward_and_apply(_forward, input_tensor, indices, self.batch_dims)
+
+        return _forward()
+
+    @staticmethod
+    def _gather_nd(data: torch.Tensor, indices: torch.Tensor, batch_dims: int) -> torch.Tensor:
+        if batch_dims != 0:
+            raise NotImplementedError('GatherND for batch_dims != 0 is not implemented')
+
+        r, m = len(data.shape), indices.shape[-1]  # pylint: disable=C0103
+        if m > r or m < 1:
+            raise ValueError(
+                f'The last dimension of indices should have a value between 1 (inclusive) and data rank (inclusive), '
+                f'got {m} and {r} respectively'
+            )
+
+        total_samples = indices.shape[:-1].numel()
+        output_shape = indices.shape[:-1] + data.shape[m:]
+        _indices = torch.split(
+            tensor=indices.reshape(total_samples, m).transpose(0, 1),
+            split_size_or_sections=1,
+            dim=0,
+        )
+
+        return data[_indices].reshape(output_shape).contiguous()
+
+
+class _GatherNDExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        input_tensor, indices, batch_dims = args
+        return graph.op('GatherND', input_tensor, indices, batch_dims_i=batch_dims, outputs=1)
+
+
+class OnnxGatherNDOpset11(OnnxGatherND):
+    """ONNX GatherND implementation for opset 11 (without batch_dims parameter)."""
+
+    def __init__(self):
+        super().__init__(batch_dims=0)
+
+    def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:  # pylint: disable=C0116
+        def _forward():
+            return self._gather_nd(data=input_tensor, indices=indices, batch_dims=0)
+
+        if torch.onnx.is_in_onnx_export():
+            return _GatherNDOpset11ExportToOnnx.set_forward_and_apply(_forward, input_tensor, indices)
+
+        return _forward()
+
+
+class _GatherNDOpset11ExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        input_tensor, indices = args
+        return graph.op('GatherND', input_tensor, indices, outputs=1)
+
+
 @add_converter(operation_type='Gather', version=1)
 @add_converter(operation_type='Gather', version=11)
 @add_converter(operation_type='Gather', version=13)
@@ -98,6 +169,30 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     torch_module = OnnxGatherElements(
         axis=axis,
     )
+
+    return OperationConverterResult(
+        torch_module=torch_module,
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='GatherND', version=12)
+@add_converter(operation_type='GatherND', version=13)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    batch_dims = node.attributes.get('batch_dims', 0)
+    torch_module = OnnxGatherND(
+        batch_dims=batch_dims,
+    )
+
+    return OperationConverterResult(
+        torch_module=torch_module,
+        onnx_mapping=onnx_mapping_from_node(node=node),
+    )
+
+
+@add_converter(operation_type='GatherND', version=11)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+    torch_module = OnnxGatherNDOpset11()
 
     return OperationConverterResult(
         torch_module=torch_module,
