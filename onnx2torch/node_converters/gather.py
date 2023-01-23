@@ -113,13 +113,13 @@ class OnnxGatherND(nn.Module, OnnxToTorchModuleWithCustomExport):
 
         total_samples = indices.shape[:-1].numel()
         output_shape = indices.shape[:-1] + data.shape[m:]
-        _indices = torch.split(
+        indices_ = torch.split(
             tensor=indices.reshape(total_samples, m).transpose(0, 1),
             split_size_or_sections=1,
             dim=0,
         )
 
-        return data[_indices].reshape(output_shape).contiguous()
+        return data[indices_].reshape(output_shape).contiguous()
 
 
 class _GatherNDExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
