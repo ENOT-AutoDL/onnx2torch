@@ -1,6 +1,6 @@
 # Currently supported operations
 
-Minimal tested opset version 9, maximum tested opset version 15, recommended opset version 13
+Minimal tested opset version 9, maximum tested opset version 16, recommended opset version 13
 
 | Operation type            | Supported | Restrictions                                                                                                                                                        |
 |---------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
