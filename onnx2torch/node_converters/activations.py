@@ -110,6 +110,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
 @add_converter(operation_type='LeakyRelu', version=1)
 @add_converter(operation_type='LeakyRelu', version=6)
+@add_converter(operation_type='LeakyRelu', version=16)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     alpha = node.attributes.get('alpha', 0.01)
 

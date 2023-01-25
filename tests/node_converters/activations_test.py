@@ -37,6 +37,7 @@ def _test_activation(  # pylint: disable=missing-function-docstring
         ('HardSigmoid', [8, 3, 32, 32], 11),
         ('HardSwish', [8, 3, 32, 32], 14),
         ('LeakyRelu', [8, 3, 32, 32], 11),
+        ('LeakyRelu', [8, 3, 32, 32], 16),
         ('LogSoftmax', [8, 3, 32, 32], 11),
         ('Softsign', [8, 3, 32, 32], 1),
         ('Softplus', [8, 3, 32, 32], 1),
