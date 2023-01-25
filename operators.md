@@ -122,7 +122,7 @@ Minimal tested opset version 9, maximum tested opset version 15, recommended ops
 | Scan                      | N         |                                                                                                                                                                     |
 | Scatter(deprecated)       | N         |                                                                                                                                                                     |
 | ScatterElements           | N         |                                                                                                                                                                     |
-| ScatterND                 | Y         |                                                                                                                                                                     |
+| ScatterND                 | Y         | Only "none" reduction is supported                                                                                                                                  |
 | Selu                      | Y         | Parameters "alpha" and "gamma" must be default                                                                                                                      |
 | SequenceAt                | N         |                                                                                                                                                                     |
 | SequenceConstruct         | N         |                                                                                                                                                                     |
