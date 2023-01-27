@@ -5,6 +5,7 @@ __all__ = [
 
 from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import Optional
 
 import torch
@@ -18,7 +19,24 @@ class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
     Marker class for onnx2torch modules with custom export to onnx.
     """
 
-    pass  # pylint: disable=unnecessary-pass
+    def _onnx_attrs(self, opset_version: int) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Returns ONNX attributes with their values as a dictionary.
+
+        Parameters
+        ----------
+        opset_version : int
+            ONNX opset version.
+            The number of attributes, their names and values depend on opset version;
+            function should return correct set of attributes.
+
+        Returns
+        -------
+        Dict[str, Any]
+            ONNX attributes.
+
+        """
+        return {}
 
 
 class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-class-docstring
