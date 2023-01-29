@@ -125,8 +125,9 @@ Transformers:
 
 ## How to add new operations to converter
 
-Here we show how to add the module:
-1. Supported by both PyTorch and ONNX and has the same behaviour.
+Here we show how to extend onnx2torch with new ONNX operation, that supported by both PyTorch and ONNX
+<details>
+<summary>and has the same behaviour</summary>
 
 An example of such a module is [Relu](./onnx2torch/node_converters/activations.py)
 
@@ -144,43 +145,90 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 Here we have registered an operation named ``Relu`` for opset versions 6, 13, 14.
 Note that the ``torch_module`` argument in ``OperationConverterResult`` must be a torch.nn.Module, not just a callable object!
 If Operation's behaviour differs from one opset version to another, you should implement it separately.
+</details>
 
-2. Operations supported by PyTorch and ONNX BUT have different behaviour
+<details>
+<summary>but has different behaviour</summary>
+
+An example of such a module is [ScatterND](./onnx2torch/node_converters/scatter_nd.py)
 
 ```python
-class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):
+# It is recommended to use Enum for string ONNX attributes.
+class ReductionOnnxAttr(Enum):
+    NONE = 'none'
+    ADD = 'add'
+    MUL = 'mul'
 
-    def forward(self, input_tensor: torch.Tensor, shape: torch.Tensor) -> torch.Tensor:
-        # wrap all forward function logic to local function without arguments
+
+class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
+    def __init__(self, reduction: ReductionOnnxAttr):
+        super().__init__()
+        self._reduction = reduction
+
+    # The following method should return ONNX attributes with their values as a dictionary.
+    # The number of attributes, their names and values depend on opset version;
+    # method should return correct set of attributes.
+    # Note: add type-postfix for each key: reduction -> reduction_s, where s means "string".
+    def _onnx_attrs(self, opset_version: int) -> Dict[str, Any]:
+        onnx_attrs: Dict[str, Any] = {}
+
+        # Here we handle opset versions < 16 where there is no "reduction" attribute.
+        if opset_version < 16:
+            if self._reduction != ReductionOnnxAttr.NONE:
+                raise ValueError(
+                    'ScatterND from opset < 16 does not support'
+                    f'reduction attribute != {ReductionOnnxAttr.NONE.value},'
+                    f'got {self._reduction.value}'
+                )
+            return onnx_attrs
+
+        onnx_attrs['reduction_s'] = self._reduction.value
+        return onnx_attrs
+
+    def forward(
+        self,
+        data: torch.Tensor,
+        indices: torch.Tensor,
+        updates: torch.Tensor,
+    ) -> torch.Tensor:
         def _forward():
-            return input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
+            # ScatterND forward implementation...
+            return output
 
         if torch.onnx.is_in_onnx_export():
-            # we need to send forward function wrapper as the first argument, all other
-            # arguments will be send to symbolic method on the next step
-            return _ExpandExportToOnnx.set_forward_and_apply(_forward, input_tensor, shape)
+            onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
+            return _ScatterNDExportToOnnx.set_forward_and_apply(
+                _forward,
+                data,
+                indices,
+                updates,
+                onnx_attrs,
+            )
 
-        # execute forward
         return _forward()
 
 
-class _ExpandExportToOnnx(CustomExportToOnnx):
-
+class _ScatterNDExportToOnnx(CustomExportToOnnx):
     @staticmethod
-    def symbolic(graph: torch_C.Graph, input_tensor: torch_C.Value, shape: torch_C.Value, *args) -> torch_C.Value:
-        return graph.op('Expand', input_tensor, shape, outputs=1)
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        # First 3 arguments are ONNX operation inputs, the last one - attributes.
+        *inputs, onnx_attrs = args
+        return graph.op('ScatterND', *inputs, **onnx_attrs, outputs=1)
 
 
-@add_converter(operation_type='Expand', version=8)
-@add_converter(operation_type='Expand', version=13)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+@add_converter(operation_type='ScatterND', version=11)
+@add_converter(operation_type='ScatterND', version=13)
+@add_converter(operation_type='ScatterND', version=16)
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    node_attributes = node.attributes
+    reduction = ReductionOnnxAttr(node_attributes.get('reduction', 'none'))
     return OperationConverterResult(
-        torch_module=OnnxExpand(),
+        torch_module=OnnxScatterND(reduction=reduction),
         onnx_mapping=onnx_mapping_from_node(node=node),
     )
 ```
-
-Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ExpandExportToOnnx``.
+Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ScatterNDExportToOnnx``.
+</details>
 
 ## Acknowledgments
 

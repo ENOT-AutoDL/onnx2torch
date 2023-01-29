@@ -147,6 +147,7 @@ def _test_roi(
     input_tensor: np.ndarray,
     rois: np.ndarray,
     batch_indices: np.ndarray,
+    opset_version: int,
     **kwargs,
 ) -> None:
     test_inputs = {'X': input_tensor, 'rois': rois, 'batch_indices': batch_indices}
@@ -164,10 +165,18 @@ def _test_roi(
         initializers={},
         inputs_example=test_inputs,
         outputs_info=outputs_info,
+        opset_version=opset_version,
     )
-    check_onnx_model(model, test_inputs)
+    check_onnx_model(
+        onnx_model=model,
+        onnx_inputs=test_inputs,
+        opset_version=opset_version,
+    )
 
 
+@pytest.mark.parametrize('opset_version', (10, 13, 16))
+@pytest.mark.parametrize('coordinate_transformation_mode', ('half_pixel', 'output_half_pixel'))
+@pytest.mark.parametrize('mode', ('avg',))
 @pytest.mark.parametrize(
     'spatial_scale,sampling_ratio,output_height,output_width',
     (
@@ -180,10 +189,13 @@ def _test_roi(
 )
 @pytest.mark.filterwarnings('ignore::torch.jit._trace.TracerWarning')
 def test_roi(  # pylint: disable=missing-function-docstring
+    coordinate_transformation_mode: str,
+    mode: str,
     spatial_scale: float,
     sampling_ratio: int,
     output_height: int,
     output_width: int,
+    opset_version: int,
 ) -> None:
     x, batch_indices, rois = get_roi_align_input_values()
     kwargs = {}
@@ -199,5 +211,8 @@ def test_roi(  # pylint: disable=missing-function-docstring
         input_tensor=x,
         rois=rois,
         batch_indices=batch_indices,
+        opset_version=opset_version,
+        mode=mode,
+        coordinate_transformation_mode=coordinate_transformation_mode if opset_version >= 16 else None,
         **kwargs,
     )
