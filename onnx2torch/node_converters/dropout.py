@@ -23,7 +23,6 @@ class OnnxDropoutDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missi
         ratio: float = 0.5,
         training_mode: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
-
         # Ignoring training_mode from ONNX and use the one from PyTorch
         return F.dropout(input_tensor, p=ratio, training=self.training)
 

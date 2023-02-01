@@ -13,7 +13,7 @@ def _test_range(
     limit: np.ndarray,
     delta: np.ndarray,
 ) -> None:
-    test_inputs = dict(start=start, limit=limit, delta=delta)
+    test_inputs = {'start': start, 'limit': limit, 'delta': delta}
     node = onnx.helper.make_node(op_type='Range', inputs=list(test_inputs), outputs=['y'])
 
     num_elements = int(max(np.ceil((limit - start) / delta), 0))

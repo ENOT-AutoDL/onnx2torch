@@ -13,7 +13,6 @@ def _test_pad(
     opset_version: int,
     **kwargs,
 ) -> None:
-
     test_inputs = {
         'x': input_array,
     }

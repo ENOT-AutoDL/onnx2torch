@@ -31,7 +31,6 @@ class OnnxTile(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable
 @add_converter(operation_type='Tile', version=6)
 @add_converter(operation_type='Tile', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-
     return OperationConverterResult(
         torch_module=OnnxTile(),
         onnx_mapping=onnx_mapping_from_node(node=node),

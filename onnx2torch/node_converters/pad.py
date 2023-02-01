@@ -87,7 +87,6 @@ class OnnxPadStatic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-cl
         return cls(pads=torch_padding, mode=torch_mode, constant_value=constant_value)
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-
         return F.pad(
             input_tensor,
             mode=self.mode,
@@ -107,7 +106,6 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-c
         pads: torch.Tensor,
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
-
         torch_pads = _onnx_padding_to_torch(pads.tolist())
         torch_pads = _torch_padding_to_mode_format(torch_pads, self.mode)
 

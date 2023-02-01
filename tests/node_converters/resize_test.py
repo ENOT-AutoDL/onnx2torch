@@ -124,7 +124,6 @@ def test_resize(  # pylint: disable=missing-function-docstring
     mode: str,
     coordinate_transformation_mode: str,
 ) -> None:
-
     _test_resize(
         x=_DATA,
         sizes=sizes,

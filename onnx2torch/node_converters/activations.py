@@ -148,7 +148,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 @add_converter(operation_type='PRelu', version=9)
 @add_converter(operation_type='PRelu', version=16)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-
     return OperationConverterResult(
         torch_module=OnnxPReLU(),
         onnx_mapping=onnx_mapping_from_node(node=node),
