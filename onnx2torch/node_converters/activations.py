@@ -7,7 +7,6 @@ __all__ = [
 
 import numpy as np
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -16,7 +15,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -68,15 +67,9 @@ class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
             return output
 
         if torch.onnx.is_in_onnx_export():
-            return _PReLUExportToOnnx.set_forward_and_apply(_forward, input_tensor, slope)
+            return DefaultExportToOnnx.export(_forward, 'PRelu', input_tensor, slope, {})
 
         return _forward()
-
-
-class _PReLUExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('PRelu', *args)
 
 
 @add_converter(operation_type='Erf', version=9)

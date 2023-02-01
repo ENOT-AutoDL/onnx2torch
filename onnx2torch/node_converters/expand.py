@@ -3,7 +3,6 @@ __all__ = [
 ]
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -11,7 +10,7 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -21,19 +20,13 @@ class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disab
         input_tensor: torch.Tensor,
         shape: torch.Tensor,
     ) -> torch.Tensor:
-        forward_lambda = lambda: input_tensor * torch.ones(
-            torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device
-        )
+        def _forward():
+            return input_tensor * torch.ones(torch.Size(shape), dtype=input_tensor.dtype, device=input_tensor.device)
+
         if torch.onnx.is_in_onnx_export():
-            return _ExpandExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor, shape)
+            return DefaultExportToOnnx.export(_forward, 'Expand', input_tensor, shape, {})
 
-        return forward_lambda()
-
-
-class _ExpandExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Expand', *args, outputs=1)
+        return _forward()
 
 
 @add_converter(operation_type='Expand', version=8)

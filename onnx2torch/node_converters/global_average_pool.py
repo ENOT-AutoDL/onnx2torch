@@ -6,7 +6,6 @@ __all__ = [
 from typing import List
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -15,7 +14,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_shape_from_value_info
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -26,7 +25,7 @@ class OnnxGlobalAveragePool(nn.Module, OnnxToTorchModuleWithCustomExport):  # py
             return torch.mean(input_tensor, dim=x_dims, keepdim=True)
 
         if torch.onnx.is_in_onnx_export():
-            return _GlobalAveragePoolExportToOnnx.set_forward_and_apply(_forward, input_tensor)
+            return DefaultExportToOnnx.export(_forward, 'GlobalAveragePool', input_tensor, {})
 
         return _forward()
 
@@ -36,20 +35,15 @@ class OnnxGlobalAveragePoolWithKnownInputShape(
 ):  # pylint: disable=missing-docstring
     def __init__(self, input_shape: List[int]):
         super().__init__()
-        self.x_dims = list(range(2, len(input_shape)))
+        self._x_dims = list(range(2, len(input_shape)))
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        forward_lambda = lambda: torch.mean(input_tensor, dim=self.x_dims, keepdim=True)
+        forward_lambda = lambda: torch.mean(input_tensor, dim=self._x_dims, keepdim=True)
+
         if torch.onnx.is_in_onnx_export():
-            return _GlobalAveragePoolExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor)
+            return DefaultExportToOnnx.export(forward_lambda, 'GlobalAveragePool', input_tensor, {})
 
         return forward_lambda()
-
-
-class _GlobalAveragePoolExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('GlobalAveragePool', *args, outputs=1)
 
 
 @add_converter(operation_type='GlobalAveragePool', version=1)

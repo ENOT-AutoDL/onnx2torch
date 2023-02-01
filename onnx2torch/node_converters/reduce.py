@@ -6,13 +6,13 @@ __all__ = [
 
 from functools import partial
 from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -22,8 +22,9 @@ from onnx2torch.utils.common import OnnxMapping
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_const_value
+from onnx2torch.utils.common import get_onnx_version
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -90,8 +91,14 @@ class OnnxReduceSumDynamicAxes(  # pylint: disable=missing-class-docstring
     def __init__(self, keepdims: int = 1, noop_with_empty_axes: int = 0):
         super().__init__()
 
-        self.keepdims = keepdims == 1
-        self.noop_with_empty_axes = noop_with_empty_axes == 1
+        self._keepdims = keepdims
+        self._noop_with_empty_axes = noop_with_empty_axes
+
+    def _onnx_attrs(self, opset_version: int) -> Dict[str, Any]:
+        return {
+            'noop_with_empty_axes_i': self._noop_with_empty_axes,
+            'keepdims_i': self._keepdims,
+        }
 
     def forward(  # pylint: disable=missing-function-docstring
         self,
@@ -100,44 +107,27 @@ class OnnxReduceSumDynamicAxes(  # pylint: disable=missing-class-docstring
     ) -> torch.Tensor:
         def _forward():
             if axes is None or axes.nelement() == 0:
-                if self.noop_with_empty_axes:
+                if self._noop_with_empty_axes:
                     return input_tensor
 
-                if not self.keepdims:
+                if not self._keepdims:
                     return torch.sum(input_tensor)
 
                 fixed_axes = list(range(input_tensor.dim()))
             else:
                 fixed_axes = torch.sort(axes).values.tolist()
 
-            return torch.sum(input_tensor, dim=fixed_axes, keepdim=self.keepdims)
+            return torch.sum(input_tensor, dim=fixed_axes, keepdim=bool(self._keepdims))
 
         if torch.onnx.is_in_onnx_export():
             args = [input_tensor]
             if axes is not None:
                 args.append(axes)
 
-            return _ReduceSumExportToOnnx.set_forward_and_apply(
-                _forward,
-                *args,
-                int(self.keepdims),
-                int(self.noop_with_empty_axes),
-            )
+            onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
+            return DefaultExportToOnnx.export(_forward, 'ReduceSum', *args, onnx_attrs)
 
         return _forward()
-
-
-class _ReduceSumExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        *args, keepdims, noop_with_empty_axes = args
-        return graph.op(
-            'ReduceSum',
-            *args,
-            noop_with_empty_axes_i=noop_with_empty_axes,
-            keepdims_i=keepdims,
-            outputs=1,
-        )
 
 
 class OnnxReduceSumStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
@@ -151,21 +141,21 @@ class OnnxReduceSumStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=
         if axes is not None:
             axes = sorted(axes)
 
-        self.keepdims = keepdims == 1
-        self.noop_with_empty_axes = noop_with_empty_axes == 1
-        self.axes = axes
+        self._keepdims = keepdims
+        self._noop_with_empty_axes = noop_with_empty_axes
+        self._axes = axes
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        if self.axes is None or len(self.axes) == 0:
-            if self.noop_with_empty_axes:
+        if self._axes is None or len(self._axes) == 0:
+            if self._noop_with_empty_axes:
                 return input_tensor
 
-            if not self.keepdims:
+            if not self._keepdims:
                 return self.math_op_function(input_tensor)
 
-            self.axes = list(range(input_tensor.dim()))
+            self._axes = list(range(input_tensor.dim()))
 
-        return torch.sum(input_tensor, dim=self.axes, keepdim=self.keepdims)
+        return torch.sum(input_tensor, dim=self._axes, keepdim=self._keepdims)
 
 
 class OnnxReduceStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring

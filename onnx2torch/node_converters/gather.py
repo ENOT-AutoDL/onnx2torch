@@ -4,12 +4,13 @@ __all__ = [
     'OnnxGatherND',
 ]
 
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -19,7 +20,7 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_onnx_version
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 from onnx2torch.utils.indices import upcast_indices
 
@@ -27,22 +28,25 @@ from onnx2torch.utils.indices import upcast_indices
 class OnnxGatherElements(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docstring
     def __init__(self, axis: int = 0):
         super().__init__()
-        self.axis = axis
+        self._axis = axis
 
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
         indices: torch.Tensor,
     ) -> torch.Tensor:
-        return torch.gather(input_tensor, dim=self.axis, index=upcast_indices(indices))
+        return torch.gather(input_tensor, dim=self._axis, index=upcast_indices(indices))
 
 
 class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
-    """ONNX gather implementation (or numpy.take implementation)"""
+    """ONNX Gather implementation (or numpy.take implementation)."""
 
     def __init__(self, axis: int = 0):
         super().__init__()
-        self.axis = axis
+        self._axis = axis
+
+    def _onnx_attrs(self, opset_version: int) -> Dict[str, Any]:
+        return {'axis_i': self._axis}
 
     @staticmethod
     def slice_from_axis(  # pylint: disable=missing-docstring
@@ -62,20 +66,14 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
             # pytorch Gather differs from onnx Gather, onnx gather work like numpy.take
             # But torch.take does not support different axis. So we make it by yourself
             # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time
-            slice_for_take = self.slice_from_axis(input_tensor, self.axis, indices)
+            slice_for_take = self.slice_from_axis(input_tensor, self._axis, indices)
             return input_tensor[slice_for_take]
 
         if torch.onnx.is_in_onnx_export():
-            return _GatherExportToOnnx.set_forward_and_apply(_forward, input_tensor, indices, self.axis)
+            onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
+            return DefaultExportToOnnx.export(_forward, 'Gather', input_tensor, indices, onnx_attrs)
 
         return _forward()
-
-
-class _GatherExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        input_tensor, indices, axis = args
-        return graph.op('Gather', input_tensor, indices, axis_i=axis, outputs=1)
 
 
 class OnnxGatherND(nn.Module, OnnxToTorchModuleWithCustomExport):
@@ -83,19 +81,26 @@ class OnnxGatherND(nn.Module, OnnxToTorchModuleWithCustomExport):
 
     def __init__(self, batch_dims: int = 0):
         super().__init__()
-        self.batch_dims: int = batch_dims
+        self._batch_dims: int = batch_dims
+
+    def _onnx_attrs(self, opset_version: int) -> Dict[str, Any]:
+        onnx_attrs: Dict[str, Any] = {}
+
+        if opset_version == 11:
+            if self._batch_dims != 0:
+                raise ValueError(f'GatherND from opset 11 does not support batch_dims != 0, got {self._batch_dims}')
+            return onnx_attrs
+
+        onnx_attrs['batch_dims_i'] = self._batch_dims
+        return onnx_attrs
 
     def forward(self, input_tensor: torch.Tensor, indices: torch.Tensor) -> torch.Tensor:  # pylint: disable=C0116
         def _forward():
-            return self._gather_nd(data=input_tensor, indices=indices, batch_dims=self.batch_dims)
+            return self._gather_nd(data=input_tensor, indices=indices, batch_dims=self._batch_dims)
 
         if torch.onnx.is_in_onnx_export():
-            if get_onnx_version() == 11:  # Special case: opset 11, without batch_dims parameter.
-                if self.batch_dims != 0:
-                    raise ValueError(f'GatherND from opset 11 does not support batch_dims != 0, got {self.batch_dims}')
-                return _GatherNDExportToOnnx.set_forward_and_apply(_forward, input_tensor, indices)
-
-            return _GatherNDExportToOnnx.set_forward_and_apply(_forward, input_tensor, indices, self.batch_dims)
+            onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
+            return DefaultExportToOnnx.export(_forward, 'GatherND', input_tensor, indices, onnx_attrs)
 
         return _forward()
 
@@ -120,17 +125,6 @@ class OnnxGatherND(nn.Module, OnnxToTorchModuleWithCustomExport):
         )
 
         return data[indices_].reshape(output_shape).contiguous()
-
-
-class _GatherNDExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        if len(args) == 2:  # Special case: opset 11, without batch_dims parameter.
-            input_tensor, indices = args
-            return graph.op('GatherND', input_tensor, indices, outputs=1)
-
-        input_tensor, indices, batch_dims = args
-        return graph.op('GatherND', input_tensor, indices, batch_dims_i=batch_dims, outputs=1)
 
 
 @add_converter(operation_type='Gather', version=1)

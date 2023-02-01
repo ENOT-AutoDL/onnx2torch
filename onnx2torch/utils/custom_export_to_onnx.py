@@ -1,5 +1,6 @@
 __all__ = [
     'CustomExportToOnnx',
+    'DefaultExportToOnnx',
     'OnnxToTorchModuleWithCustomExport',
 ]
 
@@ -39,24 +40,27 @@ class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):
         return {}
 
 
-class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-class-docstring
+class CustomExportToOnnx(torch.autograd.Function):
+    """Customizes ONNX exporting from PyTorch."""
+
     _NEXT_FORWARD_FUNCTION: Optional[Callable] = None
 
     @classmethod
-    def set_forward_and_apply(  # pylint: disable=missing-function-docstring
-        cls, forward_function: Callable, *args
-    ) -> Any:
+    def export(cls, forward_function: Callable, *args) -> Any:
+        """
+        Substitues custom forward function.
+        This function is closely related to forward function, it substitues `forward_function` to real forward.
+
+        Old name: `set_forward_and_apply`.
+        """
         CustomExportToOnnx._NEXT_FORWARD_FUNCTION = forward_function
         return cls.apply(*args)
 
     @staticmethod
-    def forward(  # pylint: disable=unused-argument, missing-function-docstring
-        ctx: Any,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Any:
+    def forward(ctx: Any, *args: Any, **kwargs: Any) -> Any:  # pylint: disable=unused-argument
+        """Applies custom forward function."""
         if CustomExportToOnnx._NEXT_FORWARD_FUNCTION is None:
-            raise RuntimeError('forward function is not set')
+            raise RuntimeError('Forward function is not set')
 
         try:
             return CustomExportToOnnx._NEXT_FORWARD_FUNCTION()  # pylint: disable=not-callable
@@ -65,11 +69,32 @@ class CustomExportToOnnx(torch.autograd.Function):  # pylint: disable=missing-cl
 
     @staticmethod
     def backward(ctx: Any, *grad_outputs: Any) -> Any:  # pylint: disable=unused-argument, missing-function-docstring
-        raise RuntimeError('backward called while converting to onnx')
+        raise RuntimeError('Backward called while converting to ONNX')
 
     @staticmethod
-    def symbolic(  # pylint: disable=unused-argument, missing-function-docstring
-        graph: torch_C.Graph,
-        *values,
-    ) -> torch_C.Value:
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:  # pylint: disable=unused-argument
+        """Export implementation. Return ONNX operation from this function using graph."""
         raise NotImplementedError
+
+
+class DefaultExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
+    """
+    CustomExportToOnnx with default symbolic method implementation.
+
+    Please follow our convention, args consists of:
+        - op_type
+        - operation inputs
+        - operation attributes
+
+    DO NOT REORDER!
+
+    Note: the number of operation outputs can be added later.
+
+    This class should be used in most cases:
+    >>> return DefaultExportToOnnx.export(_forward, op_type, *inputs, onnx_attrs)
+    """
+
+    @staticmethod
+    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
+        op_type, *inputs, onnx_attrs = args
+        return graph.op(op_type, *inputs, **onnx_attrs, outputs=1)

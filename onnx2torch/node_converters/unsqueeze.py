@@ -6,7 +6,6 @@ __all__ = [
 from typing import List
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -17,18 +16,18 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_const_value
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 class OnnxUnsqueezeStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, axes: List[int]):
         super().__init__()
-        self.axes = sorted(axes)
+        self._axes = sorted(axes)
 
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         result = input_tensor
-        for axes_id in self.axes:
+        for axes_id in self._axes:
             result = torch.unsqueeze(result, dim=axes_id)
 
         return result
@@ -51,15 +50,9 @@ class OnnxUnsqueezeDynamicAxes(  # pylint: disable=missing-class-docstring
             return result
 
         if torch.onnx.is_in_onnx_export():
-            return _UnsqueezeExportToOnnx.set_forward_and_apply(_forward, input_tensor, axes)
+            return DefaultExportToOnnx.export(_forward, 'Unsqueeze', input_tensor, axes, {})
 
         return _forward()
-
-
-class _UnsqueezeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Unsqueeze', *args, outputs=1)
 
 
 @add_converter(operation_type='Unsqueeze', version=1)
