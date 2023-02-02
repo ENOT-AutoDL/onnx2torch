@@ -3,7 +3,6 @@ __all__ = [
 ]
 
 import torch
-import torch._C as torch_C
 
 from onnx2torch.node_converters.base_element_wise import OnnxBaseElementWise
 from onnx2torch.node_converters.registry import add_converter
@@ -11,36 +10,17 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
-
-_OPERATORS = {
-    'Min': torch.amin,
-    'Max': torch.amax,
-}
-
-
-class _MinExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Min', *args, outputs=1)
-
-
-class _MaxExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Max', *args, outputs=1)
-
-
-_CUSTOM_ONNX_EXPORT_CLASS = {
-    'Min': _MinExportToOnnx,
-    'Max': _MaxExportToOnnx,
-}
 
 
 class OnnxMinMax(OnnxBaseElementWise):  # pylint: disable=missing-docstring
-    def __init__(self, operation_type: str):
-        super().__init__(_CUSTOM_ONNX_EXPORT_CLASS[operation_type])
-        self._operator = _OPERATORS[operation_type]
+    _OPERATORS = {
+        'Min': torch.amin,
+        'Max': torch.amax,
+    }
+
+    def __init__(self, op_type: str):
+        super().__init__(op_type=op_type)
+        self._operator = self._OPERATORS[op_type]
 
     def apply_reduction(self, *tensors: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         broadcast_shape = self._broadcast_shape(*tensors)

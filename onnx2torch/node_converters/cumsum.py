@@ -16,7 +16,6 @@ def _arbitrary_dim_shift_and_insert_zero(
     input_tensor: torch.Tensor,
     insert_dim: int,
 ) -> torch.Tensor:
-
     # single item shift
     slice_index, insertion = [[slice(None)] * len(input_tensor.shape)] * 2
     insert_dim_size = input_tensor.shape[insert_dim]

@@ -18,7 +18,6 @@ def _test_gemm(
     abc_as_initializers: Tuple[bool, bool, bool],
     **kwargs,
 ) -> None:
-
     input_a = np.random.uniform(low=-1.0, high=1.0, size=input_a_shape).astype(np.float32)
     input_b = np.random.uniform(low=-1.0, high=1.0, size=input_b_shape).astype(np.float32)
     input_c_shape = input_b_shape[1] if kwargs.get('transB', 0) == 0 else input_b_shape[0]

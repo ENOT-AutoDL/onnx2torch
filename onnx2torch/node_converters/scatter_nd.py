@@ -7,7 +7,6 @@ from typing import Any
 from typing import Dict
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -16,7 +15,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_onnx_version
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -81,16 +80,9 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: di
 
         if torch.onnx.is_in_onnx_export():
             onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
-            return _ScatterNDExportToOnnx.set_forward_and_apply(_forward, data, indices, updates, onnx_attrs)
+            return DefaultExportToOnnx.export(_forward, 'ScatterND', data, indices, updates, onnx_attrs)
 
         return _forward()
-
-
-class _ScatterNDExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        *inputs, onnx_attrs = args
-        return graph.op('ScatterND', *inputs, **onnx_attrs, outputs=1)
 
 
 @add_converter(operation_type='ScatterND', version=11)

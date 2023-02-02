@@ -49,30 +49,30 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         onnx_padding=node_attributes.get('pads', [0] * spatial_rank * 2),
         auto_pad=node_attributes.get('auto_pad', 'NOTSET'),
     )
-    common_kwargs = dict(
-        kernel_size=node_attributes.get('kernel_shape', weights.shape[2:]),
-        stride=node_attributes.get('strides', 1),
-        dilation=node_attributes.get('dilations', 1),
-        groups=node_attributes.get('group', 1),
-        padding=padding,
-        bias=bias is not None,
-    )
+    common_kwargs = {
+        'kernel_size': node_attributes.get('kernel_shape', weights.shape[2:]),
+        'stride': node_attributes.get('strides', 1),
+        'dilation': node_attributes.get('dilations', 1),
+        'groups': node_attributes.get('group', 1),
+        'padding': padding,
+        'bias': bias is not None,
+    }
 
     if op_type == 'Conv':
-        special_kwargs = dict(
-            out_channels=weights.shape[0],
-            in_channels=weights.shape[1] * common_kwargs['groups'],
-        )
+        special_kwargs = {
+            'out_channels': weights.shape[0],
+            'in_channels': weights.shape[1] * common_kwargs['groups'],
+        }
     elif op_type == 'ConvTranspose':
         if input_padding_module is not None:
             raise NotImplementedError('ConvTranspose with non symmetrical padding is not implemented.')
 
         output_padding = node_attributes.get('output_padding', [0] * spatial_rank)
-        special_kwargs = dict(
-            out_channels=weights.shape[1] * common_kwargs['groups'],
-            in_channels=weights.shape[0],
-            output_padding=output_padding,
-        )
+        special_kwargs = {
+            'out_channels': weights.shape[1] * common_kwargs['groups'],
+            'in_channels': weights.shape[0],
+            'output_padding': output_padding,
+        }
     else:
         raise ValueError(f'Got unknown op_type "{op_type}"')
 

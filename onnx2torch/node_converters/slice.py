@@ -9,7 +9,6 @@ from typing import Union
 
 import numpy as np
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -18,7 +17,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -98,15 +97,9 @@ class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
             if steps is not None:
                 args.append(steps)
 
-            return _SliceExportToOnnx.set_forward_and_apply(_forward, *args)
+            return DefaultExportToOnnx.export(_forward, 'Slice', *args, {})
 
         return _forward()
-
-
-class _SliceExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Slice', *args, outputs=1)
 
 
 @add_converter(operation_type='Slice', version=9)

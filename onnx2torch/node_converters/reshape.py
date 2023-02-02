@@ -3,7 +3,6 @@ __all__ = [
 ]
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -11,7 +10,7 @@ from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -31,15 +30,9 @@ class OnnxReshape(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disa
         forward_lambda = lambda: self._do_reshape(input_tensor, shape)
 
         if torch.onnx.is_in_onnx_export():
-            return _ReshapeExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor, shape)
+            return DefaultExportToOnnx.export(forward_lambda, 'Reshape', input_tensor, shape, {})
 
         return forward_lambda()
-
-
-class _ReshapeExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Reshape', *args, outputs=1)
 
 
 @add_converter(operation_type='Reshape', version=5)

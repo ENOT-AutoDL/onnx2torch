@@ -55,11 +55,11 @@ def _test_reduce_sum(
 
     if axes is not None and len(axes) > 0:
         test_inputs['axes'] = np.array(axes, dtype=np.int64)
-        output_shape = np.sum(input_tensor, axis=tuple(axes), keepdims=(keepdims == 1)).shape
+        output_shape = np.sum(input_tensor, axis=tuple(axes), keepdims=bool(keepdims)).shape
     else:
         test_inputs['axes'] = np.array([], dtype=np.int64)
         if noop_with_empty_axes == 0:
-            output_shape = np.sum(input_tensor, keepdims=(keepdims == 1)).shape
+            output_shape = np.sum(input_tensor, keepdims=bool(keepdims)).shape
         else:
             output_shape = input_tensor.shape
 
@@ -132,11 +132,11 @@ def test_reduce(  # pylint: disable=missing-function-docstring
     else:
         left_boundary = -10
 
-    test_kwargs = dict(
-        input_tensor=np.random.uniform(left_boundary, 10, shape).astype(np.float32),
-        op_type=op_type,
-        tol=tol,
-    )
+    test_kwargs = {
+        'input_tensor': np.random.uniform(left_boundary, 10, shape).astype(np.float32),
+        'op_type': op_type,
+        'tol': tol,
+    }
     if axes is not None:
         test_kwargs['axes'] = axes
     if keepdims is not None:

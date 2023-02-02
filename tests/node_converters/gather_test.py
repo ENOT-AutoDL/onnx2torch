@@ -53,7 +53,6 @@ def _test_gather(
     ),
 )
 def test_gather(op_type: str, axis: int, opset_version: int) -> None:  # pylint: disable=missing-function-docstring
-
     input_tensor = np.asarray(
         [
             [1.0, 1.2, 1.9],

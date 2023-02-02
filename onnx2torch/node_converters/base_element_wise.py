@@ -1,14 +1,14 @@
 import torch
 from torch import nn
 
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 class OnnxBaseElementWise(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring
-    def __init__(self, onnx_export_class: CustomExportToOnnx):
+    def __init__(self, op_type: str):
         super().__init__()
-        self._onnx_export_class = onnx_export_class
+        self._op_type = op_type
 
     @staticmethod
     def _broadcast_shape(*tensors: torch.Tensor):
@@ -27,6 +27,6 @@ class OnnxBaseElementWise(nn.Module, OnnxToTorchModuleWithCustomExport):  # pyli
 
         forward_lambda = lambda: self.apply_reduction(*input_tensors)
         if torch.onnx.is_in_onnx_export():
-            return self._onnx_export_class.set_forward_and_apply(forward_lambda, *input_tensors)
+            return DefaultExportToOnnx.export(forward_lambda, self._op_type, *input_tensors, {})
 
         return forward_lambda()

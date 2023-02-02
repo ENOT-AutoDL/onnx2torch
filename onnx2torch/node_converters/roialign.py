@@ -7,7 +7,6 @@ from typing import Any
 from typing import Dict
 
 import torch
-import torch._C as torch_C
 from torch import nn
 from torchvision.ops import roi_align
 
@@ -17,7 +16,7 @@ from onnx2torch.onnx_node import OnnxNode
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import get_onnx_version
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
@@ -105,16 +104,9 @@ class OnnxRoiAlign(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: dis
 
         if torch.onnx.is_in_onnx_export():
             onnx_attrs = self._onnx_attrs(get_onnx_version())
-            return _RoiAlignExportToOnnx.set_forward_and_apply(_forward, input_tensor, rois, batch_indices, onnx_attrs)
+            return DefaultExportToOnnx.export(_forward, 'RoiAlign', input_tensor, rois, batch_indices, onnx_attrs)
 
         return _forward()
-
-
-class _RoiAlignExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        *inputs, onnx_attrs = args
-        return graph.op('RoiAlign', *inputs, **onnx_attrs, outputs=1)
 
 
 def converter_schema(  # pylint: disable=missing-function-docstring, unused-argument

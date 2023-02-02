@@ -11,7 +11,6 @@ def _test_flatten(
     input_shape: List[int],
     **kwargs,
 ) -> None:
-
     x = np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32)
     test_inputs = {'x': x}
 

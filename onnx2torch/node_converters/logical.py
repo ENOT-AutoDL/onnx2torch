@@ -6,7 +6,6 @@ __all__ = [
 from typing import Optional
 
 import torch
-import torch._C as torch_C
 from torch import nn
 
 from onnx2torch.node_converters.registry import add_converter
@@ -16,7 +15,7 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import old_style_broadcast
 from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import CustomExportToOnnx
+from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 _TORCH_FUNCTION_FROM_ONNX_TYPE = {
@@ -30,15 +29,9 @@ class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         forward_lambda = lambda: torch.logical_not(input_tensor)
         if torch.onnx.is_in_onnx_export():
-            return _NotExportToOnnx.set_forward_and_apply(forward_lambda, input_tensor)
+            return DefaultExportToOnnx.export(forward_lambda, 'Not', input_tensor, {})
 
         return forward_lambda()
-
-
-class _NotExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-method
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        return graph.op('Not', *args, outputs=1)
 
 
 class OnnxLogical(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
