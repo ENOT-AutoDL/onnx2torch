@@ -196,24 +196,12 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):
             return output
 
         if torch.onnx.is_in_onnx_export():
+            # Please follow our convention, args consists of:
+            # forward function, operation type, operation inputs, operation attributes.
             onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
-            return _ScatterNDExportToOnnx.set_forward_and_apply(
-                _forward,
-                data,
-                indices,
-                updates,
-                onnx_attrs,
-            )
+            return DefaultExportToOnnx.export(_forward, 'ScatterND', data, indices, updates, onnx_attrs)
 
         return _forward()
-
-
-class _ScatterNDExportToOnnx(CustomExportToOnnx):
-    @staticmethod
-    def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
-        # First 3 arguments are ONNX operation inputs, the last one - attributes.
-        *inputs, onnx_attrs = args
-        return graph.op('ScatterND', *inputs, **onnx_attrs, outputs=1)
 
 
 @add_converter(operation_type='ScatterND', version=11)
