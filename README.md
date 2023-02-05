@@ -218,6 +218,35 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 Here we have used a trick to convert the model from torch back to ONNX by defining the custom ``_ScatterNDExportToOnnx``.
 </details>
 
+## Opset version workaround
+
+Incase you are using a model with older opset, try the following workaround:
+
+[ONNX Version Conversion - Official Docs](https://github.com/onnx/onnx/blob/main/docs/PythonAPIOverview.md#converting-version-of-an-onnx-model-within-default-domain-aionnx)
+
+<details>
+<summary>Example</summary>
+
+```python
+import onnx
+from onnx import version_converter
+import torch
+from onnx2torch import convert
+
+# Load the ONNX model.
+model = onnx.load('model.onnx')
+# Convert the model to the target version.
+target_version = 13
+converted_model = version_converter.convert_version(model, target_version)
+# Convert to torch.
+torch_model = convert(converted_model)
+torch.save(torch_model, 'model.pt')
+```
+
+</details>
+
+Note: use this only when the model does not convert to PyTorch using the existing opset version. Result might vary.
+
 ## Acknowledgments
 
 Thanks to Dmitry Chudakov [@cakeofwar42](https://github.com/cakeofwar42) for his contributions.\
