@@ -222,7 +222,7 @@ Here we have used a trick to convert the model from torch back to ONNX by defini
 
 Incase you are using a model with older opset, try the following workaround
 
-[Onnx Version Conversion - Offical Docs](https://github.com/onnx/onnx/blob/main/docs/PythonAPIOverview.md#converting-version-of-an-onnx-model-within-default-domain-aionnx)
+[ONNX Version Conversion - Official Docs](https://github.com/onnx/onnx/blob/main/docs/PythonAPIOverview.md#converting-version-of-an-onnx-model-within-default-domain-aionnx)
 
 <details>
 <summary>Example</summary>
@@ -233,19 +233,19 @@ from onnx import version_converter
 import torch
 from onnx2torch import convert
 
-# Load the ONNX model
-model = onnx.load("model.onnx")
-# Convert the model to the target version
+# Load the ONNX model.
+model = onnx.load('model.onnx')
+# Convert the model to the target version.
 target_version = 13
 converted_model = version_converter.convert_version(model, target_version)
-# Convert to torch
+# Convert to torch.
 torch_model = convert(converted_model)
-torch.save(torch_model, "model.pt")
+torch.save(torch_model, 'model.pt')
 ```
 
 </details>
 
-Note: Use this only when the model dosent convert to torch using the existing opset version. Result might vary.
+Note: use this only when the model does not convert to PyTorch using the existing opset version. Result might vary.
 
 ## Acknowledgments
 
