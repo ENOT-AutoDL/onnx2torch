@@ -60,7 +60,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | Hardmax                   | N         |                                                                                                                                                                     |
 | Identity                  | Y         |                                                                                                                                                                     |
 | If                        | N         |                                                                                                                                                                     |
-| InstanceNormalization     | N         |                                                                                                                                                                     |
+| InstanceNormalization     | Y         |                                                                                                                                                                     |
 | IsInf                     | N         |                                                                                                                                                                     |
 | IsNaN                     | N         |                                                                                                                                                                     |
 | LRN                       | Y         |                                                                                                                                                                     |
