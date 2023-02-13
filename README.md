@@ -95,6 +95,12 @@ Segmentation models:
 - [x] UNet (torchvision)
 - [x] FCN resnet50 (torchvision)
 - [x] lraspp mobilenetv3 (torchvision)
+- [x] [BasicUNetPlusPlus](https://github.com/project-MONAI/MONAI)
+- [x] [RegUNet](https://github.com/project-MONAI/MONAI)
+- [x] [AutoEncoder](https://github.com/project-MONAI/MONAI)
+- [x] [VarAutoEncoder](https://github.com/project-MONAI/MONAI)
+- [x] [UNETR](https://github.com/project-MONAI/MONAI)
+- [x] [VNet](https://github.com/project-MONAI/MONAI)
 
 Detection  from MMdetection:
 - [x] [SSDLite with MobileNetV2 backbone](https://github.com/open-mmlab/mmdetection)
