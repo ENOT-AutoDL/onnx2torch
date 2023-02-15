@@ -51,3 +51,4 @@ from onnx2torch.node_converters.topk import *
 from onnx2torch.node_converters.transpose import *
 from onnx2torch.node_converters.unsqueeze import *
 from onnx2torch.node_converters.where import *
+from onnx2torch.node_converters.mod import *
