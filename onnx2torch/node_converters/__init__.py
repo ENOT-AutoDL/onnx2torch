@@ -26,6 +26,7 @@ from onnx2torch.node_converters.matmul import *
 from onnx2torch.node_converters.max_pool import *
 from onnx2torch.node_converters.mean import *
 from onnx2torch.node_converters.min_max import *
+from onnx2torch.node_converters.mod import *
 from onnx2torch.node_converters.neg import *
 from onnx2torch.node_converters.nms import *
 from onnx2torch.node_converters.pad import *
@@ -51,4 +52,3 @@ from onnx2torch.node_converters.topk import *
 from onnx2torch.node_converters.transpose import *
 from onnx2torch.node_converters.unsqueeze import *
 from onnx2torch.node_converters.where import *
-from onnx2torch.node_converters.mod import *
