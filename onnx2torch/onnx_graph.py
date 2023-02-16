@@ -28,10 +28,10 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
         unique_names = []
         counters = {}
         for node in onnx_graph_proto.node:
-            name = f'{node.domain}_{node.op_type}'.lstrip('_')
+            name = node.name.replace(".", "/").lstrip("/")
             name_counter = counters.setdefault(name, 0)
             counters[name] += 1
-            unique_names.append(f'{name}_{name_counter}')
+            unique_names.append(f'{name}' + f'_{name_counter}' if name_counter > 1 else '')
 
         self._nodes = OrderedDict(
             (name, OnnxNode(node, unique_name=name)) for name, node in zip(unique_names, onnx_graph_proto.node)
