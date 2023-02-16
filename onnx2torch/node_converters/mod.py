@@ -20,11 +20,12 @@ class OnnxMod(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-do
 
     def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
         if self.fmod == 1:
-            return torch.fmod(x, y)
+            output = torch.fmod(x, y)
         elif self.fmod == 0:
-            return torch.remainder(x, y)
+            output = torch.remainder(x, y)
         else:
             raise ValueError(f'OnnxMod fom must be 0 or 1, but get {self.fmod}')
+        return output
 
 
 @add_converter(operation_type='Mod', version=10)

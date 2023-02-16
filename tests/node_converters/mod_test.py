@@ -7,15 +7,15 @@ from tests.utils.common import make_model_from_nodes
 
 
 @pytest.mark.parametrize('fmod_type', [0, 1])
-def test_mod(
+def test_mod(  # pylint: disable=missing-function-docstring
     fmod_type: int,
-) -> None:  # pylint: disable=missing-function-docstring
+) -> None:
     x_variants = np.random.randn(12, 1).astype(np.float32)
     y_variants = np.random.randn(12, 1).astype(np.float32)
 
     if fmod_type == 0:
-        x_variants = np.random.randint(10, 15, size=(12, 1))#.astype(np.uint8)
-        y_variants = np.random.randint(10, 15, size=(12, 1))#.astype(np.uint8)
+        x_variants = np.random.randint(10, 15, size=(12, 1))
+        y_variants = np.random.randint(10, 15, size=(12, 1))
 
     test_inputs = {'x': x_variants, 'y': y_variants}
 
