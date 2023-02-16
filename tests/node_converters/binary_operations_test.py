@@ -24,12 +24,7 @@ def test_math_binary_operation(op_type: str) -> None:  # pylint: disable=missing
         test_inputs = {'x': x, 'y': y}
         initializers = {}
         if op_type == 'Mod':
-            node = onnx.helper.make_node(
-                op_type=op_type,
-                inputs=['x', 'y'],
-                outputs=['z'],
-                fmod=1
-            )
+            node = onnx.helper.make_node(op_type=op_type, inputs=['x', 'y'], outputs=['z'], fmod=1)
         else:
             node = onnx.helper.make_node(
                 op_type=op_type,
