@@ -10,10 +10,6 @@ def test_mod() -> None:  # pylint: disable=missing-function-docstring
     x_variants = np.random.randn(12, 1).astype(np.float32)
     y_variants = np.random.randn(12, 1).astype(np.float32)
 
-    # y_variants = [
-    # np.array([2.1, -3.4, 8.0, -2.1, 3.4, 5.0]).astype(np.float32)
-    # ]
-
     test_inputs = {'x': x_variants, 'y': y_variants}
     node = onnx.helper.make_node(op_type='Mod', inputs=['x', 'y'], outputs=['z'], fmod=1)
     model = make_model_from_nodes(
@@ -22,4 +18,3 @@ def test_mod() -> None:  # pylint: disable=missing-function-docstring
         inputs_example=test_inputs,
     )
     check_onnx_model(model, test_inputs)
-
