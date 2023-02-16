@@ -8,7 +8,7 @@ from tests.utils.common import make_model_from_nodes
 
 @pytest.mark.parametrize(
     'op_type',
-    ('Add', 'Sub', 'Mul', 'Div'),
+    ('Add', 'Sub', 'Mul', 'Div', 'Mod'),
 )
 def test_math_binary_operation(op_type: str) -> None:  # pylint: disable=missing-function-docstring
     input_shape = [10, 3, 128, 128]
@@ -19,14 +19,23 @@ def test_math_binary_operation(op_type: str) -> None:  # pylint: disable=missing
         np.random.uniform(low=-1.0, high=1.0, size=input_shape).astype(np.float32),
         np.array([0.0], dtype=np.float32),
     ]
+    y_variants = y_variants[:-1] if op_type == 'Mod' else y_variants
     for y in y_variants:
         test_inputs = {'x': x, 'y': y}
         initializers = {}
-        node = onnx.helper.make_node(
-            op_type=op_type,
-            inputs=['x', 'y'],
-            outputs=['z'],
-        )
+        if op_type == 'Mod':
+            node = onnx.helper.make_node(
+                op_type=op_type,
+                inputs=['x', 'y'],
+                outputs=['z'],
+                fmod=1
+            )
+        else:
+            node = onnx.helper.make_node(
+                op_type=op_type,
+                inputs=['x', 'y'],
+                outputs=['z'],
+            )
 
         model = make_model_from_nodes(nodes=node, initializers=initializers, inputs_example=test_inputs)
         check_onnx_model(model, test_inputs)
