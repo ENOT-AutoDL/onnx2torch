@@ -4,13 +4,12 @@ __all__ = [
 
 import torch
 from torch import nn
-
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxToTorchModule
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch.utils.common import (OnnxToTorchModule,
+                                     OperationConverterResult,
+                                     onnx_mapping_from_node)
 
 
 class OnnxMod(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
@@ -18,14 +17,11 @@ class OnnxMod(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-do
         super().__init__()
         self.fmod = fmod
 
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        if self.fmod == 1:
-            output = torch.fmod(x, y)
-        elif self.fmod == 0:
-            output = torch.remainder(x, y)
-        else:
+        if self.fmod not in [0, 1]:
             raise ValueError(f'OnnxMod fom must be 0 or 1, but get {self.fmod}')
-        return output
+
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
+        return torch.fmod(x, y) if self.fmod else torch.remainder(x, y)
 
 
 @add_converter(operation_type='Mod', version=10)
