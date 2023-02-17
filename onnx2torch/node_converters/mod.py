@@ -12,6 +12,7 @@ from onnx2torch.utils.common import OnnxToTorchModule
 from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import onnx_mapping_from_node
 
+
 class OnnxMod(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
     def __init__(self, fmod: int):
         super().__init__()
