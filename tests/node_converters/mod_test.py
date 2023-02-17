@@ -22,8 +22,8 @@ from tests.utils.common import check_onnx_model, make_model_from_nodes
 )
 @pytest.mark.parametrize('fmod', [0, 1])
 def test_mod(  # pylint: disable=missing-function-docstring
-    dividend: List[List[float]],
-    divisor: List[List[float]],
+    dividend: List[float],
+    divisor: List[float],
     fmod: int,
 ) -> None:
     x_variants = np.array(dividend).astype(np.float32 if fmod else np.int32)
