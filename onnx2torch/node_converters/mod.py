@@ -3,13 +3,11 @@ __all__ = [
 ]
 
 import torch
+from torch import nn
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import (OnnxToTorchModule,
-                                     OperationConverterResult,
-                                     onnx_mapping_from_node)
-from torch import nn
+from onnx2torch.utils.common import OnnxToTorchModule, OperationConverterResult, onnx_mapping_from_node
 
 
 class OnnxMod(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
