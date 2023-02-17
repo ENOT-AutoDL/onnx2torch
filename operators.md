@@ -79,7 +79,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | MaxUnpool                 | N         |                                                                                                                                                                     |
 | Mean                      | Y         |                                                                                                                                                                     |
 | Min                       | Y         |                                                                                                                                                                     |
-| Mod                       | N         |                                                                                                                                                                     |
+| Mod                       | Y         |                                                                                                                                                                     |
 | Mul                       | Y         |                                                                                                                                                                     |
 | Multinomial               | N         |                                                                                                                                                                     |
 | Neg                       | Y         |                                                                                                                                                                     |
