@@ -28,7 +28,7 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
         unique_names = []
         counters = {}
         for node in onnx_graph_proto.node:
-            name = (f'{node.domain}/' + (node.name.replace(".", "/") or node.op_type)).lstrip("/")
+            name = OnnxGraph.generate_node_name(node)
             name_counter = counters.setdefault(name, 0)
             counters[name] += 1
             unique_names.append(f'{name}' + (f'_{name_counter}' if name_counter > 0 else ''))
@@ -94,3 +94,7 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
         value_name: str,
     ) -> Tuple[OnnxNode, int]:
         return self._node_output_values[value_name]
+
+    @staticmethod
+    def generate_node_name(node: NodeProto) -> str:
+        return (f'{node.domain}/' + (node.name.replace(".", "/") or node.op_type)).lstrip("/")
