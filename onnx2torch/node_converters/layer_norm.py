@@ -2,6 +2,8 @@ __all__ = [
     'OnnxLayerNorm',
 ]
 
+from typing import List
+
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -26,16 +28,11 @@ class OnnxLayerNorm(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-do
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_data: torch.Tensor,
+        normalized_shape: List[int],
         weight: torch.Tensor,
         bias: torch.Tensor,
     ) -> torch.Tensor:
-        return F.layer_norm(
-            input_data,
-            normalized_shape,
-            weight = weight,
-            bias = bias,
-            eps = self.epsilon
-        )
+        return F.layer_norm(input_data, normalized_shape, weight=weight, bias=bias, eps=self.epsilon)
 
 
 @add_converter(operation_type='LayerNormalization', version=17)
@@ -51,12 +48,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
         scale_value_name = node.input_values[1]
         bias_value_name = node.input_values[2]
 
-        scale = graph.initializers[scale_value_name].to_torch()
-        torch_module = nn.LayerNorm(
-            input_shape[axis],
-            eps=epsilon,
-            elementwise_affine=True
-        )
+        torch_module = nn.LayerNorm(input_shape[axis], eps=epsilon, elementwise_affine=True)
 
         with torch.no_grad():
             torch_module.weight.data = graph.initializers[scale_value_name].to_torch()
@@ -64,7 +56,9 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
 
         onnx_mapping = OnnxMapping(inputs=(node.input_values[0],), outputs=node.output_values)
     else:
-        torch_module = OnnxLayerNorm(momentum=momentum, axis=axis, epsilon=epsilon, stash_type=stash_type)
+        input_value_info = graph.value_info[node.input_values[0]]
+        input_shape = get_shape_from_value_info(input_value_info)
+        torch_module = OnnxLayerNorm(axis=axis, epsilon=epsilon, stash_type=stash_type)
         onnx_mapping = onnx_mapping_from_node(node)
 
     return OperationConverterResult(torch_module=torch_module, onnx_mapping=onnx_mapping)

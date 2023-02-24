@@ -7,6 +7,7 @@ import pytest
 from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
 
+
 def _test_layer_norm(
     x: np.ndarray,
     parameters_as_inputs: bool,
@@ -16,7 +17,7 @@ def _test_layer_norm(
     bias = np.random.randn(*normalized_shape).astype(np.float32)
 
     inputs = {'input': x}
-    parameters = {'scale': scale,'bias': bias}
+    parameters = {'scale': scale, 'bias': bias}
     initializers = {}
 
     if parameters_as_inputs:
@@ -34,8 +35,8 @@ def _test_layer_norm(
 
 
 # @pytest.mark.parametrize(
-    # 'parameters_as_inputs',
-    # (True, False),
+# 'parameters_as_inputs',
+# (True, False),
 # )
 @pytest.mark.parametrize(
     'input_shape',
@@ -60,8 +61,8 @@ def test_layer_norm(  # pylint: disable=missing-function-docstring
     _test_layer_norm(x=x, parameters_as_inputs=parameters_as_inputs)
 
 
-def calculate_normalized_shape(X_shape, axis):  # type: ignore
-    X_rank = len(X_shape)
+def calculate_normalized_shape(x_shape, axis):  # pylint: disable=missing-function-docstring
+    x_rank = len(x_shape)
     if axis < 0:
-        axis = axis + X_rank
-    return X_shape[axis:]
+        axis = axis + x_rank
+    return x_shape[axis:]
