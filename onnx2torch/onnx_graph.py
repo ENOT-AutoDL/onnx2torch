@@ -98,4 +98,20 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
 
     @staticmethod
     def generate_node_name(node: NodeProto) -> str:
+        """Generate a torch module name from the given onnx node import it with.
+
+        Uses the ONNX node's name by default, falling back to the op_type in case the former is empty. The node's
+        domain is prepended to this.
+
+        Dots (.) are not allowed within names in torch, so they are replaced with a slash (/) instead.
+
+        Parameters
+        ----------
+        node
+            The ONNX node to create a name from.
+
+        Returns
+        -------
+        A torch-compatible module name based on the given node's properties.
+        """
         return (f'{node.domain}/' + (node.name.replace('.', '/') or node.op_type)).lstrip('/')
