@@ -70,7 +70,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
             if not trans_b:
                 weights = weights.T
 
-            in_features, out_features = weights.shape[0], weights.shape[1]
+            in_features, out_features = weights.shape[1], weights.shape[0]
             torch_module = nn.Linear(
                 in_features=in_features,
                 out_features=out_features,
