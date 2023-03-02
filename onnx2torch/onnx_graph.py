@@ -97,4 +97,4 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
 
     @staticmethod
     def generate_node_name(node: NodeProto) -> str:
-        return (f'{node.domain}/' + (node.name.replace(".", "/") or node.op_type)).lstrip("/")
+        return (f'{node.domain}/' + (node.name.replace('.', '/') or node.op_type)).lstrip('/')
