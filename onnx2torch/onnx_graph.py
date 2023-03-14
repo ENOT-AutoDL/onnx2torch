@@ -5,6 +5,7 @@ from typing import Mapping
 from typing import Tuple
 
 from onnx.onnx_ml_pb2 import GraphProto
+from onnx.onnx_ml_pb2 import NodeProto
 from onnx.onnx_ml_pb2 import ValueInfoProto
 
 from onnx2torch.onnx_node import OnnxNode
@@ -28,10 +29,10 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
         unique_names = []
         counters = {}
         for node in onnx_graph_proto.node:
-            name = f'{node.domain}_{node.op_type}'.lstrip('_')
+            name = OnnxGraph.generate_node_name(node)
             name_counter = counters.setdefault(name, 0)
             counters[name] += 1
-            unique_names.append(f'{name}_{name_counter}')
+            unique_names.append(f'{name}' + (f'_{name_counter}' if name_counter > 0 else ''))
 
         self._nodes = OrderedDict(
             (name, OnnxNode(node, unique_name=name)) for name, node in zip(unique_names, onnx_graph_proto.node)
@@ -94,3 +95,23 @@ class OnnxGraph:  # pylint: disable=missing-class-docstring
         value_name: str,
     ) -> Tuple[OnnxNode, int]:
         return self._node_output_values[value_name]
+
+    @staticmethod
+    def generate_node_name(node: NodeProto) -> str:
+        """Generate a torch module name from the given onnx node import it with.
+
+        Uses the ONNX node's name by default, falling back to the op_type in case the former is empty. The node's
+        domain is prepended to this.
+
+        Dots (.) are not allowed within names in torch, so they are replaced with a slash (/) instead.
+
+        Parameters
+        ----------
+        node
+            The ONNX node to create a name from.
+
+        Returns
+        -------
+        A torch-compatible module name based on the given node's properties.
+        """
+        return (f'{node.domain}/' + (node.name.replace('.', '/') or node.op_type)).lstrip('/')
