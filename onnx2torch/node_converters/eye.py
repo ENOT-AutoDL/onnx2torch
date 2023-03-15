@@ -32,10 +32,10 @@ class OnnxEyeLike(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docs
             )
 
         if self.eyelike_k == 0:
-            return torch.eye(size_n, size_m, dtype=self.dtype)
+            return torch.eye(n=size_n, m=size_m, dtype=self.dtype)
 
         k_tensor = torch.zeros(size_n, self.eyelike_k, dtype=self.dtype)
-        eye_tensor = torch.eye(size_n, size_m - self.eyelike_k, dtype=self.dtype)
+        eye_tensor = torch.eye(n=size_n, m=size_m - self.eyelike_k, dtype=self.dtype)
         return torch.concat([k_tensor, eye_tensor], axis=1)
 
 
