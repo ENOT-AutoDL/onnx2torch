@@ -23,12 +23,15 @@ class OnnxEyeLike(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docs
         if len(x.shape) != 2:
             raise ValueError(f'EyeLike only supports 2D tensors, got {len(x.shape)}')
 
+        if self.dtype is None:
+            self.dtype = x.dtype
+
         size_n = x.size(dim=0)
         size_m = x.size(dim=1)
         if self.eyelike_k > size_n:
             raise ValueError(
-                f'the eyelike_k value is {self.eyelike_k},'
-                f'but x shape is {(size_n, size_m)}, eyelike_k should be greater than {size_n}'
+                f'EyeLike attribute k should be less or equal than the zero dimension of input tensor,'
+                f'got {self.eyelike_k} and {size_n}'
             )
 
         if self.eyelike_k == 0:
@@ -43,7 +46,7 @@ class OnnxEyeLike(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-docs
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     node_attributes = node.attributes
     eyelike_k = node_attributes.get('k', 0)
-    dtype = node_attributes.get('dtype', torch.float32)
+    dtype = node_attributes.get('dtype')
     return OperationConverterResult(
         torch_module=OnnxEyeLike(dtype=dtype, eyelike_k=eyelike_k),
         onnx_mapping=onnx_mapping_from_node(node=node),
