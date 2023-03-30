@@ -13,6 +13,7 @@ from onnx2torch.node_converters.cumsum import *
 from onnx2torch.node_converters.dropout import *
 from onnx2torch.node_converters.einsum import *
 from onnx2torch.node_converters.expand import *
+from onnx2torch.node_converters.eye_like import *
 from onnx2torch.node_converters.flatten import *
 from onnx2torch.node_converters.functions import *
 from onnx2torch.node_converters.gather import *

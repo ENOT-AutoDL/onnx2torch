@@ -43,7 +43,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | Erf                       | Y         |                                                                                                                                                                     |
 | Exp                       | Y         |                                                                                                                                                                     |
 | Expand                    | Y         |                                                                                                                                                                     |
-| EyeLike                   | N         |                                                                                                                                                                     |
+| EyeLike                   | Y         |                                                                                                                                                                     |
 | Flatten                   | Y         |                                                                                                                                                                     |
 | Floor                     | Y         |                                                                                                                                                                     |
 | GRU                       | N         |                                                                                                                                                                     |
