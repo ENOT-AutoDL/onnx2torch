@@ -28,12 +28,12 @@ class OnnxRange(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
 
         return value
 
-    def _do_arange(
+    def _arange(
         self,
         start: Union[torch.Tensor, float, int],
         limit: Union[torch.Tensor, float, int],
         delta: Union[torch.Tensor, float, int],
-    ):
+    ) -> torch.Tensor:
         return torch.arange(
             start=self._get_scalar(start),
             end=self._get_scalar(limit),
@@ -47,7 +47,7 @@ class OnnxRange(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
         limit: Union[torch.Tensor, float, int],
         delta: Union[torch.Tensor, float, int],
     ) -> torch.Tensor:
-        forward_lambda = lambda: self._do_arange(start, limit, delta)
+        forward_lambda = lambda: self._arange(start, limit, delta)
 
         if torch.onnx.is_in_onnx_export():
             return DefaultExportToOnnx.export(forward_lambda, 'Range', start, limit, delta, {})
