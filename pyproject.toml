@@ -1,3 +1,45 @@
+[project]
+name = 'onnx2torch'
+version = '1.5.8'
+license = {file = 'LICENSE'}
+description = 'ONNX to PyTorch converter'
+readme = 'README.md'
+keywords = ['AI', 'onnx', 'torch', 'onnx2torch', 'converters']
+authors = [{name = 'ENOT LLC', email = 'enot@enot.ai'}]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: Apache Software License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3 :: Only',
+]
+requires-python = '>=3.6'
+dependencies = [
+    'numpy>=1.16.4',
+    'onnx>=1.9.0',
+    'torch>=1.8.0',
+    'torchvision>=0.9.0',
+]
+
+[project.optional-dependencies]
+dev = [
+    'pytest',
+    'black',
+    'isort',
+    'pylint',
+    'pre-commit',
+    'onnxruntime',
+    'Pillow',
+    'requests',
+    'googledrivedownloader',
+]
+
+[project.urls]
+homepage = 'https://enot.ai'
+repository = 'https://github.com/ENOT-AutoDL/onnx2torch'
+
+[tool.setuptools.packages.find]
+include = ['onnx2torch']
+
 [tool.black]
 line-length = 120
 target-version = ['py36', 'py37', 'py38', 'py39']

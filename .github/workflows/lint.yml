@@ -19,7 +19,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        python -m pip install -r requirements.txt
+        python -m pip install -e .
     - name: Analysing the code with pylint
       run: |
         pylint --rcfile .pylintrc --output-format=colorized $(git ls-files '*.py')
