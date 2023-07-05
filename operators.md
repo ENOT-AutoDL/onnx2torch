@@ -63,7 +63,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | InstanceNormalization     | Y         |                                                                                                                                                                     |
 | IsInf                     | N         |                                                                                                                                                                     |
 | IsNaN                     | N         |                                                                                                                                                                     |
-| LayerNormalization        | Y         | LayerNormalization outputs "Mean" and "InvStdDev" is not implemented                                                                                                |
+| LayerNormalization        | Y         | LayerNormalization outputs "Mean" and "InvStdDev" are not implemented                                                                                                |
 | LRN                       | Y         |                                                                                                                                                                     |
 | LSTM                      | N         |                                                                                                                                                                     |
 | LeakyRelu                 | Y         |                                                                                                                                                                     |
