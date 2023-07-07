@@ -1,6 +1,6 @@
 [project]
 name = 'onnx2torch'
-version = '1.5.9'
+version = '1.5.10'
 license = {file = 'LICENSE'}
 description = 'ONNX to PyTorch converter'
 readme = 'README.md'
@@ -38,7 +38,7 @@ homepage = 'https://enot.ai'
 repository = 'https://github.com/ENOT-AutoDL/onnx2torch'
 
 [tool.setuptools.packages.find]
-include = ['onnx2torch']
+include = ['onnx2torch*']
 
 [tool.black]
 line-length = 120
