@@ -38,7 +38,7 @@ homepage = 'https://enot.ai'
 repository = 'https://github.com/ENOT-AutoDL/onnx2torch'
 
 [tool.setuptools.packages.find]
-include = ['onnx2torch']
+include = ['onnx2torch*']
 
 [tool.black]
 line-length = 120
