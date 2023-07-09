@@ -32,7 +32,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | Cos                       | Y         |                                                                                                                                                                     |
 | Cosh                      | N         |                                                                                                                                                                     |
 | CumSum                    | Y         |                                                                                                                                                                     |
-| DepthToSpace              | N         |                                                                                                                                                                     |
+| DepthToSpace              | Y         | Partial support for CRD mode                                                                                                                                        |
 | DequantizeLinear          | N         |                                                                                                                                                                     |
 | Det                       | N         |                                                                                                                                                                     |
 | Div                       | Y         |                                                                                                                                                                     |
