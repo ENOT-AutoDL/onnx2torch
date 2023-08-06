@@ -155,7 +155,7 @@ class OnnxReduceSumStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=
 
             self._axes = list(range(input_tensor.dim()))
 
-        return torch.sum(input_tensor, dim=self._axes, keepdim=self._keepdims)
+        return torch.sum(input_tensor, dim=tuple(self._axes), keepdim=bool(self._keepdims))
 
 
 class OnnxReduceStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
