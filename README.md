@@ -247,6 +247,19 @@ torch.save(torch_model, 'model.pt')
 
 Note: use this only when the model does not convert to PyTorch using the existing opset version. Result might vary.
 
+## Citation
+
+To cite onnx2torch use `Cite this repository` button, or:
+```
+@misc{onnx2torch,
+  title={onnx2torch},
+  author={ENOT developers and Kalgin, Igor and Yanchenko, Arseny and Ivanov, Pyoter and Goncharenko, Alexander},
+  year={2021},
+  howpublished={\url{https://enot.ai/}},
+  note={Version: x.y.z}
+}
+```
+
 ## Acknowledgments
 
 Thanks to Dmitry Chudakov [@cakeofwar42](https://github.com/cakeofwar42) for his contributions.\
