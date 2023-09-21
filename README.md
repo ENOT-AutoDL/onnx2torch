@@ -251,9 +251,9 @@ Note: use this only when the model does not convert to PyTorch using the existin
 
 To cite onnx2torch use `Cite this repository` button, or:
 ```
-@software{onnx2torch,
+@misc{onnx2torch,
   title={onnx2torch},
-  author={ENOT LLC},
+  author={ENOT developers and Kalgin, Igor and Yanchenko, Arseny and Ivanov, Pyoter and Goncharenko, Alexander},
   year={2021},
   howpublished={\url{https://enot.ai/}},
   note={Version: x.y.z}
