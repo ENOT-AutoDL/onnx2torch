@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: onnx2torch
+message: "Please use this information to cite onnx2torch in research or other publications."
+authors:
+  - affiliation: ENOT LLC
+    given-names: ENOT developers
+date-released: 2021-12-14
+url: "https://enot.ai"
+repository-code: "https://github.com/ENOT-AutoDL/onnx2torch"
+license: "Apache-2.0"
+keywords:
+  - onnx
+  - pytorch
+  - convert
+  - deep learning
+  - machine learning
