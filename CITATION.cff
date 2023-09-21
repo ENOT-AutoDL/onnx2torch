@@ -4,6 +4,14 @@ message: "Please use this information to cite onnx2torch in research or other pu
 authors:
   - affiliation: ENOT LLC
     given-names: ENOT developers
+  - family-names: Kalgin
+    given-names: Igor
+  - family-names: Yanchenko
+    given-names: Arseny
+  - family-names: Ivanov
+    given-names: Pyoter
+  - family-names: Goncharenko
+    given-names: Alexander
 date-released: 2021-12-14
 url: "https://enot.ai"
 repository-code: "https://github.com/ENOT-AutoDL/onnx2torch"
