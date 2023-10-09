@@ -58,7 +58,7 @@ class OnnxPReLU(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
             if slope.nelement() == 1 or (
                 slope.shape[0] == input_tensor.shape[1] and all(s == 1 for s in slope.shape[1:])
             ):
-                return nn.functional.prelu(input_tensor, weight=slope.view(-1))
+                return nn.functional.prelu(input_tensor, weight=slope.view(-1))  # pylint: disable=not-callable
 
             output = input_tensor.clone()
             output = output * slope
