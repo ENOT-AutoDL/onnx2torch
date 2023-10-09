@@ -40,3 +40,5 @@ def test_constant_of_shape() -> None:  # pylint: disable=missing-function-docstr
         shape = np.random.randint(low=1, high=2, size=(size,))
         value = np.random.uniform(low=-10000, high=10000, size=(1,))
         _test_constant_of_shape(shape, value)
+
+    _test_constant_of_shape(np.asarray([3, 3]), np.asarray([True]))

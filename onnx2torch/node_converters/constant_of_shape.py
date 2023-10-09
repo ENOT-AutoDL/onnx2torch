@@ -29,9 +29,14 @@ class OnnxConstantOfShape(nn.Module, OnnxToTorchModule):  # pylint: disable=miss
         self.register_buffer('value', value)
 
     def forward(self, shape: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
+        fill_value = self.value.item()
+        if isinstance(fill_value, bool):
+            # we must cast the fill_value to avoid problems with exporting to onnx
+            fill_value = int(fill_value)
+
         return torch.full(
             size=torch.Size(shape),
-            fill_value=self.value.item(),
+            fill_value=fill_value,
             dtype=self.value.dtype,
             device=self.value.device,
         )
