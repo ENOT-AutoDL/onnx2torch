@@ -97,4 +97,5 @@ class DefaultExportToOnnx(CustomExportToOnnx):  # pylint: disable=abstract-metho
     @staticmethod
     def symbolic(graph: torch_C.Graph, *args) -> torch_C.Value:
         op_type, *inputs, onnx_attrs = args
+        inputs = tuple(value for value in inputs if value is not None)  # filter out None
         return graph.op(op_type, *inputs, **onnx_attrs, outputs=1)

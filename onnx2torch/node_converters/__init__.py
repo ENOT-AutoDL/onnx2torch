@@ -48,6 +48,7 @@ from onnx2torch.node_converters.scatter_nd import *
 from onnx2torch.node_converters.shape import *
 from onnx2torch.node_converters.slice import *
 from onnx2torch.node_converters.split import *
+from onnx2torch.node_converters.split_to_sequence import *
 from onnx2torch.node_converters.squeeze import *
 from onnx2torch.node_converters.sum import *
 from onnx2torch.node_converters.tile import *

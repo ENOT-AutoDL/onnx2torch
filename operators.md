@@ -143,7 +143,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | Softsign                  | Y         |                                                                                                                                                                     |
 | SpaceToDepth              | N         |                                                                                                                                                                     |
 | Split                     | Y         |                                                                                                                                                                     |
-| SplitToSequence           | N         |                                                                                                                                                                     |
+| SplitToSequence           | Y         | SplitToSequence without "split" argument and "keepdims" = 0 is not implemented                                                                                      |
 | Sqrt                      | Y         |                                                                                                                                                                     |
 | Squeeze                   | Y         |                                                                                                                                                                     |
 | StringNormalizer          | N         |                                                                                                                                                                     |
