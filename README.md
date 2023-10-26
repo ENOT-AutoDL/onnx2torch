@@ -52,6 +52,7 @@ Below you can find some examples of use.
 ### Convert
 
 ```python
+import onnx
 import torch
 from onnx2torch import convert
 
