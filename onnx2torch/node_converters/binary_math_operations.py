@@ -15,11 +15,19 @@ from onnx2torch.utils.common import OperationConverterResult
 from onnx2torch.utils.common import old_style_broadcast
 from onnx2torch.utils.common import onnx_mapping_from_node
 
+
+def _onnx_div(first: torch.Tensor, second: torch.Tensor) -> torch.Tensor:
+    if first.is_floating_point() or second.is_floating_point():  # float division
+        return torch.div(first, second)
+
+    return torch.div(first, second, rounding_mode='trunc')  # integer division
+
+
 _TORCH_FUNCTION_FROM_ONNX_TYPE = {
     'Add': torch.add,
     'Sub': torch.sub,
     'Mul': torch.mul,
-    'Div': torch.div,
+    'Div': _onnx_div,
 }
 
 
