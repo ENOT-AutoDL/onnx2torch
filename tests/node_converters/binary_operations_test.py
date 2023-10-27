@@ -30,3 +30,31 @@ def test_math_binary_operation(op_type: str) -> None:  # pylint: disable=missing
 
         model = make_model_from_nodes(nodes=node, initializers=initializers, inputs_example=test_inputs)
         check_onnx_model(model, test_inputs)
+
+
+@pytest.mark.parametrize(
+    'x, y',
+    [
+        (1, 2),
+        (1, 5),
+        (5, 30),
+        (-1, 2),
+        (-1, 5),
+        (5, -30),
+        (5, 2),
+        (-5, 2),
+    ],
+)
+def test_div_operation(x: int, y: int) -> None:  # pylint: disable=missing-function-docstring
+    x_ = np.array(x, dtype=np.int64)  # pylint: disable=invalid-name
+    y_ = np.array(y, dtype=np.int64)  # pylint: disable=invalid-name
+    test_inputs = {'x': x_, 'y': y_}
+
+    node = onnx.helper.make_node(
+        op_type='Div',
+        inputs=['x', 'y'],
+        outputs=['z'],
+    )
+
+    model = make_model_from_nodes(nodes=node, initializers={}, inputs_example=test_inputs)
+    check_onnx_model(model, test_inputs)
