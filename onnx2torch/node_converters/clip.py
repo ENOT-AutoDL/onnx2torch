@@ -50,9 +50,8 @@ def _create_torch_module(min_val: Optional[torch.Tensor], max_val: Optional[torc
 @add_converter(operation_type='Clip', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
     # Min and Max inputs are optional
-    min_name = node.input_values[1] if len(node.input_values) > 1 else None
-    max_name = node.input_values[2] if len(node.input_values) > 2 else None
-
+    min_name = node.input_values[1] if len(node.input_values) > 1 and node.input_values[1] != '' else None
+    max_name = node.input_values[2] if len(node.input_values) > 2 and node.input_values[2] != '' else None
     try:
         min_val = float(get_const_value(min_name, graph)) if min_name is not None else None
         max_val = float(get_const_value(max_name, graph)) if max_name is not None else None

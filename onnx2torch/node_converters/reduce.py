@@ -141,7 +141,7 @@ class OnnxReduceSumStaticAxes(nn.Module, OnnxToTorchModule):  # pylint: disable=
         if axes is not None:
             axes = sorted(axes)
 
-        self._keepdims = keepdims
+        self._keepdims = bool(keepdims)
         self._noop_with_empty_axes = noop_with_empty_axes
         self._axes = axes
 

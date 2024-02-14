@@ -8,7 +8,7 @@ from typing import Dict
 
 import torch
 from torch import nn
-
+import numpy as np
 from onnx2torch.node_converters.registry import add_converter
 from onnx2torch.onnx_graph import OnnxGraph
 from onnx2torch.onnx_node import OnnxNode
@@ -17,6 +17,7 @@ from onnx2torch.utils.common import get_onnx_version
 from onnx2torch.utils.common import onnx_mapping_from_node
 from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+from tqdm import tqdm
 
 
 class ReductionOnnxAttr(Enum):
@@ -67,16 +68,18 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: di
         def _forward():
             # There is no scatter nd for torch, use following formula:
             # https://github.com/onnx/onnx/blob/master/docs/Operators.md#ScatterND
-            output = data.clone()
-
+            output = torch.tensor(data.clone())
             ind_dim = indices.dim()
             # last dimension is a partial-index into data
-            output_indices = indices.reshape((-1, indices.shape[-1])).T.tolist()
+            indices_np = np.array(indices.cpu().tolist())
+            output_indices = np.reshape(indices_np, (-1, indices.shape[-1])).T.tolist()
             # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
             output_updates = updates.reshape((-1, *updates.shape[ind_dim - 1 :]))
+
             output[output_indices] = output_updates
 
             return output
+
 
         if torch.onnx.is_in_onnx_export():
             onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
