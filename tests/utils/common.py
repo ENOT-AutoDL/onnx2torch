@@ -27,6 +27,8 @@ from onnx.shape_inference import infer_shapes
 
 from onnx2torch.converter import convert
 
+torch.use_deterministic_algorithms(True)
+
 try:
     from torch.onnx import CheckerError
 except ImportError:
@@ -240,7 +242,9 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
             torch_output = [torch_output]
 
         for x, y in zip(onnx_output, torch_output):
-            assert np.all(np.isclose(x, y, atol=atol_onnx_torch)), 'ort and torch outputs have significant difference'
+            assert np.all(np.isclose(x, y, atol=atol_onnx_torch)
+                ), f'ort and torch outputs have significant difference\
+                 with max difference of {abs(x-y).max()}'
 
     def torch_cpu_cuda_check_function(  # pylint: disable=missing-function-docstring
         torch_cpu_output,
@@ -253,7 +257,8 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
         for x, y in zip(torch_cpu_output, torch_cuda_output):
             assert np.all(
                 np.isclose(x, y, atol=atol_torch_cpu_cuda)
-            ), 'torch cpu and torch cuda outputs have significant difference'
+            ), f'torch cpu and torch cuda outputs have significant difference \
+                 with max difference of {abs(x-y).max()}'
 
         return True
 
@@ -261,7 +266,8 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
         for x, y in zip(onnx_output, torch2onnx_output):
             assert np.all(
                 np.isclose(x, y, atol=atol_onnx_torch2onnx)
-            ), 'ort and ort+torch2onnx outputs have significant difference'
+            ), f'ort and ort+torch2onnx outputs have significant difference\
+                 with max difference of {abs(x-y).max()}'
 
         return True
 
