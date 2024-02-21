@@ -16,7 +16,6 @@ _COCO_MEAN = np.array([0.406, 0.485, 0.456], dtype=np.float32)
 _COCO_STD = np.array([0.225, 0.224, 0.229], dtype=np.float32)
 
 
-
 @pytest.fixture(autouse=True)
 def fix_seeds(seed: int = 0):
     random.seed(seed)
@@ -80,7 +79,7 @@ def test_resnet50():  # pylint: disable=missing-function-docstring
     ),
 )
 def test_onnx_models(  # pylint: disable=missing-function-docstring
-    model_name: str, resolution: Tuple[int, int],  atol_ort_torch: float, atol_torch_cpu_cuda: float
+    model_name: str, resolution: Tuple[int, int], atol_ort_torch: float, atol_torch_cpu_cuda: float
 ) -> None:
     model = get_model(model_name)
     input_name = model.graph.input[0].name
@@ -118,7 +117,9 @@ def test_onnx_models(  # pylint: disable=missing-function-docstring
         ('regnet_y_16gf', 2e-2),
     ),
 )
-def test_torchvision_classification(model_name: str, atol_torch_cpu_cuda: float) -> None:  # pylint: disable=missing-function-docstring
+def test_torchvision_classification(
+    model_name: str, atol_torch_cpu_cuda: float
+) -> None:  # pylint: disable=missing-function-docstring
     torch_model = getattr(torchvision.models, model_name)(pretrained=True)
     test_inputs = {
         'inputs': create_test_batch(batch_size=32),
@@ -142,7 +143,9 @@ def test_torchvision_classification(model_name: str, atol_torch_cpu_cuda: float)
         ('lraspp_mobilenet_v3_large', 2e-2),
     ),
 )
-def test_torchvision_segmentation(model_name: str, atol_torch_cpu_cuda: float) -> None:  # pylint: disable=missing-function-docstring
+def test_torchvision_segmentation(
+    model_name: str, atol_torch_cpu_cuda: float
+) -> None:  # pylint: disable=missing-function-docstring
     torch_model = getattr(torchvision.models.segmentation, model_name)(pretrained=True)
     test_inputs = {
         'inputs': create_test_batch(batch_size=8),

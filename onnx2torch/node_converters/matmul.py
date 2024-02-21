@@ -17,17 +17,16 @@ class OnnxMatMul(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class
     def __init__(self, name):
         super().__init__()
         self.name = name
-    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        if x.dim() ==3 and y.dim() == 3:
-            out = torch.bmm(x, y)
 
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
+        # TODO: Figure out a way to simplify this code
+        if x.dim() == 3 and y.dim() == 3 and x.shape[0] == y.shape[0]:
+            out = torch.bmm(x, y)
         else:
-            # return torch.mm(x, y)
             try:
-                out= torch.matmul(x, y)
+                out = torch.matmul(x, y)
             except:
                 out = torch.mm(x, y)
-
         return out
 
 

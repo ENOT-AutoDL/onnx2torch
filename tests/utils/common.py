@@ -242,8 +242,9 @@ def check_onnx_model(  # pylint: disable=missing-function-docstring
             torch_output = [torch_output]
 
         for x, y in zip(onnx_output, torch_output):
-            assert np.all(np.isclose(x, y, atol=atol_onnx_torch)
-                ), f'ort and torch outputs have significant difference\
+            assert np.all(
+                np.isclose(x, y, atol=atol_onnx_torch)
+            ), f'ort and torch outputs have significant difference\
                  with max difference of {abs(x-y).max()}'
 
     def torch_cpu_cuda_check_function(  # pylint: disable=missing-function-docstring

@@ -22,9 +22,11 @@ class OnnxExpand(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disab
     ) -> torch.Tensor:
         if shape.is_cuda:
             shape = shape.cpu()
-        
+
         def _forward():
-            return input_tensor * torch.ones(torch.Size(shape.cpu().tolist()), dtype=input_tensor.dtype, device=input_tensor.device)
+            return input_tensor * torch.ones(
+                torch.Size(shape.tolist()), dtype=input_tensor.dtype, device=input_tensor.device
+            )
 
         if torch.onnx.is_in_onnx_export():
             return DefaultExportToOnnx.export(_forward, 'Expand', input_tensor, shape, {})

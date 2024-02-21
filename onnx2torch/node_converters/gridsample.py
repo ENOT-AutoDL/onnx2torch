@@ -45,18 +45,13 @@ class UGridSampler(nn.Module):
         grid,
     ) -> torch.Tensor:
         grid = grid.type(x.dtype)
-        return torch.nn.functional.grid_sample(x,
-                                               grid,
-                                               mode=self.interpolation_mode,
-                                               padding_mode=self.padding_mode,
-                                               align_corners=self.align_corners)
+        return torch.nn.functional.grid_sample(
+            x, grid, mode=self.interpolation_mode, padding_mode=self.padding_mode, align_corners=self.align_corners
+        )
 
 
 @add_converter(operation_type='GridSample', version=16)
-def _(
-    node: OnnxNode, graph: OnnxGraph
-) -> OperationConverterResult:  # pylint: disable=unused-argument
-
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     node_attributes = node.attributes
     align_corners = node_attributes.get('align_corners', 0)
     padding_mode = node_attributes.get('padding_mode', 0)
@@ -64,6 +59,4 @@ def _(
     print(align_corners, padding_mode, mode)
 
     torch_module = UGridSampler(align_corners, mode, padding_mode)
-    return OperationConverterResult(
-        torch_module=torch_module, onnx_mapping=onnx_mapping_from_node(node)
-    )
+    return OperationConverterResult(torch_module=torch_module, onnx_mapping=onnx_mapping_from_node(node))
