@@ -25,7 +25,8 @@ class OnnxTile(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable
         repeats: torch.Tensor,
     ) -> torch.Tensor:
         # torch.tile(input_tensor, repeats) is not supported for exporting
-        forward_lambda = lambda: input_tensor.repeat(torch.Size(self.repeats))
+        repeats = self.repeats if self.repeats else repeats
+        forward_lambda = lambda: input_tensor.repeat(torch.Size(repeats))
         if torch.onnx.is_in_onnx_export():
             return DefaultExportToOnnx.export(forward_lambda, 'Tile', input_tensor, repeats, {})
 
@@ -35,7 +36,9 @@ class OnnxTile(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable
 @add_converter(operation_type='Tile', version=6)
 @add_converter(operation_type='Tile', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
-    repeats = graph.initializers[node.input_values[1]].to_torch().cpu().tolist()
+    repeats = []
+    if node.input_values[1] in graph.initializers:
+        repeats = graph.initializers[node.input_values[1]].to_torch().cpu().tolist()
     return OperationConverterResult(
         torch_module=OnnxTile(repeats),
         onnx_mapping=onnx_mapping_from_node(node=node),
