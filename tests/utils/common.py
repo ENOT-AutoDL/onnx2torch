@@ -25,7 +25,7 @@ from onnx.onnx_ml_pb2 import NodeProto
 from onnx.onnx_ml_pb2 import ValueInfoProto
 from onnx.shape_inference import infer_shapes
 
-from onnx2torch.converter import convert
+from onnx2torch2.converter import convert
 
 torch.use_deterministic_algorithms(True)
 
