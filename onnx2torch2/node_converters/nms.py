@@ -10,14 +10,14 @@ import torch
 import torchvision
 from torch import nn
 
-from onnx2torch.node_converters.registry import add_converter
-from onnx2torch.onnx_graph import OnnxGraph
-from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import get_onnx_version
-from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
-from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+from onnx2torch2.node_converters.registry import add_converter
+from onnx2torch2.onnx_graph import OnnxGraph
+from onnx2torch2.onnx_node import OnnxNode
+from onnx2torch2.utils.common import OperationConverterResult
+from onnx2torch2.utils.common import get_onnx_version
+from onnx2torch2.utils.common import onnx_mapping_from_node
+from onnx2torch2.utils.custom_export_to_onnx import DefaultExportToOnnx
+from onnx2torch2.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 class OnnxNonMaxSuppression(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring

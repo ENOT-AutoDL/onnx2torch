@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 
-from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
-from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+from onnx2torch2.utils.custom_export_to_onnx import DefaultExportToOnnx
+from onnx2torch2.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
 class OnnxBaseElementWise(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-docstring

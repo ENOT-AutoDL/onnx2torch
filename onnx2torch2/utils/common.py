@@ -8,8 +8,8 @@ from onnx import ValueInfoProto  # pylint: disable=no-name-in-module
 from torch import nn
 from torch.onnx import symbolic_helper
 
-from onnx2torch.onnx_graph import OnnxGraph
-from onnx2torch.onnx_node import OnnxNode
+from onnx2torch2.onnx_graph import OnnxGraph
+from onnx2torch2.onnx_node import OnnxNode
 
 
 class OnnxToTorchModule:

@@ -4,7 +4,7 @@ from typing import Union
 
 from torch import nn
 
-from onnx2torch.node_converters.pad import OnnxPadStatic
+from onnx2torch2.node_converters.pad import OnnxPadStatic
 
 
 def is_symmetric_onnx_padding(padding: Tuple[int, ...]) -> bool:  # pylint: disable=missing-function-docstring

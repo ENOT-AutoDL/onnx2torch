@@ -4,12 +4,12 @@ __all__ = [
 
 import torch
 
-from onnx2torch.node_converters.base_element_wise import OnnxBaseElementWise
-from onnx2torch.node_converters.registry import add_converter
-from onnx2torch.onnx_graph import OnnxGraph
-from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import onnx_mapping_from_node
+from onnx2torch2.node_converters.base_element_wise import OnnxBaseElementWise
+from onnx2torch2.node_converters.registry import add_converter
+from onnx2torch2.onnx_graph import OnnxGraph
+from onnx2torch2.onnx_node import OnnxNode
+from onnx2torch2.utils.common import OperationConverterResult
+from onnx2torch2.utils.common import onnx_mapping_from_node
 
 
 class OnnxSum(OnnxBaseElementWise):  # pylint: disable=missing-docstring

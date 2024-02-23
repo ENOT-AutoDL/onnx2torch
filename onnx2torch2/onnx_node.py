@@ -6,7 +6,7 @@ from typing import Tuple
 from onnx.onnx_ml_pb2 import AttributeProto
 from onnx.onnx_ml_pb2 import NodeProto
 
-from onnx2torch.onnx_tensor import OnnxTensor
+from onnx2torch2.onnx_tensor import OnnxTensor
 
 
 class OnnxNode:  # pylint: disable=missing-class-docstring

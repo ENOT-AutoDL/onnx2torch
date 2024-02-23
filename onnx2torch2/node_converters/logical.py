@@ -8,15 +8,15 @@ from typing import Optional
 import torch
 from torch import nn
 
-from onnx2torch.node_converters.registry import add_converter
-from onnx2torch.onnx_graph import OnnxGraph
-from onnx2torch.onnx_node import OnnxNode
-from onnx2torch.utils.common import OnnxToTorchModule
-from onnx2torch.utils.common import OperationConverterResult
-from onnx2torch.utils.common import old_style_broadcast
-from onnx2torch.utils.common import onnx_mapping_from_node
-from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
-from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
+from onnx2torch2.node_converters.registry import add_converter
+from onnx2torch2.onnx_graph import OnnxGraph
+from onnx2torch2.onnx_node import OnnxNode
+from onnx2torch2.utils.common import OnnxToTorchModule
+from onnx2torch2.utils.common import OperationConverterResult
+from onnx2torch2.utils.common import old_style_broadcast
+from onnx2torch2.utils.common import onnx_mapping_from_node
+from onnx2torch2.utils.custom_export_to_onnx import DefaultExportToOnnx
+from onnx2torch2.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 _TORCH_FUNCTION_FROM_ONNX_TYPE = {
     'Or': torch.logical_or,

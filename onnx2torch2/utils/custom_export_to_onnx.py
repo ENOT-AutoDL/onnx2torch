@@ -12,7 +12,7 @@ from typing import Optional
 import torch
 from torch import _C as torch_C
 
-from onnx2torch.utils.common import OnnxToTorchModule
+from onnx2torch2.utils.common import OnnxToTorchModule
 
 
 class OnnxToTorchModuleWithCustomExport(OnnxToTorchModule):

@@ -1,1 +1,1 @@
-from onnx2torch.converter import convert
+from onnx2torch2.converter import convert

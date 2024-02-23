@@ -9,10 +9,10 @@ from onnx.onnx_ml_pb2 import ModelProto
 from torch import fx
 from torch import nn
 
-from onnx2torch.node_converters import get_converter
-from onnx2torch.onnx_graph import OnnxGraph
-from onnx2torch.onnx_graph import ValueType
-from onnx2torch.utils.safe_shape_inference import safe_shape_inference
+from onnx2torch2.node_converters import get_converter
+from onnx2torch2.onnx_graph import OnnxGraph
+from onnx2torch2.onnx_graph import ValueType
+from onnx2torch2.utils.safe_shape_inference import safe_shape_inference
 
 
 def _remove_initializers_from_input(model: ModelProto) -> ModelProto:
@@ -44,11 +44,11 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     """Convert model from onnx to PyTorch.
 
     This function build torch.fx GraphModule from onnx ModelProto using operations from the converter registry.
-    The registered operation can be found in onnx2torch/node_converters.
+    The registered operation can be found in onnx2torch2/node_converters.
 
     Usage example:
 
-        from onnx2torch import convert
+        from onnx2torch2 import convert
         torch_module = convert('path/to/onnx_model.onnx')
 
 
