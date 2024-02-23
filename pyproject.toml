@@ -5,7 +5,7 @@ license = {file = 'LICENSE'}
 description = 'ONNX to PyTorch converter'
 readme = 'README.md'
 keywords = ['AI', 'onnx', 'torch', 'onnx2torch2', 'converters']
-authors = [{name = '', email = ''}]
+authors = [{name = 'untetherai', email = 'info@untether.ai'}]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'License :: OSI Approved :: Apache Software License',
