@@ -44,7 +44,6 @@ class UGridSampler(nn.Module):
         x,
         grid,
     ) -> torch.Tensor:
-        grid = grid.type(x.dtype)
         return torch.nn.functional.grid_sample(
             x, grid, mode=self.interpolation_mode, padding_mode=self.padding_mode, align_corners=self.align_corners
         )
