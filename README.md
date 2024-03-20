@@ -4,45 +4,41 @@
 </div>
 
 <p align="center">
-    <a href="https://pypi.org/project/onnx2torch">
-        <img src="https://badgen.net/pypi/v/onnx2torch" />
+    <a href="https://pypi.org/project/onnx2torch2">
+        <img src="https://badgen.net/pypi/v/onnx2torch2" />
     </a>
-    <a href="https://anaconda.org/conda-forge/onnx2torch">
-        <img src="https://img.shields.io/conda/vn/conda-forge/onnx2torch" />
+    <a href="https://anaconda.org/conda-forge/onnx2torch2">
+        <img src="https://img.shields.io/conda/vn/conda-forge/onnx2torch2" />
     </a>
-    <a href="https://pypi.org/project/onnx2torch">
-        <img src="https://badgen.net/pypi/license/onnx2torch" />
+    <a href="https://pypi.org/project/onnx2torch2">
+        <img src="https://badgen.net/pypi/license/onnx2torch2" />
     </a>
     <a href="https://github.com/psf/black">
         <img src="https://img.shields.io/badge/code%20style-black-black" />
     </a>
-    <a href="https://pypi.org/project/onnx2torch">
-        <img src="https://img.shields.io/pypi/dm/onnx2torch" />
+    <a href="https://pypi.org/project/onnx2torch2">
+        <img src="https://img.shields.io/pypi/dm/onnx2torch2" />
     </a>
-    <a href="https://github.com/ENOT-AutoDL/onnx2torch/stargazers">
-        <img src="https://img.shields.io/github/stars/ENOT-AutoDL/onnx2torch.svg?style=social&label=Star&maxAge=2592000" />
+    <a href="https://github.com/untetherai/onnx2torch2/stargazers">
+        <img src="https://img.shields.io/github/stars/untetherai/onnx2torch2.svg?style=social&label=Star&maxAge=2592000" />
     </a>
 </p>
 
-onnx2torch is an ONNX to PyTorch converter.
+onnx2torch2 is an ONNX to PyTorch converter.
 Our converter:
 * Is easy to use – Convert the ONNX model with the function call ``convert``;
 * Is easy to extend – Write your own custom layer in PyTorch and register it with ``@add_converter``;
 * Convert back to ONNX – You can convert the model back to ONNX using the ``torch.onnx.export`` function.
 
-If you find an issue, please [let us know](https://github.com/ENOT-AutoDL/onnx2torch/issues)! And feel free to create merge requests.
+If you find an issue, please [let us know](https://github.com/untetherai/onnx2torch2/issues)! And feel free to create merge requests.
 
 Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.
-Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
+Let us know which models you use or want to convert from onnx to torch [here](https://github.com/untetherai/onnx2torch2/discussions).
 
 ## Installation
 
 ```bash
-pip install onnx2torch
-```
-or
-```bash
-conda install -c conda-forge onnx2torch
+pip install .
 ```
 
 ## Usage
@@ -54,7 +50,7 @@ Below you can find some examples of use.
 ```python
 import onnx
 import torch
-from onnx2torch import convert
+from onnx2torch2 import convert
 
 # Path to ONNX model
 onnx_model_path = '/some/path/mobile_net_v2.onnx'
@@ -126,11 +122,11 @@ Transformers:
 
 ## How to add new operations to converter
 
-Here we show how to extend onnx2torch with new ONNX operation, that supported by both PyTorch and ONNX
+Here we show how to extend onnx2torch2 with new ONNX operation, that supported by both PyTorch and ONNX
 <details>
 <summary>and has the same behaviour</summary>
 
-An example of such a module is [Relu](./onnx2torch/node_converters/activations.py)
+An example of such a module is [Relu](./onnx2torch2/node_converters/activations.py)
 
 ```python
 @add_converter(operation_type='Relu', version=6)
@@ -151,7 +147,7 @@ If Operation's behaviour differs from one opset version to another, you should i
 <details>
 <summary>but has different behaviour</summary>
 
-An example of such a module is [ScatterND](./onnx2torch/node_converters/scatter_nd.py)
+An example of such a module is [ScatterND](./onnx2torch2/node_converters/scatter_nd.py)
 
 ```python
 # It is recommended to use Enum for string ONNX attributes.
@@ -232,7 +228,7 @@ Incase you are using a model with older opset, try the following workaround:
 import onnx
 from onnx import version_converter
 import torch
-from onnx2torch import convert
+from onnx2torch2 import convert
 
 # Load the ONNX model.
 model = onnx.load('model.onnx')
@@ -250,10 +246,10 @@ Note: use this only when the model does not convert to PyTorch using the existin
 
 ## Citation
 
-To cite onnx2torch use `Cite this repository` button, or:
+To cite onnx2torch2 use `Cite this repository` button, or:
 ```
-@misc{onnx2torch,
-  title={onnx2torch},
+@misc{onnx2torch2,
+  title={onnx2torch2},
   author={ENOT developers and Kalgin, Igor and Yanchenko, Arseny and Ivanov, Pyoter and Goncharenko, Alexander},
   year={2021},
   howpublished={\url{https://enot.ai/}},

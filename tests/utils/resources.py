@@ -30,13 +30,13 @@ _ONNX_MODELS_IDS = {
     'swin': f'{_CHKP_TRANSFORMERS_URL}/swin.onnx',
     'vit': f'{_CHKP_TRANSFORMERS_URL}/vit.onnx',
     'gptj_2_random_blocks': f'{_CHKP_TRANSFORMERS_URL}/gptj_2_random_blocks.onnx',
-    'resnet50': 'https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v2-7.onnx',
+    'resnet50': 'https://huggingface.co/OWG/resnet-50/resolve/main/onnx/model.onnx',
     '3d_gan': f'{_CHKP_OTHER_URL}/3d_gan.onnx',
     'shelfnet': f'{_CHKP_KEYPOINTS_URL}/shelfnet.onnx',
     'point_arch': f'{_CHKP_OTHER_URL}/point_arch_nq.onnx',
 }
 
-_MINIMAL_DATASETS_ID = '1Vd7qfQotrRADPLFxViA2tRpz7tBymR31'
+_MINIMAL_DATASETS_ID = '1mkQI6SPGGpqujJI-ZGe8iZKdZeoM0uNr'
 
 
 def get_model_path(name: str) -> Path:  # pylint: disable=missing-function-docstring
@@ -58,14 +58,14 @@ def get_model(name: str) -> ModelProto:  # pylint: disable=missing-function-docs
 
 def get_minimal_dataset_path():  # pylint: disable=missing-function-docstring
     dataset_path = DATASETS_DIR / 'minimal_dataset'
-    if not dataset_path.exists():
-        arch_path = dataset_path.with_suffix('.tar.gz')
+    arch_path = dataset_path.with_suffix('.tar.gz')
+    if not arch_path.exists():
         GoogleDriveDownloader.download_file_from_google_drive(
             file_id=_MINIMAL_DATASETS_ID,
             dest_path=arch_path,
             overwrite=True,
         )
-        with tarfile.open(arch_path, 'r:gz') as arch_file:
-            arch_file.extractall(path=dataset_path)
+    with tarfile.open(arch_path, 'r:gz') as arch_file:
+        arch_file.extractall(path=dataset_path)
 
     return dataset_path

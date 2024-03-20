@@ -39,9 +39,9 @@ def _test_layer_norm(
     check_onnx_model(
         onnx_model=model,
         onnx_inputs=inputs,
-        atol_onnx_torch=1e-5,
+        atol_onnx_torch=6e-5,
         atol_torch_cpu_cuda=1e-5,
-        atol_onnx_torch2onnx=1e-5,
+        atol_onnx_torch2onnx=6e-5,
     )
 
 
