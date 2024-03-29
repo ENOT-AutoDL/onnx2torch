@@ -107,7 +107,7 @@ Segmentation models:
 - [x] HRNet
 - [x] UNet (torchvision)
 - [x] FCN ResNet-50 (torchvision)
-- [x] lraspp MobileNetV3 (torchvision)
+- [x] LRASPP MobileNetV3 (torchvision)
 
 Detection from MMdetection:
 
