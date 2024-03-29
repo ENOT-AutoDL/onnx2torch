@@ -61,9 +61,9 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | Identity                  | Y         |                                                                                                                                                                     |
 | If                        | N         |                                                                                                                                                                     |
 | InstanceNormalization     | Y         |                                                                                                                                                                     |
-| IsInf                     | N         |                                                                                                                                                                     |
-| IsNaN                     | N         |                                                                                                                                                                     |
-| LayerNormalization        | Y         | LayerNormalization outputs "Mean" and "InvStdDev" are not implemented                                                                                                |
+| IsInf                     | Y         |                                                                                                                                                                     |
+| IsNaN                     | Y         |                                                                                                                                                                     |
+| LayerNormalization        | Y         | LayerNormalization outputs "Mean" and "InvStdDev" are not implemented                                                                                               |
 | LRN                       | Y         |                                                                                                                                                                     |
 | LSTM                      | N         |                                                                                                                                                                     |
 | LeakyRelu                 | Y         |                                                                                                                                                                     |
@@ -85,7 +85,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | Multinomial               | N         |                                                                                                                                                                     |
 | Neg                       | Y         |                                                                                                                                                                     |
 | NonMaxSuppression         | Y         |                                                                                                                                                                     |
-| NonZero                   | N         |                                                                                                                                                                     |
+| NonZero                   | Y         |                                                                                                                                                                     |
 | Not                       | Y         |                                                                                                                                                                     |
 | OneHot                    | N         |                                                                                                                                                                     |
 | Optional                  | N         |                                                                                                                                                                     |

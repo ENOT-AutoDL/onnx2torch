@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 __all__ = [
     'OnnxNonZero',
 ]
@@ -14,15 +15,13 @@ from onnx2torch.utils.common import OperationConverterResult
 
 
 class OnnxNonZero(nn.Module, OnnxToTorchModule):
-    def __init__(self):
-        super().__init__()
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.nonzero(input_tensor)
 
 
 @add_converter(operation_type='NonZero', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    del graph
     torch_module = OnnxNonZero()
 
     return OperationConverterResult(
