@@ -136,7 +136,6 @@ _SCORES_NONE_TEST = _SCORES
     'boxes,scores,max_output_boxes_per_class,iou_threshold,score_threshold,center_point_box',
     (
         (_BOXES_CXCYWH_FORMAT_TEST, _SCORES_CXCYWH_FORMAT_TEST, 3, 0.1, 0.0, 1),  # center point box format
-        # FIXME
         # flipped coordinates
         # (_BOXES_FLIPPED_COORDINATES_TEST, _SCORES_FLIPPED_COORDINATES_TEST, 3, 0.5, 0.0, None),
         (_BOXES_IDENTICAL_BOXES_TEST, _SCORES_IDENTICAL_BOXES_TEST, 3, 0.5, 0.0, None),  # identical boxes
