@@ -38,10 +38,11 @@ Our converter:
 - Is easy to extend – Write your own custom layer in PyTorch and register it with `@add_converter`;
 - Convert back to ONNX – You can convert the model back to ONNX using the `torch.onnx.export` function.
 
-If you find an issue, please [let us know](https://github.com/ENOT-AutoDL/onnx2torch/issues)! And feel free to create merge requests.
+If you find an issue, please [let us know](https://github.com/ENOT-AutoDL/onnx2torch/issues)!
+And feel free to create merge requests.
 
 Please note that this converter covers only a limited number of PyTorch / ONNX models and operations.
-Let us know which models you use or want to convert from onnx to torch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
+Let us know which models you use or want to convert from ONNX to PyTorch [here](https://github.com/ENOT-AutoDL/onnx2torch/discussions).
 
 ## Installation
 
@@ -103,11 +104,11 @@ We have tested the following models:
 Segmentation models:
 
 - [x] DeepLabV3+
-- [x] DeepLabV3 ResNet-50 (torchvision)
+- [x] DeepLabV3 ResNet-50 (TorchVision)
 - [x] HRNet
-- [x] UNet (torchvision)
-- [x] FCN ResNet-50 (torchvision)
-- [x] LRASPP MobileNetV3 (torchvision)
+- [x] UNet (TorchVision)
+- [x] FCN ResNet-50 (TorchVision)
+- [x] LRASPP MobileNetV3 (TorchVision)
 
 Detection from MMdetection:
 
@@ -117,7 +118,7 @@ Detection from MMdetection:
 - [x] [YOLOv3 d53](https://github.com/open-mmlab/mmdetection)
 - [x] [YOLOv5](https://github.com/ultralytics/yolov5)
 
-Classification from __torchvision__:
+Classification from __TorchVision__:
 
 - [x] ResNet-18
 - [x] ResNet-50
