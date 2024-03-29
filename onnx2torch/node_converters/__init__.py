@@ -22,6 +22,8 @@ from onnx2torch.node_converters.gemm import *
 from onnx2torch.node_converters.global_average_pool import *
 from onnx2torch.node_converters.identity import *
 from onnx2torch.node_converters.instance_norm import *
+from onnx2torch.node_converters.isinf import *
+from onnx2torch.node_converters.isnan import *
 from onnx2torch.node_converters.layer_norm import *
 from onnx2torch.node_converters.logical import *
 from onnx2torch.node_converters.lrn import *
@@ -32,6 +34,7 @@ from onnx2torch.node_converters.min_max import *
 from onnx2torch.node_converters.mod import *
 from onnx2torch.node_converters.neg import *
 from onnx2torch.node_converters.nms import *
+from onnx2torch.node_converters.nonzero import *
 from onnx2torch.node_converters.pad import *
 from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
