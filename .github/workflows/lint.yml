@@ -19,7 +19,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        python -m pip install -e .
+        python -m pip install -e .[dev]
     - name: Analysing the code with pylint
       run: |
         pylint --output-format=colorized $(git ls-files '*.py')
