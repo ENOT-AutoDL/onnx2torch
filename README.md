@@ -11,16 +11,23 @@
         <img src="https://img.shields.io/conda/vn/conda-forge/onnx2torch" />
     </a>
     <a href="https://pypi.org/project/onnx2torch">
-        <img src="https://badgen.net/pypi/license/onnx2torch" />
-    </a>
-    <a href="https://github.com/psf/black">
-        <img src="https://img.shields.io/badge/code%20style-black-black" />
+        <img src="https://img.shields.io/github/license/ENOT-AutoDL/onnx2torch?color=blue" />
     </a>
     <a href="https://pypi.org/project/onnx2torch">
-        <img src="https://img.shields.io/pypi/dm/onnx2torch" />
+        <img src="https://img.shields.io/pypi/dm/onnx2torch?color=blue" />
     </a>
     <a href="https://github.com/ENOT-AutoDL/onnx2torch/stargazers">
         <img src="https://img.shields.io/github/stars/ENOT-AutoDL/onnx2torch.svg?style=social&label=Star&maxAge=2592000" />
+    </a>
+    <br>
+    <a href="https://github.com/psf/black">
+        <img src="https://img.shields.io/badge/code%20style-black-black?color=blue" />
+    </a>
+    <a href="https://github.com/pre-commit/pre-commit">
+        <img src="https://img.shields.io/badge/pre--commit-enabled-blue?logo=pre-commit" />
+    </a>
+    <a href="https://conventionalcommits.org">
+        <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white&color=blue" />
     </a>
 </p>
 
