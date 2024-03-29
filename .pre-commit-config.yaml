@@ -1,39 +1,79 @@
+default_install_hook_types: [commit-msg, pre-commit, pre-push]
+
 repos:
-- repo: https://github.com/psf/black
-  rev: 24.3.0
-  hooks:
-    - id: black
-- repo: https://github.com/PyCQA/isort
-  rev: 5.13.2
-  hooks:
-    - id: isort
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
-  hooks:
-    - id: check-yaml
-    - id: check-toml
-    - id: check-json
-    - id: end-of-file-fixer
-    - id: trailing-whitespace
-    - id: check-added-large-files
-    - id: check-case-conflict
-    - id: check-merge-conflict
-    - id: detect-private-key
-    - id: end-of-file-fixer
-    - id: requirements-txt-fixer
-    - id: no-commit-to-branch
-      args: ["-b=main"]
-- repo: https://github.com/PyCQA/pylint
-  rev: v3.1.0
-  hooks:
-    - id: pylint
-      name: pylint
-      entry: pylint
-      language: system
-      types: [ python ]
-      args:
-        [
-          "-rn",
-          "-sn",
-          "--output-format=colorized",
-        ]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: debug-statements
+      - id: detect-private-key
+      - id: detect-aws-credentials
+        args: [--allow-missing-credentials]
+      - id: no-commit-to-branch
+        args: [-b=main]
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.20.0
+    hooks:
+      - id: commitizen
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat-black
+          - mdformat-shfmt
+
+  - repo: https://github.com/lyz-code/yamlfix
+    rev: 1.16.0
+    hooks:
+      - id: yamlfix
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args:
+          - --format
+          - parsable
+          - --strict
+          - -d
+          - '{extends: relaxed, rules: {line-length: {max: 120}}}'
+
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/PyCQA/pylint
+    rev: v3.1.0
+    hooks:
+      - id: pylint
+        language: system
+        args: [-rn, -sn]
+
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.356
+    hooks:
+      - id: pyright
