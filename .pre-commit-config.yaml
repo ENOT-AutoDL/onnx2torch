@@ -1,21 +1,14 @@
 repos:
 - repo: https://github.com/psf/black
-  rev: 23.1.0
+  rev: 24.3.0
   hooks:
     - id: black
 - repo: https://github.com/PyCQA/isort
-  rev: 5.12.0
+  rev: 5.13.2
   hooks:
     - id: isort
-      args:
-        [
-          "--force-single-line-imports",
-          "--ensure-newline-before-comments",
-          "--line-length=120",
-          "--profile=black",
-        ]
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v4.5.0
   hooks:
     - id: check-yaml
     - id: check-toml
@@ -29,18 +22,18 @@ repos:
     - id: end-of-file-fixer
     - id: requirements-txt-fixer
     - id: no-commit-to-branch
-      args:
-        [
-          "-b=main",
-        ]
+      args: ["-b=main"]
 - repo: https://github.com/PyCQA/pylint
-  rev: v2.16.0
+  rev: v3.1.0
   hooks:
     - id: pylint
+      name: pylint
+      entry: pylint
+      language: system
+      types: [ python ]
       args:
         [
           "-rn",
           "-sn",
-          "--rcfile=.pylintrc",
           "--output-format=colorized",
         ]

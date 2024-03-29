@@ -51,3 +51,31 @@ profile = 'black'
 line_length = 120
 ensure_newline_before_comments = true
 force_single_line = true
+
+[tool.pylint.master]
+load-plugins = ['pylint.extensions.docparams']
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-args = 12
+max-locals = 30
+max-attributes = 20
+min-public-methods = 0
+
+[tool.pylint.typecheck]
+generated-members = ['torch.*']
+
+[tool.pylint.messages_control]
+disable = [
+  'logging-fstring-interpolation',
+  'cyclic-import',
+  'duplicate-code',
+  'missing-module-docstring',
+  'unnecessary-pass',
+  'no-name-in-module',
+]
+
+[tool.pylint.BASIC]
+good-names = ['bs', 'bn']

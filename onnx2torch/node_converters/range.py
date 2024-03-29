@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 __all__ = [
     'OnnxRange',
 ]
@@ -16,7 +17,7 @@ from onnx2torch.utils.custom_export_to_onnx import DefaultExportToOnnx
 from onnx2torch.utils.custom_export_to_onnx import OnnxToTorchModuleWithCustomExport
 
 
-class OnnxRange(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
+class OnnxRange(nn.Module, OnnxToTorchModuleWithCustomExport):
     def __init__(self):
         super().__init__()
         self.register_buffer('dummy_buffer', torch.Tensor(), persistent=False)
@@ -41,22 +42,24 @@ class OnnxRange(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
             device=self.dummy_buffer.device,
         )
 
-    def forward(  # pylint: disable=missing-function-docstring
+    def forward(
         self,
         start: Union[torch.Tensor, float, int],
         limit: Union[torch.Tensor, float, int],
         delta: Union[torch.Tensor, float, int],
     ) -> torch.Tensor:
-        forward_lambda = lambda: self._arange(start, limit, delta)
+        def _forward() -> torch.Tensor:
+            return self._arange(start, limit, delta)
 
         if torch.onnx.is_in_onnx_export():
-            return DefaultExportToOnnx.export(forward_lambda, 'Range', start, limit, delta, {})
+            return DefaultExportToOnnx.export(_forward, 'Range', start, limit, delta, {})
 
-        return forward_lambda()
+        return _forward()
 
 
 @add_converter(operation_type='Range', version=11)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    del graph
     return OperationConverterResult(
         torch_module=OnnxRange(),
         onnx_mapping=onnx_mapping_from_node(node),

@@ -22,7 +22,7 @@ jobs:
         python -m pip install -e .
     - name: Analysing the code with pylint
       run: |
-        pylint --rcfile .pylintrc --output-format=colorized $(git ls-files '*.py')
+        pylint --output-format=colorized $(git ls-files '*.py')
 
   lint-python-format:
     name: Python format
