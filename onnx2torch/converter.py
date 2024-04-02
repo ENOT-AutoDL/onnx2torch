@@ -124,7 +124,13 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
                 torch_input_node = torch_nodes[onnx_input_node.unique_name]
 
                 # Get only one needed output of torch_input_node by index
-                if len(onnx_input_node.output_values) > 1 or onnx_input_node._proto.op_type in ('If', 'Loop', 'Scan', 'SequenceMap', 'Split'):
+                if len(onnx_input_node.output_values) > 1 or onnx_input_node.proto.op_type in (
+                    'If',
+                    'Loop',
+                    'Scan',
+                    'SequenceMap',
+                    'Split'
+                ):
                     index = onnx_input_node.output_values.index(value_name)
                     torch_input_node = torch_graph.call_function(getitem, args=(torch_input_node, index))
                     torch_nodes[name + '_split_output'] = torch_input_node
