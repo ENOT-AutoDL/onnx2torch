@@ -17,7 +17,9 @@ from onnx2torch.utils.safe_shape_inference import safe_shape_inference
 
 def _remove_initializers_from_input(model: ModelProto) -> ModelProto:
     graph_inputs = model.graph.input
-    graph_inputs_mapping = {one_input.name: one_input for one_input in graph_inputs}
+    graph_inputs_mapping = {
+        one_input.name: one_input for one_input in graph_inputs
+    }
 
     for initializer in model.graph.initializer:
         if initializer.name in graph_inputs_mapping:
@@ -29,10 +31,14 @@ def _remove_initializers_from_input(model: ModelProto) -> ModelProto:
 class InitializersContainer(nn.Module):
     """Module for storing initializers in torch fx graph."""
 
-    def add_initializer(self, name: str, initializer: torch.Tensor) -> None:  # pylint: disable=missing-docstring
+    def add_initializer(
+        self, name: str, initializer: torch.Tensor
+    ) -> None:  # pylint: disable=missing-docstring
         self.register_buffer(name, initializer)
 
-    def forward(self, *args, **kwargs):  # pylint: disable=missing-function-docstring
+    def forward(
+        self, *args, **kwargs
+    ):  # pylint: disable=missing-function-docstring
         raise RuntimeError('Got unexpected "forward" on constant container')
 
 
@@ -72,10 +78,15 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     onnx_model = safe_shape_inference(onnx_model_or_path)
 
     if onnx_model.ir_version < 3:
-        raise NotImplementedError('Onnx IR is too old (minimal supported version is 3).')
+        raise NotImplementedError(
+            'Onnx IR is too old (minimal supported version is 3).'
+        )
 
     onnx_model = _remove_initializers_from_input(onnx_model)
-    opset_import = {opsetid_proto.domain: opsetid_proto.version for opsetid_proto in onnx_model.opset_import}
+    opset_import = {
+        opsetid_proto.domain: opsetid_proto.version
+        for opsetid_proto in onnx_model.opset_import
+    }
 
     onnx_graph = OnnxGraph(onnx_model.graph)  # pylint: disable=no-member
     torch_graph = fx.Graph()
@@ -89,7 +100,9 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
     for input_value, name in enumerate(onnx_graph.input_values, 1):
         if save_input_names:
             if not name.isidentifier():
-                raise ValueError(f'Input name "{name}" cannot be used as name of placeholder in fx.GraphModule.')
+                raise ValueError(
+                    f'Input name "{name}" cannot be used as name of placeholder in fx.GraphModule.'
+                )
 
             placeholder_name = name
         else:
@@ -124,53 +137,81 @@ def convert(  # pylint: disable=too-many-locals, too-many-branches, too-many-sta
                 torch_input_node = torch_nodes[onnx_input_node.unique_name]
 
                 # Get only one needed output of torch_input_node by index
-                if len(onnx_input_node.output_values) > 1 or onnx_input_node.proto.op_type in (
+                if len(
+                    onnx_input_node.output_values
+                ) > 1 or onnx_input_node.proto.op_type in (
                     'If',
                     'Loop',
                     'Scan',
                     'SequenceMap',
-                    'Split'
+                    'Split',
                 ):
                     index = onnx_input_node.output_values.index(value_name)
-                    torch_input_node = torch_graph.call_function(getitem, args=(torch_input_node, index))
+                    torch_input_node = torch_graph.call_function(
+                        getitem, args=(torch_input_node, index)
+                    )
                     torch_nodes[name + '_split_output'] = torch_input_node
                 args.append(torch_input_node)
 
             elif value_type == ValueType.GRAPH_INITIALIZER:
                 # The name of pytorch buffer must not contain '.'(dot)
-                len_torch_initializers = sum(1 for _ in torch_initializers.buffers())
+                len_torch_initializers = sum(
+                    1 for _ in torch_initializers.buffers()
+                )
                 torch_buffer_name = f'onnx_initializer_{len_torch_initializers}'
                 if value_name not in torch_nodes:
                     torch_initializers.add_initializer(
                         torch_buffer_name,
                         onnx_graph.initializers[value_name].to_torch(),
                     )
-                    torch_nodes[torch_buffer_name] = torch_graph.get_attr(f'initializers.{torch_buffer_name}')
+                    torch_nodes[torch_buffer_name] = torch_graph.get_attr(
+                        f'initializers.{torch_buffer_name}'
+                    )
                 args.append(torch_nodes[torch_buffer_name])
 
             elif value_type == ValueType.EMPTY:
                 args.append(None)
 
             else:
-                raise RuntimeError(f'Got unexpected input value type ({value_type})')
+                raise RuntimeError(
+                    f'Got unexpected input value type ({value_type})'
+                )
 
         # Collect kwargs if there are some skipped args
         kwargs = {}
         if None in args:
             first_skipped_arg = args.index(None)
-            forward_args = tuple(inspect.signature(torch_module.forward).parameters.keys())
+            forward_args = tuple(
+                inspect.signature(torch_module.forward).parameters.keys()
+            )
             forward_args = forward_args[first_skipped_arg : len(args)]
-            args, kwargs_values = args[:first_skipped_arg], args[first_skipped_arg:]
-            kwargs.update({name: value for name, value in zip(forward_args, kwargs_values) if value is not None})
+            args, kwargs_values = (
+                args[:first_skipped_arg],
+                args[first_skipped_arg:],
+            )
+            kwargs.update(
+                {
+                    name: value
+                    for name, value in zip(forward_args, kwargs_values)
+                    if value is not None
+                }
+            )
 
-        torch_nodes[name] = torch_graph.call_module(module_name=name, args=tuple(args), kwargs=kwargs)
+        torch_nodes[name] = torch_graph.call_module(
+            module_name=name, args=tuple(args), kwargs=kwargs
+        )
 
     # Create output nodes
-    onnx_output_nodes = [onnx_graph.value_as_node_output(value_name)[0] for value_name in onnx_graph.output_values]
+    onnx_output_nodes = [
+        onnx_graph.value_as_node_output(value_name)[0]
+        for value_name in onnx_graph.output_values
+    ]
     # Delete duplicates and save order
     onnx_output_nodes = list(OrderedDict.fromkeys(onnx_output_nodes))
 
-    torch_output_nodes = [torch_nodes[onnx_node.unique_name] for onnx_node in onnx_output_nodes]
+    torch_output_nodes = [
+        torch_nodes[onnx_node.unique_name] for onnx_node in onnx_output_nodes
+    ]
     if len(torch_output_nodes) == 1:
         torch_output_nodes = torch_output_nodes[0]
     torch_graph.output(torch_output_nodes)
