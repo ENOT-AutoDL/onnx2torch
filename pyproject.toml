@@ -1,6 +1,6 @@
 [project]
 name = 'onnx2torch'
-version = '1.5.13'
+version = '1.5.14'
 license = {file = 'LICENSE'}
 description = 'ONNX to PyTorch converter'
 readme = 'README.md'
@@ -40,6 +40,29 @@ repository = 'https://github.com/ENOT-AutoDL/onnx2torch'
 [tool.setuptools.packages.find]
 include = ['onnx2torch*']
 
+[tool.commitizen]
+name = 'cz_conventional_commits'
+tag_format = '$version'
+version_scheme = 'pep440'
+version_provider = 'pep621'
+update_changelog_on_bump = true
+major_version_zero = true
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 0
+wrap-descriptions = 0
+blank = true
+black = true
+pre-summary-newline = true
+
+[tool.yamlfix]
+line_length = 120
+explicit_start = false
+sequence_style = 'keep_style'
+whitelines = 1
+section_whitelines = 1
+
 [tool.black]
 line-length = 120
 target-version = ['py36', 'py37', 'py38', 'py39']
@@ -51,3 +74,36 @@ profile = 'black'
 line_length = 120
 ensure_newline_before_comments = true
 force_single_line = true
+
+[tool.pylint.master]
+load-plugins = ['pylint.extensions.docparams']
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-args = 12
+max-locals = 30
+max-attributes = 20
+min-public-methods = 0
+
+[tool.pylint.typecheck]
+generated-members = ['torch.*']
+
+[tool.pylint.messages_control]
+disable = [
+    'logging-fstring-interpolation',
+    'cyclic-import',
+    'duplicate-code',
+    'missing-module-docstring',
+    'unnecessary-pass',
+    'no-name-in-module',
+]
+
+[tool.pylint.BASIC]
+good-names = ['bs', 'bn']
+
+[tool.pyright]
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportWildcardImportFromLibrary = false
