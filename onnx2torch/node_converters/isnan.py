@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 __all__ = [
     'OnnxIsNaN',
 ]
@@ -14,15 +15,13 @@ from onnx2torch.utils.common import OperationConverterResult
 
 
 class OnnxIsNaN(nn.Module, OnnxToTorchModule):
-    def __init__(self):
-        super().__init__()
-
     def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
         return torch.isnan(input_tensor)
 
 
 @add_converter(operation_type='IsNaN', version=13)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    del graph
     torch_module = OnnxIsNaN()
 
     return OperationConverterResult(
