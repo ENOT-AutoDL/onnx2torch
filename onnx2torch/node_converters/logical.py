@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 __all__ = [
     'OnnxNot',
     'OnnxLogical',
@@ -25,16 +26,18 @@ _TORCH_FUNCTION_FROM_ONNX_TYPE = {
 }
 
 
-class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disable=missing-class-docstring
-    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:  # pylint: disable=missing-function-docstring
-        forward_lambda = lambda: torch.logical_not(input_tensor)
+class OnnxNot(nn.Module, OnnxToTorchModuleWithCustomExport):
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        def _forward() -> torch.Tensor:
+            return torch.logical_not(input_tensor)
+
         if torch.onnx.is_in_onnx_export():
-            return DefaultExportToOnnx.export(forward_lambda, 'Not', input_tensor, {})
+            return DefaultExportToOnnx.export(_forward, 'Not', input_tensor, {})
 
-        return forward_lambda()
+        return _forward()
 
 
-class OnnxLogical(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
+class OnnxLogical(nn.Module, OnnxToTorchModule):
     def __init__(self, operation_type: str, broadcast: Optional[int] = None, axis: Optional[int] = None):
         super().__init__()
         self.broadcast = broadcast
@@ -42,9 +45,7 @@ class OnnxLogical(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-clas
 
         self.logic_op_function = _TORCH_FUNCTION_FROM_ONNX_TYPE[operation_type]
 
-    def forward(  # pylint: disable=missing-function-docstring
-        self, first_tensor: torch.Tensor, second_tensor: torch.Tensor
-    ):
+    def forward(self, first_tensor: torch.Tensor, second_tensor: torch.Tensor):
         if self.broadcast == 1 and self.axis is not None:
             second_tensor = old_style_broadcast(first_tensor, second_tensor, self.axis)
 
@@ -57,7 +58,8 @@ class OnnxLogical(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-clas
 @add_converter(operation_type='And', version=7)
 @add_converter(operation_type='Or', version=1)
 @add_converter(operation_type='Or', version=7)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    del graph
     return OperationConverterResult(
         torch_module=OnnxLogical(
             operation_type=node.operation_type,
@@ -69,7 +71,8 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
 
 @add_converter(operation_type='Not', version=1)
-def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
+def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:
+    del graph
     return OperationConverterResult(
         torch_module=OnnxNot(),
         onnx_mapping=onnx_mapping_from_node(node=node),

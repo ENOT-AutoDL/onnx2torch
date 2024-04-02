@@ -37,7 +37,7 @@ def add_converter(  # pylint: disable=missing-function-docstring
             raise ValueError(f'Operation "{description}" already registered')
 
         _CONVERTER_REGISTRY[description] = converter
-        _LOGGER.info(f'Operation converter registered {description}')
+        _LOGGER.debug(f'Operation converter registered {description}')
 
         return converter
 
