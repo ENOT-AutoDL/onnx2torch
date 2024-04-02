@@ -11,18 +11,18 @@ jobs:
     name: Pylint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
-      with:
-        python-version: "3.9"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-        python -m pip install -e .[dev]
-    - name: Analysing the code with pylint
-      run: |
-        pylint --output-format=colorized $(git ls-files '*.py')
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          python -m pip install -e .[dev]
+      - name: Analysing the code with pylint
+        run: |
+          pylint --output-format=colorized $(git ls-files '*.py')
 
   lint-python-format:
     name: Python format
@@ -31,12 +31,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
-          python-version: "3.9"
+          python-version: '3.9'
       - uses: psf/black@stable
         with:
-          options: "--check --diff"
+          options: --check --diff
       - uses: isort/isort-action@master
         with:
-          configuration:
-            --check
-            --diff
+          configuration: --check --diff
