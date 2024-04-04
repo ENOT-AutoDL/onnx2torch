@@ -1,0 +1,17 @@
+name: Wheel builder
+
+on:
+
+  release:
+    types: [published]
+
+permissions:
+  contents: read  #  to fetch code (actions/checkout)
+
+jobs:
+
+  wheelbuilder:
+    uses: ./.github/workflows/REUSE.wheelbuild.yaml
+    with:
+      publish: true
+    secrets: inherit

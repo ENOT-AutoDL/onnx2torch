@@ -1,5 +1,6 @@
-from typing import Tuple, Any
 import random
+from typing import Tuple
+
 import numpy as np
 import pytest
 import torch
@@ -17,7 +18,7 @@ _COCO_STD = np.array([0.225, 0.224, 0.229], dtype=np.float32)
 
 
 @pytest.fixture(autouse=True)
-def fix_seeds(seed: int = 0):
+def fix_seeds(seed: int = 0):  # pylint: disable=missing-function-docstring
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)

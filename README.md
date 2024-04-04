@@ -217,7 +217,7 @@ Here we have used a trick to convert the model from torch back to ONNX by defini
 
 ## Opset version workaround
 
-Incase you are using a model with older opset, try the following workaround:
+In case you are using a model with older opset, try the following workaround:
 
 [ONNX Version Conversion - Official Docs](https://github.com/onnx/onnx/blob/main/docs/PythonAPIOverview.md#converting-version-of-an-onnx-model-within-default-domain-aionnx)
 

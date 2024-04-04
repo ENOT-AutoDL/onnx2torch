@@ -12,22 +12,18 @@
 # right or title under any patent, copyright or otherwise, and makes
 # no representation or warranty that this Information does not infringe
 # any third party patent, copyright or other proprietary right.
-import warnings
-from typing import Optional, cast, Any
 
 import torch
-from torch import nn, fx
-from onnx2torch2 import node_converters
+from torch import nn
 
 from onnx2torch2.node_converters.registry import add_converter
 from onnx2torch2.onnx_graph import OnnxGraph
 from onnx2torch2.onnx_node import OnnxNode
-from onnx2torch2.utils.common import OnnxToTorchModule
 from onnx2torch2.utils.common import OperationConverterResult
 from onnx2torch2.utils.common import onnx_mapping_from_node
 
 
-class UGridSampler(nn.Module):
+class UGridSampler(nn.Module):  # pylint: disable=missing-class-docstring
     def __init__(
         self,
         align_corners: int = 0,
