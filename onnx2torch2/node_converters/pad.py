@@ -18,7 +18,7 @@ from onnx2torch2.onnx_node import OnnxNode
 from onnx2torch2.utils.common import OnnxMapping
 from onnx2torch2.utils.common import OnnxToTorchModule
 from onnx2torch2.utils.common import OperationConverterResult
-from onnx2torch2.utils.common import onnx_mapping_from_node
+from onnx2torch2.utils.common import onnx_mapping_from_node, get_const_value
 
 _ONNX_TO_TORCH_MODE = {
     'constant': 'constant',
@@ -96,17 +96,18 @@ class OnnxPadStatic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-cl
 
 
 class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
-    def __init__(self, mode: str = 'constant'):
+    def __init__(self, pads: List[int] | None, mode: str = 'constant'):
         super().__init__()
+        self.pads = pads
         self.mode = mode
 
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
-        pads: torch.Tensor,
+        pads: List[float],
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
-        torch_pads = _onnx_padding_to_torch(pads.tolist())
+        torch_pads = _onnx_padding_to_torch(pads.tolist() if self.pads == None else self.pads)
         torch_pads = _torch_padding_to_mode_format(torch_pads, self.mode)
 
         return F.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)  # pylint: disable=not-callable
@@ -118,8 +119,14 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     mode = node.attributes.get('mode', 'constant')
     mode = _onnx_to_torch_mode(mode)
 
+    pads_name = node.input_values[1]
+    pads = None
+    if pads_name in graph.initializers or pads_name in graph._node_output_values:
+        pads = get_const_value(pads_name, graph).tolist()
+
+
     return OperationConverterResult(
-        torch_module=OnnxPadDynamic(mode=mode),
+        torch_module=OnnxPadDynamic(pads=pads, mode=mode),
         onnx_mapping=OnnxMapping(
             inputs=node.input_values,
             outputs=node.output_values,
