@@ -25,7 +25,7 @@ class OnnxMatMul(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class
         else:
             try:
                 out = torch.matmul(x, y)
-            except:
+            except:  # pylint: disable=bare-except
                 out = torch.mm(x, y)
         return out
 

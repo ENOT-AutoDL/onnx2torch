@@ -3,7 +3,6 @@ __all__ = [
 ]
 
 from enum import Enum
-from tqdm import tqdm
 from typing import Any
 from typing import Dict
 

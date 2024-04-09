@@ -20,9 +20,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         python -m pip install -e .
+
+    # https://github.com/psf/black/issues/1127, hence the filter
     - name: Analysing the code with pylint
       run: |
-        pylint --rcfile .pylintrc --output-format=colorized $(git ls-files '*.py')
+        pylint --rcfile .pylintrc --output-format=colorized $(git ls-files '*.py'|grep -v tests)
 
   lint-python-format:
     name: Python format

@@ -1,0 +1,53 @@
+name: Wheel builder
+
+on:
+
+  workflow_call:
+
+    inputs:
+      publish:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read  #  to fetch code (actions/checkout)
+
+jobs:
+
+    publish:
+        name: Publish
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+
+          - name: Set up Python
+            uses: actions/setup-python@v2
+            with:
+              python-version: '3.12'
+
+          - name: Install dependencies
+            run: |
+              python -m pip install --upgrade pip setuptools wheel twine build
+
+          - name: Build wheels
+            run: |
+              python -m build --sdist --outdir dist
+              python -m build --wheel --outdir dist
+
+          - name: Twine validation
+            run: |
+              twine check dist/*
+
+          - name: Upload wheels
+            uses: actions/upload-artifact@v2
+            with:
+              name: packages
+              path: dist/*
+          - name: Publish to Pypi
+            if: ${{inputs.publish == true}}
+            uses: pypa/gh-action-pypi-publish@release/v1
+            with:
+              user: __token__
+              password: ${{ secrets.PYPI_API_TOKEN }}
+              packages-dir: dist

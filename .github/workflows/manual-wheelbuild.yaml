@@ -1,0 +1,16 @@
+name: Wheel builder
+
+on:
+
+    workflow_dispatch:
+
+    push:
+
+permissions:
+  contents: read  #  to fetch code (actions/checkout)
+
+jobs:
+
+  wheelbuilder:
+    uses: ./.github/workflows/REUSE.wheelbuild.yaml
+    secrets: inherit

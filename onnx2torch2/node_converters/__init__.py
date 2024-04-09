@@ -20,6 +20,7 @@ from onnx2torch2.node_converters.functions import *
 from onnx2torch2.node_converters.gather import *
 from onnx2torch2.node_converters.gemm import *
 from onnx2torch2.node_converters.global_average_pool import *
+from onnx2torch2.node_converters.gridsample import *
 from onnx2torch2.node_converters.identity import *
 from onnx2torch2.node_converters.instance_norm import *
 from onnx2torch2.node_converters.layer_norm import *
@@ -55,4 +56,3 @@ from onnx2torch2.node_converters.topk import *
 from onnx2torch2.node_converters.transpose import *
 from onnx2torch2.node_converters.unsqueeze import *
 from onnx2torch2.node_converters.where import *
-from onnx2torch2.node_converters.gridsample import *
