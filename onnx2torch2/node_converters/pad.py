@@ -18,7 +18,7 @@ from onnx2torch2.onnx_node import OnnxNode
 from onnx2torch2.utils.common import OnnxMapping
 from onnx2torch2.utils.common import OnnxToTorchModule
 from onnx2torch2.utils.common import OperationConverterResult
-from onnx2torch2.utils.common import onnx_mapping_from_node, get_const_value
+from onnx2torch2.utils.common import get_const_value, onnx_mapping_from_node
 
 _ONNX_TO_TORCH_MODE = {
     'constant': 'constant',
@@ -96,7 +96,7 @@ class OnnxPadStatic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-cl
 
 
 class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-class-docstring
-    def __init__(self, pads: List[int] | None, mode: str = 'constant'):
+    def __init__(self, pads: List[int], mode: str = 'constant'):
         super().__init__()
         self.pads = pads
         self.mode = mode
@@ -107,7 +107,7 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-c
         pads: List[float],
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
-        torch_pads = _onnx_padding_to_torch(pads.tolist() if self.pads is None else self.pads)
+        torch_pads = _onnx_padding_to_torch(pads.tolist() if not self.pads else self.pads)
         torch_pads = _torch_padding_to_mode_format(torch_pads, self.mode)
 
         return F.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)  # pylint: disable=not-callable
@@ -120,8 +120,8 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     mode = _onnx_to_torch_mode(mode)
 
     pads_name = node.input_values[1]
-    pads = None
-    if pads_name in graph.initializers or pads_name in graph._node_output_values:
+    pads = []
+    if pads_name in graph.initializers or pads_name in graph._node_output_values:   # pylint: disable=W0212
         pads = get_const_value(pads_name, graph).tolist()
 
     return OperationConverterResult(
