@@ -24,8 +24,8 @@ issues](https://github.com/untetherai/onnx2torch2/issues?q=is%3Aopen+is%3Aissue+
 Never contributed to open source before? Here are a couple of friendly
 tutorials:
 
--   <http://makeapullrequest.com/>
--   <http://www.firsttimersonly.com/>
+-   [pull request tutorial](http://makeapullrequest.com/)
+-   [first timers](http://www.firsttimersonly.com/)
 
 ## Getting Started
 

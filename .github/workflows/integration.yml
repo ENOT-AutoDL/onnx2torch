@@ -26,7 +26,6 @@ jobs:
                 os: [ubuntu-latest, windows-latest, macOS-latest]
         env:
             ACTIONS_ALLOW_INSECURE_COMMANDS: true
-        name: Python ${matrix.python-version} on ${{ matrix.os }}
 
         steps:
             - name: Checkout
