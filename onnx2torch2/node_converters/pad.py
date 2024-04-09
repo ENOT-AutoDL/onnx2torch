@@ -15,10 +15,10 @@ from torch import nn
 from onnx2torch2.node_converters.registry import add_converter
 from onnx2torch2.onnx_graph import OnnxGraph
 from onnx2torch2.onnx_node import OnnxNode
-from onnx2torch2.utils.common import get_const_value
 from onnx2torch2.utils.common import OnnxMapping
 from onnx2torch2.utils.common import OnnxToTorchModule
 from onnx2torch2.utils.common import OperationConverterResult
+from onnx2torch2.utils.common import get_const_value
 from onnx2torch2.utils.common import onnx_mapping_from_node
 
 _ONNX_TO_TORCH_MODE = {
@@ -105,7 +105,7 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-c
     def forward(  # pylint: disable=missing-function-docstring
         self,
         input_tensor: torch.Tensor,
-        pads: List[float],
+        pads: torch.Tensor,
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
         torch_pads = _onnx_padding_to_torch(pads.tolist() if not self.pads else self.pads)
