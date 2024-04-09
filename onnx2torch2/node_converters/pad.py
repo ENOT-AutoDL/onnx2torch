@@ -15,10 +15,11 @@ from torch import nn
 from onnx2torch2.node_converters.registry import add_converter
 from onnx2torch2.onnx_graph import OnnxGraph
 from onnx2torch2.onnx_node import OnnxNode
+from onnx2torch2.utils.common import get_const_value
 from onnx2torch2.utils.common import OnnxMapping
 from onnx2torch2.utils.common import OnnxToTorchModule
 from onnx2torch2.utils.common import OperationConverterResult
-from onnx2torch2.utils.common import get_const_value, onnx_mapping_from_node
+from onnx2torch2.utils.common import onnx_mapping_from_node
 
 _ONNX_TO_TORCH_MODE = {
     'constant': 'constant',
