@@ -107,7 +107,7 @@ class OnnxPadDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missing-c
         pads: List[float],
         constant_value: Optional[float] = 0.0,
     ) -> torch.Tensor:
-        torch_pads = _onnx_padding_to_torch(pads.tolist() if self.pads == None else self.pads)
+        torch_pads = _onnx_padding_to_torch(pads.tolist() if self.pads is None else self.pads)
         torch_pads = _torch_padding_to_mode_format(torch_pads, self.mode)
 
         return F.pad(input_tensor, mode=self.mode, pad=torch_pads, value=constant_value)  # pylint: disable=not-callable
@@ -123,7 +123,6 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
     pads = None
     if pads_name in graph.initializers or pads_name in graph._node_output_values:
         pads = get_const_value(pads_name, graph).tolist()
-
 
     return OperationConverterResult(
         torch_module=OnnxPadDynamic(pads=pads, mode=mode),
