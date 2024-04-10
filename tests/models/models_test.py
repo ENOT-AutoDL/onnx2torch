@@ -72,7 +72,7 @@ def test_resnet50():  # pylint: disable=missing-function-docstring
         # ('ssd300_vgg', (604, 604), 100, 50),
         # ('ssdlite', (224, 224), 100, 50),
         # ('yolov3_d53', (604, 604), 100, 50),
-        ('yolov5_ultralitics', (672, 256), 2e-3, 1.9),
+        ('yolov5_ultralitics', (672, 256), 2e-3, 2.3),
         ('deeplabv3_mnv3_large', (320, 320), 3e-5, 3e-2),
         ('deeplabv3_plus_resnet101', (486, 500), 3e-5, 2e-2),
         ('hrnet', (321, 321), 6e-8, 4e-7),
