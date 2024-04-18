@@ -54,6 +54,8 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
         axis: int,
         indices: torch.Tensor,
     ) -> Tuple[Union[slice, torch.Tensor], ...]:
+        if indices.dim() == 0:
+            indices = indices.unsqueeze(0)
         axis = input_tensor.dim() + axis if axis < 0 else axis
         skip_axis: List[Union[slice, torch.Tensor]] = [slice(None)] * axis
         skip_axis.append(upcast_indices(indices))
@@ -67,7 +69,10 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
             # But torch.take does not support different axis. So we make it by yourself
             # numpy.take is input_data[:, :, indices] where we pass NONE slices AXIS time
             slice_for_take = self.slice_from_axis(input_tensor, self._axis, indices)
-            return input_tensor[slice_for_take]
+            if indices.dim() == 0:
+                return input_tensor[slice_for_take].squeeze(self._axis)
+            else:
+                return input_tensor[slice_for_take]
 
         if torch.onnx.is_in_onnx_export():
             onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
