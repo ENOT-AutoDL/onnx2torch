@@ -71,8 +71,8 @@ class OnnxGather(nn.Module, OnnxToTorchModuleWithCustomExport):
             slice_for_take = self.slice_from_axis(input_tensor, self._axis, indices)
             if indices.dim() == 0:
                 return input_tensor[slice_for_take].squeeze(self._axis)
-            else:
-                return input_tensor[slice_for_take]
+
+            return input_tensor[slice_for_take]
 
         if torch.onnx.is_in_onnx_export():
             onnx_attrs = self._onnx_attrs(opset_version=get_onnx_version())
