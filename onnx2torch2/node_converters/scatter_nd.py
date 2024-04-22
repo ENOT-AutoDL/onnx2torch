@@ -6,7 +6,6 @@ from enum import Enum
 from typing import Any
 from typing import Dict
 
-import numpy as np
 import torch
 from torch import nn
 
@@ -71,8 +70,7 @@ class OnnxScatterND(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: di
             output = torch.tensor(data.clone(), device=data.device)
             ind_dim = indices.dim()
             # last dimension is a partial-index into data
-            indices_np = indices.cpu().numpy()
-            output_indices = np.reshape(indices_np, (-1, indices.shape[-1])).T.tolist()
+            output_indices = torch.split(torch.t(indices.reshape((-1, indices.shape[-1]))), 1)
             # update.shape = indices.shape[0:ind_dim-1] ++ data.shape[indices.shape[-1]:data.dim()-1]
             output_updates = updates.reshape((-1, *updates.shape[ind_dim - 1 :]))
             output[output_indices] = output_updates
