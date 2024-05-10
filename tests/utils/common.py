@@ -211,7 +211,7 @@ def _check_onnx_model(
 
     onnx_torch_check_function(ort_outputs, torch_outputs)
 
-    if torch_cpu_cuda_check_function is not None:
+    if torch_cpu_cuda_check_function is not None and torch.cuda.is_available():
         torch_cuda_outputs = calc_torch_outputs(onnx_model, onnx_inputs, device='cuda')
         torch_cpu_cuda_check_function(torch_outputs, torch_cuda_outputs)
 
