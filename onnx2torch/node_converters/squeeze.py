@@ -93,6 +93,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
 
 
 @add_converter(operation_type='Squeeze', version=13)
+@add_converter(operation_type='Squeeze', version=21)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     return OperationConverterResult(
         torch_module=OnnxSqueezeDynamicAxes(),
