@@ -25,6 +25,7 @@ def add_converter(  # pylint: disable=missing-function-docstring
     operation_type: str,
     version: int,
     domain: str = defs.ONNX_DOMAIN,
+    override_registry: bool = False,
 ):
     description = OperationDescription(
         domain=domain,
@@ -33,7 +34,7 @@ def add_converter(  # pylint: disable=missing-function-docstring
     )
 
     def deco(converter: TConverter):
-        if description in _CONVERTER_REGISTRY:
+        if description in _CONVERTER_REGISTRY and not override_registry:
             raise ValueError(f'Operation "{description}" already registered')
 
         _CONVERTER_REGISTRY[description] = converter
