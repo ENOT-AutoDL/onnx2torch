@@ -57,7 +57,7 @@ class CustomExportToOnnx(torch.autograd.Function):
         return cls.apply(*args)
 
     @staticmethod
-    def forward(ctx: Any, *args: Any, **kwargs: Any) -> Any:  # pylint: disable=unused-argument
+    def forward(ctx: Any, *args: Any, **kwargs: Any) -> Any:  # pylint: disable=unused-argument, arguments-differ
         """Applies custom forward function."""
         if CustomExportToOnnx._NEXT_FORWARD_FUNCTION is None:
             raise RuntimeError('Forward function is not set')

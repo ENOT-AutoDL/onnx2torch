@@ -1,10 +1,11 @@
+# pylint: disable=missing-docstring
 from pathlib import Path
 
 import numpy as np
 import onnx
-from onnx.helper import make_tensor_value_info
 import pytest
 import torch
+from onnx.helper import make_tensor_value_info
 
 from tests.utils.common import check_onnx_model
 from tests.utils.common import make_model_from_nodes
@@ -51,7 +52,7 @@ from tests.utils.common import make_model_from_nodes
     "select_last_index",
     (0, 1),
 )
-def test_arg_max_arg_min(  # pylint: disable=missing-function-docstring
+def test_arg_max_arg_min(
     op_type: str,
     opset_version: int,
     dims: int,
@@ -95,7 +96,7 @@ class ArgMaxModel(torch.nn.Module):
     def __init__(self, axis: int, keepdims: bool):
         super().__init__()
         self.axis = axis
-        self.keepdims = bool(keepdims)
+        self.keepdims = keepdims
 
     def forward(self, data: torch.Tensor) -> torch.Tensor:
         return torch.argmax(data, dim=self.axis, keepdim=self.keepdims)
@@ -105,29 +106,16 @@ class ArgMinModel(torch.nn.Module):
     def __init__(self, axis: int, keepdims: bool):
         super().__init__()
         self.axis = axis
-        self.keepdims = bool(keepdims)
+        self.keepdims = keepdims
 
     def forward(self, data: torch.Tensor) -> torch.Tensor:
         return torch.argmin(data, dim=self.axis, keepdim=self.keepdims)
 
 
+@pytest.mark.parametrize("op_type", ["ArgMax", "ArgMin"])
+@pytest.mark.parametrize("opset_version", [11, 12, 13])
 @pytest.mark.parametrize(
-    "op_type",
-    (
-        "ArgMax",
-        "ArgMin",
-    ),
-)
-@pytest.mark.parametrize(
-    "opset_version",
-    (
-        11,
-        12,
-        13,
-    ),
-)
-@pytest.mark.parametrize(
-    "dims,axis",
+    "dims, axis",
     (
         (1, 0),
         (2, 0),
@@ -141,19 +129,13 @@ class ArgMinModel(torch.nn.Module):
         (4, 3),
     ),
 )
-@pytest.mark.parametrize(
-    "keepdims",
-    (
-        0,
-        1,
-    ),
-)
+@pytest.mark.parametrize("keepdims", [True, False])
 def test_start_from_torch_module(
     op_type: str,
     opset_version: int,
     dims: int,
     axis: int,
-    keepdims: int,
+    keepdims: bool,
     tmp_path: Path,
 ) -> None:
     """
@@ -179,7 +161,7 @@ def test_start_from_torch_module(
         input_names=input_names,
         output_names=output_names,
         do_constant_folding=False,
-        training=torch._C._onnx.TrainingMode.TRAINING,
+        opset_version=opset_version,
     )
 
     # load the exported onnx file

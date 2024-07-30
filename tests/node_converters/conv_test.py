@@ -1,5 +1,6 @@
 from itertools import chain
 from itertools import product
+from typing import Literal
 from typing import Tuple
 
 import numpy as np
@@ -10,7 +11,7 @@ from tests.utils.common import make_model_from_nodes
 
 
 def _test_conv(
-    op_type: str,
+    op_type: Literal['Conv', 'ConvTranspose'],
     in_channels: int,
     out_channels: int,
     kernel_shape: Tuple[int, int],
@@ -23,7 +24,7 @@ def _test_conv(
     x = np.random.uniform(low=-1.0, high=1.0, size=x_shape).astype(np.float32)
     if op_type == 'Conv':
         weights_shape = (out_channels, in_channels // group) + kernel_shape
-    elif op_type == 'ConvTranspose':
+    else:  # ConvTranspose
         weights_shape = (in_channels, out_channels // group) + kernel_shape
     weights = np.random.uniform(low=-1.0, high=1.0, size=weights_shape).astype(np.float32)
 
