@@ -152,7 +152,7 @@ def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: 
             )
 
     if cubic_coeff_a != -0.75:
-        warnings.warn('With a cubic coefficient value other than 0.75, the results might differ significantly!')
+        warnings.warn('With a cubic coefficient value other than -0.75, the results might differ significantly!')
 
     if exclude_outside != 0:
         warnings.warn('With a exclude outside value other than 0, the results might differ significantly!')
