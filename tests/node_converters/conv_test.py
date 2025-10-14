@@ -159,6 +159,32 @@ def test_conv_stride_dilations_pads() -> None:  # pylint: disable=missing-functi
         )
 
 
+def test_conv_auto_pad() -> None:  # pylint: disable=missing-function-docstring
+    input_hw_variants = ((32, 32), (32, 27), (27, 32), (27, 27))
+    kernel_shape_variants = tuple(
+        chain(
+            ((i, i) for i in range(1, 4)),
+            ((1, 2), (1, 3), (2, 3)),
+        )
+    )
+
+    auto_pad = ("SAME_UPPER", "VALID")
+    all_variants = product(
+        input_hw_variants,
+        kernel_shape_variants,
+        auto_pad,
+    )
+    for input_hw, kernel_shape, auto_pad in all_variants:
+        _test_conv(
+            op_type='Conv',
+            in_channels=16,
+            out_channels=16,
+            input_hw=input_hw,
+            kernel_shape=kernel_shape,
+            auto_pad=auto_pad,
+        )
+
+
 def test_conv_transpose_output_pads() -> None:  # pylint: disable=missing-function-docstring
     input_hw_variants = ((5, 5), (6, 6), (7, 7))
     stride_variants = (

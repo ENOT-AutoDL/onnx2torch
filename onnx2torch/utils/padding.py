@@ -30,6 +30,6 @@ def onnx_auto_pad_to_torch_padding(  # pylint: disable=missing-function-docstrin
         return 0, None
 
     if auto_pad in ('SAME_UPPER', 'SAME_LOWER'):
-        raise NotImplementedError(f'"{auto_pad}" auto_pad is not implemented')
+        return 'same', None
 
     raise ValueError(f'Got unexpected auto_pad value "{auto_pad}"')
