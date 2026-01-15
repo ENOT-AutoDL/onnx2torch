@@ -60,7 +60,7 @@ def _do_slice(x: torch.Tensor, flip_dims: List, pos_axes_slices: List, neg_axes_
         x = torch.flip(x, dims=flip_dims)
 
     if pos_axes_slices:
-        x = x[pos_axes_slices]
+        x = x[tuple(pos_axes_slices)]
 
     if neg_axes_slices:
         x = x[neg_axes_slices]
