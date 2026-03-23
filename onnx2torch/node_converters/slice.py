@@ -102,6 +102,7 @@ class OnnxSlice(nn.Module, OnnxToTorchModuleWithCustomExport):  # pylint: disabl
         return _forward()
 
 
+@add_converter(operation_type='Slice', version=1)
 @add_converter(operation_type='Slice', version=9)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     node_attributes = node.attributes

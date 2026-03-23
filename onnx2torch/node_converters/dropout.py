@@ -27,6 +27,7 @@ class OnnxDropoutDynamic(nn.Module, OnnxToTorchModule):  # pylint: disable=missi
         return F.dropout(input_tensor, p=ratio, training=self.training)
 
 
+@add_converter(operation_type='Dropout', version=7)
 @add_converter(operation_type='Dropout', version=10)
 def _(node: OnnxNode, graph: OnnxGraph) -> OperationConverterResult:  # pylint: disable=unused-argument
     node_attributes = node.attributes
