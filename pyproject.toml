@@ -101,7 +101,7 @@ disable = [
 ]
 
 [tool.pylint.BASIC]
-good-names = ['bs', 'bn']
+good-names = ['bs', 'bn', 'W', 'R', 'B', 'H', 'X', 'Y']
 
 [tool.pyright]
 reportMissingImports = false
