@@ -46,7 +46,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | EyeLike                   | Y         |                                                                                                                                                               |
 | Flatten                   | Y         |                                                                                                                                                               |
 | Floor                     | Y         |                                                                                                                                                               |
-| GRU                       | N         |                                                                                                                                                               |
+| GRU                       | Y         | layout=1 (batch-major), clip, linear_before_reset=1, and sequence_lens are not supported                                                                      |
 | Gather                    | Y         |                                                                                                                                                               |
 | GatherElements            | Y         |                                                                                                                                                               |
 | GatherND                  | Y         | GatherND operation with parameter "batch_dims" > 0 is not implemented                                                                                         |
@@ -65,7 +65,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | IsNaN                     | Y         |                                                                                                                                                               |
 | LayerNormalization        | Y         | LayerNormalization outputs "Mean" and "InvStdDev" are not implemented                                                                                         |
 | LRN                       | Y         |                                                                                                                                                               |
-| LSTM                      | N         |                                                                                                                                                               |
+| LSTM                      | Y         | layout=1 (batch-major), clip, input_forget=1, peephole weights, and sequence_lens are not supported; weights must be initializers                             |
 | LeakyRelu                 | Y         |                                                                                                                                                               |
 | Less                      | Y         |                                                                                                                                                               |
 | Log                       | Y         |                                                                                                                                                               |
@@ -98,7 +98,7 @@ Minimal tested opset version 9, maximum tested opset version 16, recommended ops
 | QLinearConv               | N         |                                                                                                                                                               |
 | QLinearMatMul             | N         |                                                                                                                                                               |
 | QuantizeLinear            | N         |                                                                                                                                                               |
-| RNN                       | N         |                                                                                                                                                               |
+| RNN                       | Y         | layout=1 (batch-major), clip, and sequence_lens are not supported; weights must be initializers                                                               |
 | RandomNormal              | N         |                                                                                                                                                               |
 | RandomNormalLike          | N         |                                                                                                                                                               |
 | RandomUniform             | N         |                                                                                                                                                               |

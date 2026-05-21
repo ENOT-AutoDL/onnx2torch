@@ -40,6 +40,7 @@ from onnx2torch.node_converters.pad import *
 from onnx2torch.node_converters.pow import *
 from onnx2torch.node_converters.range import *
 from onnx2torch.node_converters.reciprocal import *
+from onnx2torch.node_converters.rnn import *
 from onnx2torch.node_converters.reduce import *
 from onnx2torch.node_converters.registry import OperationDescription
 from onnx2torch.node_converters.registry import TConverter
